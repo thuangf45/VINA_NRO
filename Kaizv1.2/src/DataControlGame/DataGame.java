@@ -19,16 +19,11 @@
  * Lớp này chủ yếu dùng để lưu trữ dữ liệu cấu hình tĩnh, không có phương thức xử lý hoặc trả về giá trị động.
  */
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package DataControlGame;
 
 /**
  *
- * @author Administrator
+ * @author Lucifer
  */
 public class DataGame {
     public static String IPServerGame = "Nro Green 01:127.0.0.1:14445:0,0,0";
