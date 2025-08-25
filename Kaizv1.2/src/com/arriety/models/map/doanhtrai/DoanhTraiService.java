@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author GirlBeo
+ * @author Lucifer
  * 
  * Tóm tắt lớp DoanhTraiService:
  * Lớp DoanhTraiService thuộc package com.arriety.models.map.doanhtrai, là một singleton quản lý các doanh trại (DoanhTrai) trong game. Lớp chịu trách nhiệm khởi tạo, thêm khu vực, cập nhật trạng thái, và xử lý logic tham gia doanh trại cho người chơi. Ngoài ra, lớp quản lý thời gian reset và thời gian chờ của doanh trại, cũng như khởi tạo các boss trong doanh trại dựa trên chỉ số của bang hội.
