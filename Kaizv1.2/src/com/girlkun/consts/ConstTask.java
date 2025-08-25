@@ -4,62 +4,194 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author 💖 Trần Lại 💖
- * @copyright 💖 GirlkuN 💖
- *
+ * @author Lucifer
+ * Tóm tắt lớp ConstTask:
+ * Lớp ConstTask thuộc package com.girlkun.consts, chứa các hằng số tĩnh (static constants) dùng trong hệ thống nhiệm vụ phụ (Side Task) của game. 
+ * Bao gồm các mức độ nhiệm vụ, phần thưởng vàng, số lượng nhiệm vụ tối đa mỗi ngày, ID đặc biệt của map và NPC, cũng như các placeholder text 
+ * để hiển thị tên map, NPC, và quái vật trong nhiệm vụ. Ngoài ra có phương thức main() hỗ trợ sinh mã định danh cho task và kiểm tra trùng lặp ID.
  */
 public class ConstTask {
 
-    //const level side task
+    /**
+     * EASY: byte - Mức độ nhiệm vụ dễ. Giá trị: 0.
+     */
     public static final byte EASY = 0;
+
+    /**
+     * NORMAL: byte - Mức độ nhiệm vụ thường. Giá trị: 1.
+     */
     public static final byte NORMAL = 1;
+
+    /**
+     * HARD: byte - Mức độ nhiệm vụ khó. Giá trị: 2.
+     */
     public static final byte HARD = 2;
+
+    /**
+     * VERY_HARD: byte - Mức độ nhiệm vụ rất khó. Giá trị: 3.
+     */
     public static final byte VERY_HARD = 3;
+
+    /**
+     * HELL: byte - Mức độ nhiệm vụ địa ngục. Giá trị: 4.
+     */
     public static final byte HELL = 4;
 
-    //const gold reward side task
+    /**
+     * GOLD_EASY: int - Phần thưởng vàng cho nhiệm vụ EASY. Giá trị: 10,000,000.
+     */
     public static final int GOLD_EASY = 10000000;
+
+    /**
+     * GOLD_NORMAL: int - Phần thưởng vàng cho nhiệm vụ NORMAL. Giá trị: 30,000,000.
+     */
     public static final int GOLD_NORMAL = 30000000;
+
+    /**
+     * GOLD_HARD: int - Phần thưởng vàng cho nhiệm vụ HARD. Giá trị: 50,000,000.
+     */
     public static final int GOLD_HARD = 50000000;
+
+    /**
+     * GOLD_VERY_HARD: int - Phần thưởng vàng cho nhiệm vụ VERY_HARD. Giá trị: 80,000,000.
+     */
     public static final int GOLD_VERY_HARD = 80000000;
+
+    /**
+     * GOLD_HELL: int - Phần thưởng vàng cho nhiệm vụ HELL. Giá trị: 100,000,000.
+     */
     public static final int GOLD_HELL = 100000000;
 
-    //const max side task of date
+    /**
+     * MAX_SIDE_TASK: byte - Số lượng nhiệm vụ phụ tối đa có thể nhận trong ngày. Giá trị: 20.
+     */
     public static final byte MAX_SIDE_TASK = 20;
 
-    //const change map id
+    /**
+     * MAP_NHA: byte - ID đặc biệt để thay đổi bản đồ về nhà. Giá trị: -2.
+     */
     public static final byte MAP_NHA = -2;
+
+    /**
+     * MAP_200: byte - ID đặc biệt của bản đồ 200. Giá trị: -3.
+     */
     public static final byte MAP_200 = -3;
+
+    /**
+     * MAP_VACH_NUI: byte - ID đặc biệt của bản đồ Vách Núi. Giá trị: -4.
+     */
     public static final byte MAP_VACH_NUI = -4;
+
+    /**
+     * MAP_500: byte - ID đặc biệt của bản đồ 500. Giá trị: -5.
+     */
     public static final byte MAP_500 = -5;
+
+    /**
+     * MAP_TTVT: byte - ID đặc biệt của bản đồ Thử Thách Vượt Thời (TTVT). Giá trị: -6.
+     */
     public static final byte MAP_TTVT = -6;
+
+    /**
+     * MAP_QUAI_BAY_600: byte - ID đặc biệt của bản đồ Quái Bay 600. Giá trị: -7.
+     */
     public static final byte MAP_QUAI_BAY_600 = -7;
+
+    /**
+     * MAP_LANG: byte - ID đặc biệt của bản đồ Làng. Giá trị: -8.
+     */
     public static final byte MAP_LANG = -8;
+
+    /**
+     * MAP_QUY_LAO: byte - ID đặc biệt của bản đồ Quỷ Lão. Giá trị: -9.
+     */
     public static final byte MAP_QUY_LAO = -9;
 
-    //const change npc id
+    /**
+     * NPC_NHA: byte - ID đặc biệt của NPC Nhà. Giá trị: -2.
+     */
     public static final byte NPC_NHA = -2;
+
+    /**
+     * NPC_TTVT: byte - ID đặc biệt của NPC Thử Thách Vượt Thời. Giá trị: -3.
+     */
     public static final byte NPC_TTVT = -3;
+
+    /**
+     * NPC_SHOP_LANG: byte - ID đặc biệt của NPC Shop Làng. Giá trị: -4.
+     */
     public static final byte NPC_SHOP_LANG = -4;
+
+    /**
+     * NPC_QUY_LAO: byte - ID đặc biệt của NPC Quỷ Lão. Giá trị: -5.
+     */
     public static final byte NPC_QUY_LAO = -5;
 
-    //const change text
+    /**
+     * TEN_LANG: String - Placeholder text hiển thị tên Làng. Giá trị: "%1".
+     */
     public static final String TEN_LANG = "%1";
+
+    /**
+     * TEN_NPC_NHA: String - Placeholder text hiển thị tên NPC Nhà. Giá trị: "%2".
+     */
     public static final String TEN_NPC_NHA = "%2";
+
+    /**
+     * TEN_MAP_200: String - Placeholder text hiển thị tên Map 200. Giá trị: "%3".
+     */
     public static final String TEN_MAP_200 = "%3";
+
+    /**
+     * TEN_QUAI_200: String - Placeholder text hiển thị tên Quái 200. Giá trị: "%4".
+     */
     public static final String TEN_QUAI_200 = "%4";
+
+    /**
+     * TEN_VACH_NUI: String - Placeholder text hiển thị tên Vách Núi. Giá trị: "%5".
+     */
     public static final String TEN_VACH_NUI = "%5";
+
+    /**
+     * TEN_MAP_500: String - Placeholder text hiển thị tên Map 500. Giá trị: "%6".
+     */
     public static final String TEN_MAP_500 = "%6";
+
+    /**
+     * TEN_NPC_TTVT: String - Placeholder text hiển thị tên NPC Thử Thách Vượt Thời. Giá trị: "%7".
+     */
     public static final String TEN_NPC_TTVT = "%7";
+
+    /**
+     * TEN_NPC_SHOP_LANG: String - Placeholder text hiển thị tên NPC Shop Làng. Giá trị: "%8".
+     */
     public static final String TEN_NPC_SHOP_LANG = "%8";
+
+    /**
+     * TEN_QUAI_BAY_600: String - Placeholder text hiển thị tên Quái Bay 600. Giá trị: "%9".
+     */
     public static final String TEN_QUAI_BAY_600 = "%9";
+
+    /**
+     * TEN_NPC_QUY_LAO: String - Placeholder text hiển thị tên NPC Quỷ Lão. Giá trị: "%10".
+     */
     public static final String TEN_NPC_QUY_LAO = "%10";
+
+    /**
+     * TEN_MAP_QUY_LAO: String - Placeholder text hiển thị tên Map Quỷ Lão. Giá trị: "%11".
+     */
     public static final String TEN_MAP_QUY_LAO = "%11";
+
+    /**
+     * TEN_QUAI_3000: String - Placeholder text hiển thị tên Quái 3000. Giá trị: "%12".
+     */
     public static final String TEN_QUAI_3000 = "%12";
 
+    /**
+     * main(): phương thức hỗ trợ sinh ra các hằng số TASK_{i}_{j} bằng công thức (i << 10) + j << 1,
+     * đồng thời kiểm tra trùng lặp ID.
+     */
     public static void main(String[] args) {
-
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < 300; i++) {
             for (int j = 0; j <= 20; j++) {
@@ -67,14 +199,15 @@ public class ConstTask {
                 System.out.println("public static final int TASK_" + i + "_" + j + " = " + id + ";");
                 if (!list.contains(id)) {
                     list.add(id);
-//                    System.out.println("id: " + id);
+//                  System.out.println("id: " + id);
                 } else {
                     System.out.println("**: " + id);
                 }
             }
         }
-
     }
+
+
 
     //id task custompublic static final int 0_0 = 0;
     public static final int TASK_0_0 = 0;
