@@ -6,6 +6,7 @@ import com.girlkun.models.boss.list_boss.doanh_trai.TrungUyThep;
 import com.girlkun.models.boss.list_boss.doanh_trai.TrungUyTrang;
 import com.girlkun.models.boss.list_boss.doanh_trai.TrungUyXanhLo;
 import com.girlkun.models.map.Zone;
+import static com.arriety.models.map.doanhtrai.DoanhTrai.TIME_DOANH_TRAI;
 import com.girlkun.models.player.Player;
 import com.girlkun.services.MapService;
 import com.girlkun.services.Service;
