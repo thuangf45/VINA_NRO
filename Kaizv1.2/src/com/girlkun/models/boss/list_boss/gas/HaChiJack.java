@@ -11,21 +11,55 @@ import com.girlkun.services.Service;
 import com.girlkun.utils.Util;
 
 /**
- * @author BTH sieu cap vippr0
+ * Đại diện cho Boss HaChiJack trong sự kiện Khí Gas Hủy Diệt.
+ * Boss này có hệ thống skill đa dạng, rơi đồ và thông báo cho bang hội khi bị hạ gục.
+ *
+ * @author Lucifer
  */
 public class HaChiJack extends Boss {
 
+    /** Cấp độ của Boss */
     private int levell;
-    private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
+
+    /** Danh sách kỹ năng Demon đầy đủ các cấp */
+    private static final int[][] FULL_DEMON = new int[][]{
+        {Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3},
+        {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}
+    };
+
+    /** Thời gian lần cuối thực hiện chiêu Hấp Thu */
     private long lastTimeHapThu;
+
+    /** Thời gian hồi chiêu Hấp Thu */
     private int timeHapThu;
+
+    /** Lưu thời gian cập nhật gần nhất */
     private long lastUpdate = System.currentTimeMillis();
+
+    /** Thời điểm Boss tham gia bản đồ */
     private long timeJoinMap;
+
+    /** Biến khởi tạo trạng thái đặc biệt */
     private int initSuper = 0;
+
+    /** Người chơi đã spawn ra Boss */
     private Player plSpawn;
+
+    /** Người chơi hiện tại mà Boss đang tấn công */
     protected Player playerAtt;
+
+    /** Thời gian tồn tại tối đa của Boss */
     private int timeLive = 200000000;
 
+    /**
+     * Khởi tạo Boss HaChiJack.
+     *
+     * @param pl    Người chơi tạo ra Boss (thường là người mở sự kiện)
+     * @param level Cấp độ Boss
+     * @param dame  Sát thương cơ bản
+     * @param hp    Máu cơ bản
+     * @throws Exception Nếu dữ liệu không hợp lệ
+     */
     public HaChiJack(Player pl, int level, int dame, int hp) throws Exception {
         super(BossID.HACHIYACK, new BossData(
                 "HaChiYack", //name
@@ -50,9 +84,13 @@ public class HaChiJack extends Boss {
         plSpawn = pl;
     }
 
+    /**
+     * Xử lý phần thưởng khi Boss bị tiêu diệt.
+     *
+     * @param plKill Người chơi hạ gục Boss
+     */
     @Override
     public void reward(Player plKill) {
-
         int paramhp = 0;
         int parammp = 0;
         int paramsd = 0;
@@ -104,12 +142,23 @@ public class HaChiJack extends Boss {
         }
     }
 
+    /**
+     * Kích hoạt hành vi Boss (AI, di chuyển, tấn công, ...).
+     */
     @Override
     public void active() {
         super.active();
     }
 
-
+    /**
+     * Xử lý sát thương khi Boss bị tấn công.
+     *
+     * @param plAtt        Người chơi tấn công
+     * @param damage       Sát thương gây ra
+     * @param piercing     Có bỏ qua giáp hay không
+     * @param isMobAttack  Có phải từ quái thường không
+     * @return Sát thương thực tế Boss nhận vào
+     */
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(50, 100)) {
@@ -144,6 +193,9 @@ public class HaChiJack extends Boss {
         }
     }
 
+    /**
+     * Xử lý khi Boss rời bản đồ (xóa khỏi BossManager).
+     */
     @Override
     public void leaveMap() {
         super.leaveMap();
