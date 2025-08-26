@@ -13,45 +13,132 @@ import com.girlkun.utils.Util;
 
 import java.util.Date;
 import java.util.List;
-/**
- * @Stole By Tú Phạm +_+❤
- */
 
+/**
+ * Lớp BlackBallWar quản lý sự kiện chiến tranh ngọc rồng sao đen, bao gồm thời gian, nhặt ngọc và phần thưởng.
+ * @author Lucifer
+ */
 public class BlackBallWar {
 
+    /**
+     * Thời gian tối thiểu để nhặt ngọc rồng sao đen sau khi rơi (mili giây).
+     */
     private static final int TIME_CAN_PICK_BLACK_BALL_AFTER_DROP = 0;
 
+    /**
+     * Hệ số nhân HP/KI cho ngọc rồng 3 sao.
+     */
     public static final byte X3 = 3;
+
+    /**
+     * Hệ số nhân HP/KI cho ngọc rồng 5 sao.
+     */
     public static final byte X5 = 5;
+
+    /**
+     * Hệ số nhân HP/KI cho ngọc rồng 7 sao.
+     */
     public static final byte X7 = 7;
 
+    /**
+     * Chi phí vàng để kích hoạt nhân HP/KI 3 lần.
+     */
     public static final int COST_X3 = 100000000;
+
+    /**
+     * Chi phí vàng để kích hoạt nhân HP/KI 5 lần.
+     */
     public static final int COST_X5 = 300000000;
+
+    /**
+     * Chi phí vàng để kích hoạt nhân HP/KI 7 lần.
+     */
     public static final int COST_X7 = 500000000;
 
+    /**
+     * Giờ mở sự kiện ngọc rồng sao đen.
+     */
     public static final byte HOUR_OPEN = 20;
+
+    /**
+     * Phút mở sự kiện ngọc rồng sao đen.
+     */
     public static final byte MIN_OPEN = 0;
+
+    /**
+     * Giây mở sự kiện ngọc rồng sao đen.
+     */
     public static final byte SECOND_OPEN = 0;
 
+    /**
+     * Giờ cho phép nhặt ngọc rồng sao đen.
+     */
     public static final byte HOUR_CAN_PICK_DB = 20;
+
+    /**
+     * Phút cho phép nhặt ngọc rồng sao đen.
+     */
     public static final byte MIN_CAN_PICK_DB = 25;
+
+    /**
+     * Giây cho phép nhặt ngọc rồng sao đen.
+     */
     public static final byte SECOND_CAN_PICK_DB = 0;
 
+    /**
+     * Giờ đóng sự kiện ngọc rồng sao đen.
+     */
     public static final byte HOUR_CLOSE = 21;
-    public static final byte MIN_CLOSE = 0;
-    public static final byte SECOND_CLOSE = 0;
-    //*************************************
-    public static final int AVAILABLE = 7;
-    private static final int TIME_WIN = 300000; //cam toi thieu 300k mili = 5p
 
+    /**
+     * Phút đóng sự kiện ngọc rồng sao đen.
+     */
+    public static final byte MIN_CLOSE = 0;
+
+    /**
+     * Giây đóng sự kiện ngọc rồng sao đen.
+     */
+    public static final byte SECOND_CLOSE = 0;
+
+    /**
+     * Số lượng bản đồ ngọc rồng sao đen tối đa.
+     */
+    public static final int AVAILABLE = 7;
+
+    /**
+     * Thời gian tối thiểu để giữ ngọc và giành chiến thắng (mili giây).
+     */
+    private static final int TIME_WIN = 300000;
+
+    /**
+     * Thể hiện duy nhất của lớp BlackBallWar (mô hình Singleton).
+     */
     private static BlackBallWar i;
 
+    /**
+     * Thời điểm mở sự kiện ngọc rồng sao đen (mili giây).
+     */
     public static long TIME_OPEN;
+
+    /**
+     * Thời điểm cho phép nhặt ngọc rồng sao đen (mili giây).
+     */
     private static long TIME_CAN_PICK_DB;
+
+    /**
+     * Thời điểm đóng sự kiện ngọc rồng sao đen (mili giây).
+     */
     public static long TIME_CLOSE;
 
+    /**
+     * Ngày hiện tại để kiểm tra cập nhật thời gian sự kiện.
+     */
     private int day = -1;
 
+    /**
+     * Lấy thể hiện duy nhất của lớp BlackBallWar và cập nhật thời gian sự kiện.
+     * @return Thể hiện của BlackBallWar.
+     */
     public static BlackBallWar gI() {
         if (i == null) {
             i = new BlackBallWar();
@@ -60,6 +147,9 @@ public class BlackBallWar {
         return i;
     }
 
+    /**
+     * Cập nhật thời gian mở, đóng và thời điểm cho phép nhặt ngọc rồng sao đen.
+     */
     public void setTime() {
         if (i.day == -1 || i.day != TimeUtil.getCurrDay()) {
             i.day = TimeUtil.getCurrDay();
@@ -72,6 +162,10 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Thả ngọc rồng sao đen xuống bản đồ khi người chơi đang giữ.
+     * @param player Người chơi thả ngọc.
+     */
     public synchronized void dropBlackBall(Player player) {
         if (player.iDMark.isHoldBlackBall()) {
             player.iDMark.setHoldBlackBall(false);
@@ -82,7 +176,7 @@ public class BlackBallWar {
             Service.gI().dropItemMap(itemMap.zone, itemMap);
             player.iDMark.setTempIdBlackBallHold(-1);
             player.zone.lastTimeDropBlackBall = System.currentTimeMillis();
-            Service.gI().sendFlagBag(player); //gui vao tui do
+            Service.gI().sendFlagBag(player);
 
             if (player.clan != null) {
                 List<Player> players = player.zone.getPlayers();
@@ -97,6 +191,10 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Cập nhật trạng thái sự kiện ngọc rồng sao đen, kiểm tra chiến thắng hoặc kết thúc.
+     * @param player Người chơi cần kiểm tra.
+     */
     public void update(Player player) {
         if (player.zone == null || !MapService.gI().isMapBlackBallWar(player.zone.map.mapId)) {
             return;
@@ -127,6 +225,10 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Xử lý chiến thắng khi người chơi giữ ngọc đủ thời gian và trao phần thưởng.
+     * @param player Người chơi giành chiến thắng.
+     */
     private void win(Player player) {
         player.zone.finishBlackBallWar = true;
         int star = player.iDMark.getTempIdBlackBallHold() - 371;
@@ -140,7 +242,6 @@ public class BlackBallWar {
                                 + "dành chiến thắng ngọc rồng sao đen " + star + " sao");
                     }
                 }
-
             } catch (Exception e) {
                 Logger.logException(BlackBallWar.class, e,
                         "Lỗi ban thưởng ngọc rồng đen "
@@ -159,6 +260,10 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Đưa người chơi ra khỏi bản đồ ngọc rồng sao đen khi sự kiện kết thúc.
+     * @param player Người chơi cần đưa ra ngoài.
+     */
     private void kickOutOfMap(Player player) {
         if (player.cFlag == 8) {
             Service.gI().changeFlag(player, Util.nextInt(1, 7));
@@ -167,6 +272,11 @@ public class BlackBallWar {
         ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 250);
     }
 
+    /**
+     * Chuyển người chơi đến bản đồ ngọc rồng sao đen theo chỉ số.
+     * @param player Người chơi cần chuyển.
+     * @param index Chỉ số bản đồ.
+     */
     public void changeMap(Player player, byte index) {
         try {
             long now = System.currentTimeMillis();
@@ -181,6 +291,10 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Thêm người chơi vào bản đồ ngọc rồng sao đen và thay đổi cờ bang hội.
+     * @param player Người chơi tham gia.
+     */
     public void joinMapBlackBallWar(Player player) {
         boolean changed = false;
         if (player.clan != null) {
@@ -198,6 +312,12 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Xử lý việc nhặt ngọc rồng sao đen của người chơi.
+     * @param player Người chơi nhặt ngọc.
+     * @param item Vật phẩm ngọc rồng sao đen.
+     * @return true nếu nhặt thành công, false nếu không.
+     */
     public boolean pickBlackBall(Player player, Item item) {
         try {
             if (System.currentTimeMillis() < this.TIME_CAN_PICK_DB) {
@@ -211,7 +331,6 @@ public class BlackBallWar {
                 return false;
             } else {
                 if (Util.canDoWithTime(player.zone.lastTimeDropBlackBall, TIME_CAN_PICK_BLACK_BALL_AFTER_DROP)) {
-
                     player.iDMark.setHoldBlackBall(true);
                     player.iDMark.setTempIdBlackBallHold(item.template.id);
                     player.iDMark.setLastTimeHoldBlackBall(System.currentTimeMillis());
@@ -237,6 +356,11 @@ public class BlackBallWar {
         }
     }
 
+    /**
+     * Kích hoạt hiệu ứng nhân HP/KI cho người chơi dựa trên số vàng.
+     * @param player Người chơi kích hoạt.
+     * @param x Hệ số nhân HP/KI (X3, X5, X7).
+     */
     public void xHPKI(Player player, byte x) {
         int cost = 0;
         switch (x) {
