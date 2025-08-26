@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.girlkun.models.boss.list_boss.FideBack;
 
 import com.girlkun.models.boss.Boss;
@@ -17,16 +12,27 @@ import com.girlkun.utils.Util;
 import java.util.Random;
 
 /**
- *
- * @Stole By Arriety
+ * Lớp đại diện cho boss King Cold trong game.
+ * Boss có phần thưởng đa dạng khi bị tiêu diệt.
+ * 
+ * @author Lucifer
  */
 public class Kingcold extends Boss {
 
+    /**
+     * Constructor khởi tạo boss King Cold với ID và dữ liệu từ BossesData.
+     * 
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public Kingcold() throws Exception {
         super(BossID.VUA_COLD, BossesData.VUA_COLD);
     }
 
-      @Override
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt King Cold.
+     * @param plKill Người chơi đã tiêu diệt boss
+     */
+    @Override
     public void reward(Player plKill) {
         int[] itemDos = new int[]{555, 557, 559, 556, 558, 560, 562, 564, 566, 563, 565, 567};
         int[] NRs = new int[]{15, 16};
