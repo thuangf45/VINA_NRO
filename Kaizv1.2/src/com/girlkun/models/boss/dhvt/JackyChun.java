@@ -6,12 +6,15 @@ import com.girlkun.models.boss.BossesData;
 import com.girlkun.models.player.Player;
 
 /**
- * @author BTH sieu cap vippr0 
+ * Lớp đại diện cho boss JackyChun trong sự kiện Đại Hội Võ Thuật (DHVT)
+ * @author Lucifer
  */
 public class JackyChun extends BossDHVT {
 
+    /** Constructor khởi tạo boss JackyChun với ID và dữ liệu từ BossesData */
     public JackyChun(Player player) throws Exception {
         super(BossID.JACKY_CHUN, BossesData.JACKY_CHUN);
+        /** Gán người chơi mục tiêu cho boss */
         this.playerAtt = player;
     }
 }
