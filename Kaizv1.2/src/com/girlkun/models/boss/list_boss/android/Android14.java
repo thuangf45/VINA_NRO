@@ -34,9 +34,7 @@ import com.girlkun.utils.Util;
  *   + Android 14 tự hồi máu, chuyển sang non-PK và bật flag callApk13.
  * - Khi kết thúc câu thoại (doneChatS), Android 15 sẽ được đưa vào trạng thái PK.
  *
- * @author  
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class Android14 extends Boss {
 

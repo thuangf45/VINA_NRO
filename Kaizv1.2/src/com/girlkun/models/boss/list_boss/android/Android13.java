@@ -30,9 +30,7 @@ import com.girlkun.utils.Util;
  *   để cùng tham chiến.
  * - Đồng thời, parentBoss cũng được đổi sang trạng thái PK.
  *
- * @author  
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class Android13 extends Boss {
 

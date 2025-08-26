@@ -28,9 +28,7 @@ import java.util.Random;
  * - Có xác suất né đòn dựa trên tlNeDon.
  * - Nếu có khiên chắn, sát thương nhận giảm một nửa, khi sát thương vượt quá HP tối đa thì khiên sẽ vỡ.
  *
- * @author 
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class ThanThienSu extends Boss {
 

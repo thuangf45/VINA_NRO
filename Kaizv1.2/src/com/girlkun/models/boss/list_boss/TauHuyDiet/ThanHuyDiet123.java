@@ -33,9 +33,7 @@ import com.girlkun.utils.Util;
  * Cơ chế phần thưởng:
  * - Dùng phương thức {@link #rewardFutureBoss(Player)} để rơi đồ (định nghĩa ở Boss cha).
  *
- * @author 
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class ThanHuyDiet123 extends Boss {
 

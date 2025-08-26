@@ -27,9 +27,7 @@ import com.girlkun.utils.Util;
  * - Code có sẵn phần xử lý vòng đời (active/joinMap) nhưng đang bị comment lại.
  *   Nếu bật lại thì boss sẽ tự rời map sau ~1000s kể từ khi xuất hiện.
  *
- * @author 
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class ThienSuWhis extends Boss {
 

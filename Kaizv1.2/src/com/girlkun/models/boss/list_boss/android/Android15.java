@@ -32,9 +32,7 @@ import com.girlkun.utils.Util;
  * Cơ chế phối hợp:
  * - Android 15 sẽ được hồi phục HP và chuyển sang Non-PK khi Android 14 gọi {@link Android14#callApk13()}.
  *
- * @author  
- *  - Code gốc: team dev
- *  - JavaDoc & chú thích: Lucifer
+ * @author Lucifer
  */
 public class Android15 extends Boss {
 
