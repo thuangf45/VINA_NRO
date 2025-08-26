@@ -78,22 +78,22 @@ public class CheckDataDay {
     /**
      * Lưu trạng thái đã nhận quà online hằng ngày
      */
-//    public static String SaveRecieveOnline(Player player) {
-//        JSONArray dataArray = new JSONArray();
-//        for (int i = 0; i < OnlineHangNgay.isRecieve.length; i++) {
-//            dataArray.add(OnlineHangNgay.isRecieve[i] ? 1 : 0);
-//        }
-//        return dataArray.toJSONString();
-//    }
+    public static String SaveRecieveOnline(Player player) {
+        JSONArray dataArray = new JSONArray();
+        for (int i = 0; i < OnlineHangNgay.isRecieve.length; i++) {
+            dataArray.add(OnlineHangNgay.isRecieve[i] ? 1 : 0);
+        }
+        return dataArray.toJSONString();
+    }
 
     /**
      * Lưu trạng thái đã nhận quà nạp hằng ngày
      */
-//    public static String SaveRecieveNap(Player player) {
-//        JSONArray dataArray = new JSONArray();
-//        for (int i = 0; i < QuaNapHangNgay.isRecieve.length; i++) {
-//            dataArray.add(QuaNapHangNgay.isRecieve[i] ? 1 : 0);
-//        }
-//        return dataArray.toJSONString();
-//    }
+    public static String SaveRecieveNap(Player player) {
+        JSONArray dataArray = new JSONArray();
+        for (int i = 0; i < QuaNapHangNgay.isRecieve.length; i++) {
+            dataArray.add(QuaNapHangNgay.isRecieve[i] ? 1 : 0);
+        }
+        return dataArray.toJSONString();
+    }
 }
