@@ -5,30 +5,33 @@ import com.girlkun.server.Manager;
 import com.girlkun.network.io.Message;
 import com.girlkun.server.io.MySession;
 
-
+/**
+ * Quản lý cập nhật dữ liệu vật phẩm cho client, bao gồm các mẫu vật phẩm và tùy chọn vật phẩm.
+ * @author Lucifer
+ */
 public class ItemData {
 
-    //------------------------------------------------------ start update client
+    /**
+     * Cập nhật thông tin vật phẩm cho phiên client.
+     * @param session Phiên làm việc của client
+     */
     public static void updateItem(MySession session) {
         updateItemOptionItemplate(session);
-//        int count = 500;
-//        updateItemTemplate(session, count);
-//        updateItemTemplate(session, count, Manager.ITEM_TEMPLATES.size());
-
-
-
         updateItemTemplate(session, 750);
         updateItemTemplate(session, 750, Manager.ITEM_TEMPLATES.size());
-//        updateItemTemplate(session, 1500, Manager.ITEM_TEMPLATES.size());
     }
 
+    /**
+     * Cập nhật mẫu tùy chọn vật phẩm cho phiên client.
+     * @param session Phiên làm việc của client
+     */
     private static void updateItemOptionItemplate(MySession session) {
         Message msg;
         try {
             msg = new Message(-28);
             msg.writer().writeByte(8);
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(0); //update option
+            msg.writer().writeByte(DataGame.vsItem); // Phiên bản vật phẩm
+            msg.writer().writeByte(0); // Cập nhật tùy chọn
             msg.writer().writeByte(Manager.ITEM_OPTION_TEMPLATES.size());
             for (ItemOptionTemplate io : Manager.ITEM_OPTION_TEMPLATES) {
                 msg.writer().writeUTF(io.name);
@@ -37,19 +40,21 @@ public class ItemData {
             session.doSendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-             
-
         }
     }
 
+    /**
+     * Cập nhật mẫu vật phẩm cho phiên client với số lượng giới hạn.
+     * @param session Phiên làm việc của client
+     * @param count Số lượng mẫu vật phẩm cần gửi
+     */
     private static void updateItemTemplate(MySession session, int count) {
         Message msg;
         try {
             msg = new Message(-28);
             msg.writer().writeByte(8);
-
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(1); //reload itemtemplate
+            msg.writer().writeByte(DataGame.vsItem); // Phiên bản vật phẩm
+            msg.writer().writeByte(1); // Tải lại mẫu vật phẩm
             msg.writer().writeShort(count);
             for (int i = 0; i < count; i++) {
                 msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).type);
@@ -65,22 +70,25 @@ public class ItemData {
             session.doSendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            
         }
     }
 
+    /**
+     * Cập nhật mẫu vật phẩm cho phiên client trong một khoảng xác định.
+     * @param session Phiên làm việc của client
+     * @param start Vị trí bắt đầu của danh sách mẫu vật phẩm
+     * @param end Vị trí kết thúc của danh sách mẫu vật phẩm
+     */
     private static void updateItemTemplate(MySession session, int start, int end) {
         Message msg;
         try {
             msg = new Message(-28);
             msg.writer().writeByte(8);
-
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(2); //add itemtemplate
+            msg.writer().writeByte(DataGame.vsItem); // Phiên bản vật phẩm
+            msg.writer().writeByte(2); // Thêm mẫu vật phẩm
             msg.writer().writeShort(start);
             msg.writer().writeShort(end);
             for (int i = start; i < end; i++) {
-//                System.out.println("start: " + start + " -> " + end + " id " + Manager.ITEM_TEMPLATES.get(i).id);
                 msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).type);
                 msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).gender);
                 msg.writer().writeUTF(Manager.ITEM_TEMPLATES.get(i).name);
@@ -94,8 +102,6 @@ public class ItemData {
             session.doSendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            
         }
     }
-    //-------------------------------------------------------- end update client
 }
