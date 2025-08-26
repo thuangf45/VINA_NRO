@@ -16,14 +16,28 @@ import com.girlkun.utils.Util;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class đại diện cho Boss Ninja Áo Tím trong Doanh Trại
+ * - Có khả năng triệu hồi NinjaClone khi HP thấp
+ * - Rơi vật phẩm khi bị hạ gục
+ */
 public class NinjaTim extends Boss {
     private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
-  private long lastTimeHapThu;
+    private long lastTimeHapThu;
     private int timeHapThu;
     private int initSuper = 0;
     protected Player playerAtt;
     private int timeLive = 10;
     private boolean calledNinja;
+    private long st;
+
+    /**
+     * Constructor tạo Ninja Áo Tím
+     * @param zone Khu vực xuất hiện
+     * @param dame Sát thương cơ bản
+     * @param hp Máu cơ bản
+     * @throws Exception
+     */
     public NinjaTim(Zone zone, int dame, int hp ) throws Exception {
         super(BossID.NINJA_AO_TIM, new BossData(
                 "Ninja Áo Tím", //name
@@ -35,17 +49,21 @@ public class NinjaTim extends Boss {
                 new int[][]{
                 {Skill.DEMON, 3, 1}, {Skill.DEMON, 6, 2}, {Skill.DRAGON, 7, 3}, {Skill.DRAGON, 1, 4}, {Skill.GALICK, 5, 5},
                 {Skill.KAMEJOKO, 7, 6}, {Skill.KAMEJOKO, 6, 7}, {Skill.KAMEJOKO, 5, 8}, {Skill.KAMEJOKO, 4, 9}, {Skill.KAMEJOKO, 3, 10}, {Skill.KAMEJOKO, 2, 11},{Skill.KAMEJOKO, 1, 12},
-              {Skill.ANTOMIC, 1, 13},  {Skill.ANTOMIC, 2, 14},  {Skill.ANTOMIC, 3, 15},{Skill.ANTOMIC, 4, 16},  {Skill.ANTOMIC, 5, 17},{Skill.ANTOMIC, 6, 19},  {Skill.ANTOMIC, 7, 20},
+                {Skill.ANTOMIC, 1, 13},  {Skill.ANTOMIC, 2, 14},  {Skill.ANTOMIC, 3, 15},{Skill.ANTOMIC, 4, 16},  {Skill.ANTOMIC, 5, 17},{Skill.ANTOMIC, 6, 19},  {Skill.ANTOMIC, 7, 20},
                 {Skill.MASENKO, 1, 21}, {Skill.MASENKO, 5, 22}, {Skill.MASENKO, 6, 23},
-                    {Skill.KAMEJOKO, 7, 1000},},
+                {Skill.KAMEJOKO, 7, 1000},},
                 new String[]{}, //text chat 1
                 new String[]{"|-1|Nhóc con"}, //text chat 2
                 new String[]{}, //text chat 3
                 60
         ));
-        
         this.zone = zone;
     }
+
+    /**
+     * Xử lý rơi vật phẩm khi Boss chết
+     * @param plKill người chơi hạ gục Boss
+     */
     @Override
     public void reward(Player plKill) {
         if (Util.isTrue(100, 100)) {
@@ -54,14 +72,21 @@ public class NinjaTim extends Boss {
             Service.getInstance().dropItemMap(this.zone, it);
         }
     }
-    
+
+    /**
+     * Hành động của Boss trong mỗi tick
+     * - Tự động rời map sau 30 phút
+     */
     public void active() {
         super.active(); //To change body of generated methods, choose Tools | Templates.
         if (Util.canDoWithTime(st, 1800000)) {
             this.changeStatus(BossStatus.LEAVE_MAP);
         }
     }
-    
+
+    /**
+     * Rời khỏi bản đồ
+     */
     @Override
     public void leaveMap() {
         super.leaveMap();
@@ -69,15 +94,24 @@ public class NinjaTim extends Boss {
             BossManager.gI().removeBoss(this);
         }
     }
-     
+
+    /**
+     * Tham gia bản đồ
+     */
     @Override
     public void joinMap() {
         super.joinMap(); //To change body of generated methods, choose Tools | Templates.
         st = System.currentTimeMillis();
     }
-    private long st;
-    
-   
+
+    /**
+     * Xử lý khi Boss bị tấn công
+     * @param plAtt người tấn công
+     * @param damage sát thương
+     * @param piercing có xuyên giáp không
+     * @param isMobAttack có phải mob đánh không
+     * @return lượng sát thương thực nhận
+     */
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
@@ -92,6 +126,8 @@ public class NinjaTim extends Boss {
                 damage = damage/2;
             }
             this.nPoint.subHP(damage);
+
+            // Khi HP thấp hơn 15tr thì gọi thêm NinjaClone
             if (this.nPoint.hp <= 15000000 && !this.calledNinja) {
                 try {
                     new NinjaClone(this.zone, 2, Util.nextInt(1000, 10000), BossID.NINJA_AO_TIM1);
@@ -104,14 +140,12 @@ public class NinjaTim extends Boss {
                 this.calledNinja = true;
             }
             if (isDie()) {
-this.setDie(plAtt);
-die(plAtt);
-}
+                this.setDie(plAtt);
+                die(plAtt);
+            }
             return damage;
         } else {
             return 0;
         }
     }
-    
-
 }
