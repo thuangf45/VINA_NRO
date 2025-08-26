@@ -21,8 +21,8 @@ import com.girlkun.models.Effect.EffectChar;
 import com.girlkun.models.Effect.EffectService;
 import com.girlkun.models.Effect.HaoQuang;
 import com.girlkun.models.Effect.VongChan;
-//import com.girlkun.models.Event.CauCa;
-//import com.girlkun.models.ThanhTich.ThanhTich;
+import com.girlkun.models.Event.CauCa;
+import com.girlkun.models.ThanhTich.ThanhTich;
 import com.girlkun.models.clan.ClanMember;
 import com.girlkun.models.map.BDKB.BanDoKhoBauService;
 import com.girlkun.models.map.TrapMap;
@@ -55,7 +55,7 @@ import com.girlkun.utils.Logger;
 import com.girlkun.utils.Util;
 
 import java.util.ArrayList;
-//import javafx.scene.effect.Effect;
+import javafx.scene.effect.Effect;
 
 public class Player {
 
@@ -67,7 +67,7 @@ public class Player {
     public int goldXiu;
     public MySession session;
     public boolean beforeDispose;
-//    public List<ThanhTich> Archivement = new ArrayList<>();
+    public List<ThanhTich> Archivement = new ArrayList<>();
     public boolean isPet;
     public boolean isNewPet;
     public int TimeOnline = 0;
@@ -170,7 +170,7 @@ public class Player {
     public boolean receivedWoodChest;
     public int goldChallenge;
     public boolean bdkb_isJoinBdkb;
-//    public CauCa cauca;
+    public CauCa cauca;
     public int data_task;
 
     public boolean titleitem;
@@ -202,7 +202,7 @@ public class Player {
         charms = new Charms();
         effectSkin = new EffectSkin(this);
         skillSpecial = new SkillSpecial(this);
-//        cauca = new CauCa(this);
+        cauca = new CauCa(this);
     }
 
     //--------------------------------------------------------------------------
