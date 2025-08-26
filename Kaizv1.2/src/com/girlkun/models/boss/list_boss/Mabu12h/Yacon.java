@@ -11,12 +11,33 @@ import com.girlkun.utils.Util;
 
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Yacon trong sự kiện Mabu 12h.
+ * - Khi bị tiêu diệt sẽ rơi ngẫu nhiên: đồ TL, NR, đồ cấp 12, hoặc item đặc biệt (561).
+ * - Người chơi tiêu diệt Yacon sẽ nhận thêm điểm trong fightMabu.
+ * - Có sẵn logic rời map sau 5 phút nhưng đang bị comment.
+ *
+ * @author Lucifer
+ */
 public class Yacon extends Boss {
 
+    /**
+     * Khởi tạo boss Yacon với ID ngẫu nhiên và dữ liệu từ BossesData.
+     *
+     * @throws Exception Nếu có lỗi khi khởi tạo
+     */
     public Yacon() throws Exception {
         super(Util.randomBossId(), BossesData.YACON);
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Yacon.
+     * - Có tỉ lệ rơi đồ TL, NR hoặc đồ cấp 12.
+     * - Ngoài ra có thể rơi item đặc biệt (561).
+     * - Người chơi tiêu diệt sẽ được cộng thêm 20 điểm fightMabu.
+     *
+     * @param plKill Người chơi hạ gục boss
+     */
     @Override
     public void reward(Player plKill) {
         byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -56,24 +77,3 @@ public class Yacon extends Boss {
 //    private long st;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
