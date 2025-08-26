@@ -7,18 +7,37 @@ import com.girlkun.models.player.Player;
 import com.girlkun.services.Service;
 import com.girlkun.utils.Util;
 
-
+/**
+ * Lớp đại diện cho trận đấu thách đấu (PVP) giữa hai người chơi trong game.
+ * @author Lucifer
+ */
 public class ThachDau extends PVP {
 
+    /**
+     * Lượng vàng cược cho trận đấu thách đấu.
+     */
     private int goldThachDau;
+
+    /**
+     * Lượng vàng phần thưởng khi thắng trận đấu (80% của vàng cược).
+     */
     private long goldReward;
 
+    /**
+     * Constructor khởi tạo trận đấu thách đấu giữa hai người chơi.
+     * @param p1 Người chơi thứ nhất
+     * @param p2 Người chơi thứ hai
+     * @param goldThachDau Lượng vàng cược cho trận đấu
+     */
     public ThachDau(Player p1, Player p2, int goldThachDau) {
         super(TYPE_PVP.THACH_DAU, p1, p2);
         this.goldThachDau = goldThachDau;
         this.goldReward = goldThachDau / 100 * 80;
     }
 
+    /**
+     * Bắt đầu trận đấu thách đấu, trừ vàng cược của cả hai người chơi và kích hoạt trạng thái PVP.
+     */
     @Override
     public void start() {
         this.p1.inventory.gold -= this.goldThachDau;
@@ -28,27 +47,43 @@ public class ThachDau extends PVP {
         super.start();
     }
 
+    /**
+     * Kết thúc trận đấu thách đấu (không thực hiện hành động cụ thể trong lớp này).
+     */
     @Override
     public void finish() {
-
     }
 
+    /**
+     * Dọn dẹp tài nguyên và kết thúc trận đấu thách đấu.
+     */
     @Override
     public void dispose() {
         super.dispose();
     }
 
+    /**
+     * Cập nhật trạng thái trận đấu thách đấu (hiện không thực hiện hành động cụ thể).
+     */
     @Override
     public void update() {
     }
 
+    /**
+     * Trao phần thưởng vàng cho người chơi thắng trận đấu.
+     * @param plWin Người chơi thắng
+     */
     @Override
-    public void reward(Player plWin) 
-    {
+    public void reward(Player plWin) {
         plWin.inventory.gold += this.goldReward;
         Service.gI().sendMoney(plWin);
     }
 
+    /**
+     * Gửi kết quả trận đấu và xử lý phần thưởng hoặc hình phạt cho người chơi thua.
+     * @param plLose Người chơi thua
+     * @param typeLose Loại thua cuộc (bỏ chạy hoặc chết)
+     */
     @Override
     public void sendResult(Player plLose, TYPE_LOSE_PVP typeLose) {
         if (typeLose == TYPE_LOSE_PVP.RUNS_AWAY) {
@@ -62,10 +97,4 @@ public class ThachDau extends PVP {
         }
         Service.gI().sendMoney(p1.equals(plLose) ? p1 : p2);
     }
-
 }
-
-/**
- * Vui lòng không sao chép mã nguồn này dưới mọi hình thức Hãy tôn trọng tác giả
- * của mã nguồn này Xin cảm ơn! - GirkBeo
- */
