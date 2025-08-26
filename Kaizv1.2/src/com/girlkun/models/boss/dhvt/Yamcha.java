@@ -6,17 +6,14 @@ import com.girlkun.models.boss.BossesData;
 import com.girlkun.models.player.Player;
 
 /**
- * Lớp đại diện cho boss JackyChun trong sự kiện Đại Hội Võ Thuật (DHVT)
+ * Lớp đại diện cho boss Yamcha trong sự kiện Đại Hội Võ Thuật (DHVT)
  * @author Lucifer
  */
-public class JackyChun extends BossDHVT {
+public class Yamcha extends BossDHVT {
 
-    /**
-     * Constructor khởi tạo boss JackyChun với ID và dữ liệu từ BossesData
-     * @param player Người chơi mục tiêu mà boss sẽ tấn công
-     */
-    public JackyChun(Player player) throws Exception {
-        super(BossID.JACKY_CHUN, BossesData.JACKY_CHUN);
+    /** Constructor khởi tạo boss Yamcha với ID và dữ liệu từ BossesData */
+    public Yamcha(Player player) throws Exception {
+        super(BossID.YAMCHA, BossesData.YAMCHA);
         /** Gán người chơi mục tiêu cho boss */
         this.playerAtt = player;
     }
