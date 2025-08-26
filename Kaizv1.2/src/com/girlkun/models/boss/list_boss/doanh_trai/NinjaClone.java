@@ -28,6 +28,8 @@ import com.girlkun.utils.Util;
  * - Có hành vi respawn → joinMap → active.
  * - Khi bị tấn công, có khả năng né đòn hoặc chống bằng khiên.
  * - Khi chết sẽ rơi item.
+ * 
+ * @author Lucifer
  */
 public class NinjaClone extends Boss {
 

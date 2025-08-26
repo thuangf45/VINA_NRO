@@ -20,6 +20,8 @@ import java.util.logging.Logger;
  * Class đại diện cho Boss Ninja Áo Tím trong Doanh Trại
  * - Có khả năng triệu hồi NinjaClone khi HP thấp
  * - Rơi vật phẩm khi bị hạ gục
+ * 
+ * @author Lucifer
  */
 public class NinjaTim extends Boss {
     private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
