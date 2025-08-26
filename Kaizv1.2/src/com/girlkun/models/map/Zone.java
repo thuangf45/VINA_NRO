@@ -29,64 +29,165 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Lớp Zone đại diện cho một khu vực cụ thể trong bản đồ của trò chơi, quản lý người chơi, quái vật, vật phẩm và các thực thể khác.
+ * @author Lucifer
+ */
 public class Zone {
 
+    /**
+     * Hằng số quy định số lượng người chơi tiêu chuẩn trong một khu vực.
+     */
     public static final byte PLAYERS_TIEU_CHUAN_TRONG_MAP = 12;
 
+    /**
+     * Đếm số lượng vật phẩm đã xuất hiện trong khu vực.
+     */
     public int countItemAppeaerd = 0;
 
+    /**
+     * Bản đồ chứa khu vực này.
+     */
     public Map map;
+
+    /**
+     * ID của khu vực.
+     */
     public int zoneId;
+
+    /**
+     * Số lượng người chơi tối đa trong khu vực.
+     */
     public int maxPlayer;
+
+    /**
+     * Thời gian (giờ) của khu vực.
+     */
     public int hours;
 
-    private final List<Player> humanoids; // player, boss, pet
-    private final List<Player> notBosses; // player, pet
-    private final List<Player> players; // player
-    public final List<Player> bosses; // boss
-    private final List<Player> pets; // pet
+    /**
+     * Danh sách các thực thể con người (bao gồm người chơi, boss, pet).
+     */
+    private final List<Player> humanoids;
 
+    /**
+     * Danh sách các thực thể không phải boss (người chơi, pet).
+     */
+    private final List<Player> notBosses;
+
+    /**
+     * Danh sách người chơi trong khu vực.
+     */
+    private final List<Player> players;
+
+    /**
+     * Danh sách các boss trong khu vực.
+     */
+    public final List<Player> bosses;
+
+    /**
+     * Danh sách các pet trong khu vực.
+     */
+    private final List<Player> pets;
+
+    /**
+     * Danh sách các quái vật trong khu vực.
+     */
     public final List<Mob> mobs;
+
+    /**
+     * Danh sách các vật phẩm trên bản đồ.
+     */
     public final List<ItemMap> items;
 
+    /**
+     * Thời điểm lần cuối thả ngọc rồng đen.
+     */
     public long lastTimeDropBlackBall;
+
+    /**
+     * Trạng thái hoàn thành sự kiện ngọc rồng đen.
+     */
     public boolean finishBlackBallWar;
+
+    /**
+     * Trạng thái hoàn thành bản đồ Ma Bư.
+     */
     public boolean finishMapMaBu;
 
+    /**
+     * Danh sách các bẫy trong bản đồ.
+     */
     public List<TrapMap> trapMaps;
+
+    /**
+     * Trạng thái hoàn thành nhiệm vụ ngũ hành sơn.
+     */
     public boolean finishnguhs;
+
+    /**
+     * Người chơi trọng tài trong khu vực.
+     */
     @Setter
     @Getter
     private Player referee;
 
+    /**
+     * Kiểm tra xem khu vực đã đầy người chơi chưa.
+     * @return true nếu số lượng người chơi đạt tối đa.
+     */
     public boolean isFullPlayer() {
         return this.players.size() >= this.maxPlayer;
     }
 
+    /**
+     * Trạng thái sống của Trung Úy Trắng.
+     */
     public boolean isTrungUyTrangAlive;
+
+    /**
+     * Trạng thái sống của Bulon 13.
+     */
     public boolean isbulon13Alive;
+
+    /**
+     * Trạng thái sống của Bulon 14.
+     */
     public boolean isbulon14Alive;
 
+    /**
+     * Cập nhật trạng thái của các quái vật trong khu vực.
+     */
     private void udMob() {
         for (Mob mob : this.mobs) {
             mob.update();
         }
     }
 
-
+    /**
+     * Cập nhật trạng thái của các vật phẩm trong khu vực.
+     */
     private void udItem() {
         for (int i = this.items.size() - 1; i >= 0; i--) {
             this.items.get(i).update();
         }
     }
 
+    /**
+     * Cập nhật trạng thái của khu vực, bao gồm quái vật, người chơi và vật phẩm.
+     */
     public void update() {
         udMob();
         udPlayer();
         udItem();
     }
-    
 
+    /**
+     * Khởi tạo một khu vực mới với bản đồ, ID khu vực và số lượng người chơi tối đa.
+     * @param map Bản đồ chứa khu vực.
+     * @param zoneId ID của khu vực.
+     * @param maxPlayer Số lượng người chơi tối đa.
+     */
     public Zone(Map map, int zoneId, int maxPlayer) {
         this.map = map;
         this.zoneId = zoneId;
@@ -101,10 +202,19 @@ public class Zone {
         this.trapMaps = new ArrayList<>();
     }
 
+    /**
+     * Lấy số lượng người chơi hiện tại trong khu vực.
+     * @return Số lượng người chơi.
+     */
     public int getNumOfPlayers() {
         return this.players.size();
     }
 
+    /**
+     * Kiểm tra xem một boss có thể tham gia khu vực hay không.
+     * @param boss Boss cần kiểm tra.
+     * @return true nếu boss có thể tham gia.
+     */
     public boolean isBossCanJoin(Boss boss) {
         for (Player b : this.bosses) {
             if (b.id == boss.id) {
@@ -113,7 +223,10 @@ public class Zone {
         }
         return true;
     }
-    
+
+    /**
+     * Cập nhật trạng thái của các người chơi không phải boss trong khu vực.
+     */
     private void udPlayer() {
         for (int i = this.notBosses.size() - 1; i >= 0; i--) {
             if (i >= 0 && i < this.notBosses.size()) { // Check if the index is valid
@@ -125,6 +238,10 @@ public class Zone {
         }
     }
 
+    /**
+     * Kiểm tra xem có trọng tài trong khu vực hay không.
+     * @return true nếu không có trọng tài.
+     */
     public boolean IsTrongTaiDeoCoTrongKhu() {
         for (Player b : this.players) {
             if (b.id == -1000000) {
@@ -134,22 +251,42 @@ public class Zone {
         return true;
     }
 
+    /**
+     * Lấy danh sách các thực thể không phải boss.
+     * @return Danh sách người chơi và pet.
+     */
     public List<Player> getNotBosses() {
         return this.notBosses;
     }
 
+    /**
+     * Lấy danh sách người chơi trong khu vực.
+     * @return Danh sách người chơi.
+     */
     public List<Player> getPlayers() {
         return this.players;
     }
 
+    /**
+     * Lấy danh sách các thực thể con người (người chơi, boss, pet).
+     * @return Danh sách các thực thể con người.
+     */
     public List<Player> getHumanoids() {
         return this.humanoids;
     }
 
+    /**
+     * Lấy danh sách các boss trong khu vực.
+     * @return Danh sách boss.
+     */
     public List<Player> getBosses() {
         return this.bosses;
     }
 
+    /**
+     * Thêm một người chơi vào khu vực và phân loại vào các danh sách phù hợp.
+     * @param player Người chơi cần thêm.
+     */
     public void addPlayer(Player player) {
         if (player != null) {
             if (!this.humanoids.contains(player)) {
@@ -170,6 +307,10 @@ public class Zone {
         }
     }
 
+    /**
+     * Kiểm tra xem có trọng tài trong khu vực hay không dựa trên tên hoặc ID bản đồ.
+     * @return true nếu không có trọng tài.
+     */
     public boolean isKhongCoTrongTaiTrongKhu() {
         boolean cccccc = true;
         for (Player pl : players) {
@@ -184,6 +325,10 @@ public class Zone {
         return cccccc;
     }
 
+    /**
+     * Xóa người chơi khỏi khu vực và các danh sách liên quan.
+     * @param player Người chơi cần xóa.
+     */
     public void removePlayer(Player player) {
         this.humanoids.remove(player);
         this.notBosses.remove(player);
@@ -192,6 +337,11 @@ public class Zone {
         this.pets.remove(player);
     }
 
+    /**
+     * Lấy vật phẩm trên bản đồ theo ID vật phẩm.
+     * @param itemId ID của vật phẩm trên bản đồ.
+     * @return Vật phẩm tìm thấy hoặc null.
+     */
     public ItemMap getItemMapByItemMapId(int itemId) {
         for (ItemMap item : this.items) {
             if (item.itemMapId == itemId) {
@@ -201,6 +351,11 @@ public class Zone {
         return null;
     }
 
+    /**
+     * Lấy vật phẩm trên bản đồ theo ID mẫu vật phẩm.
+     * @param tempId ID mẫu của vật phẩm.
+     * @return Vật phẩm tìm thấy hoặc null.
+     */
     public ItemMap getItemMapByTempId(int tempId) {
         for (ItemMap item : this.items) {
             if (item.itemTemplate.id == tempId) {
@@ -210,6 +365,11 @@ public class Zone {
         return null;
     }
 
+    /**
+     * Lấy danh sách vật phẩm trên bản đồ phù hợp với nhiệm vụ của người chơi.
+     * @param player Người chơi cần kiểm tra.
+     * @return Danh sách vật phẩm phù hợp.
+     */
     public List<ItemMap> getItemMapsForPlayer(Player player) {
         List<ItemMap> list = new ArrayList<>();
         for (ItemMap item : items) {
@@ -228,6 +388,11 @@ public class Zone {
         return list;
     }
 
+    /**
+     * Lấy người chơi trong khu vực theo ID.
+     * @param idPlayer ID của người chơi.
+     * @return Người chơi tìm thấy hoặc null.
+     */
     public Player getPlayerInMap(long idPlayer) {
         for (Player pl : humanoids) {
             if (pl.id == idPlayer) {
@@ -237,6 +402,11 @@ public class Zone {
         return null;
     }
 
+    /**
+     * Xử lý việc nhặt vật phẩm trên bản đồ cho người chơi.
+     * @param player Người chơi nhặt vật phẩm.
+     * @param itemMapId ID của vật phẩm trên bản đồ.
+     */
     public void pickItem(Player player, int itemMapId) {
         ItemMap itemMap = getItemMapByItemMapId(itemMapId);
         if (itemMap != null) {
@@ -270,34 +440,11 @@ public class Zone {
                                     case 356:
                                     case 357:
                                     case 358:
-//                                    case 359:
-//                                        if (System.currentTimeMillis() >= NgocRongNamecService.gI().tOpenNrNamec) {
-//                                            if (player.idNRNM == -1) {
-//                                                PlayerService.gI().changeAndSendTypePK(player, ConstPlayer.PK_ALL);
-//                                                player.idNRNM = item.template.id;
-//                                                NgocRongNamecService.gI().mapNrNamec[item.template.id
-//                                                        - 353] = player.zone.map.mapId;
-//                                                NgocRongNamecService.gI().nameNrNamec[item.template.id
-//                                                        - 353] = player.zone.map.mapName;
-//                                                NgocRongNamecService.gI().zoneNrNamec[item.template.id
-//                                                        - 353] = (byte) player.zone.zoneId;
-//                                                NgocRongNamecService.gI().pNrNamec[item.template.id
-//                                                        - 353] = player.name;
-//                                                NgocRongNamecService.gI().idpNrNamec[item.template.id
-//                                                        - 353] = (int) player.id;
-//                                                player.lastTimePickNRNM = System.currentTimeMillis();
-//                                                Service.gI().sendFlagBag(player);
-//                                                msg.writer().writeUTF("Bạn đã nhặt được " + item.template.name);
-//                                                msg.writer().writeShort(item.quantity);
-//                                                player.sendMessage(msg);
-//                                                msg.cleanup();
-//                                            } else {
-//                                                Service.gI().sendThongBao(player, "Bạn đã mang ngọc rồng trên người");
-//                                            }
-//                                        } else {
-//                                            Service.gI().sendThongBao(player, "Chỉ là cục đá thôi, nhặt làm gì?");
-//                                        }
-//                                        break;
+                                        msg.writer().writeUTF("Bạn đã nhặt được " + item.template.name);
+                                        msg.writer().writeShort(item.quantity);
+                                        player.sendMessage(msg);
+                                        msg.cleanup();
+                                        break;
                                     case 73:
                                         msg.writer().writeUTF("");
                                         msg.writer().writeShort(item.quantity);
@@ -322,7 +469,6 @@ public class Zone {
                                         InventoryServiceNew.gI().sendItemBags(player);
                                         break;
                                 }
-
                         }
                         msg.writer().writeShort(item.quantity);
                         player.sendMessage(msg);
@@ -343,12 +489,6 @@ public class Zone {
                         Service.gI().sendThongBao(player, text);
                     }
                 }
-//                 if (!picked) {
-//                 ItemMap itm = new ItemMap(itemMap);
-//                 itm.x = player.location.x + Util.nextInt(-20, 20);
-//                 itm.y = itm.zone.map.yPhysicInTop(itm.x, player.location.y);
-//                 Service.gI().dropItemMap(player.zone, itm);
-//                 }
             } else {
                 Service.gI().sendThongBao(player, "Không thể nhặt vật phẩm của người khác");
             }
@@ -359,16 +499,28 @@ public class Zone {
         TaskService.gI().checkDoneSideTaskPickItem(player, itemMap);
     }
 
+    /**
+     * Thêm vật phẩm vào danh sách vật phẩm của khu vực.
+     * @param itemMap Vật phẩm trên bản đồ cần thêm.
+     */
     public void addItem(ItemMap itemMap) {
         if (itemMap != null && !items.contains(itemMap)) {
             items.add(0, itemMap);
         }
     }
 
+    /**
+     * Xóa vật phẩm khỏi danh sách vật phẩm của khu vực.
+     * @param itemMap Vật phẩm trên bản đồ cần xóa.
+     */
     public void removeItemMap(ItemMap itemMap) {
         this.items.remove(itemMap);
     }
 
+    /**
+     * Lấy ngẫu nhiên một người chơi không phải boss trong khu vực.
+     * @return Người chơi ngẫu nhiên hoặc null nếu không có.
+     */
     public Player getRandomPlayerInMap() {
         if (!this.notBosses.isEmpty()) {
             return this.notBosses.get(Util.nextInt(0, this.notBosses.size() - 1));
@@ -377,7 +529,11 @@ public class Zone {
         }
     }
 
-    public void load_Me_To_Another(Player player) { // load thông tin người chơi cho những người chơi khác
+    /**
+     * Gửi thông tin của người chơi cho những người chơi khác trong khu vực.
+     * @param player Người chơi cần gửi thông tin.
+     */
+    public void load_Me_To_Another(Player player) {
         try {
             if (player.zone != null) {
                 if (MapService.gI().isMapOffline(this.map.mapId)) {
@@ -398,7 +554,11 @@ public class Zone {
         }
     }
 
-    public void load_Another_To_Me(Player player) { // load những player trong map và gửi cho player vào map
+    /**
+     * Gửi thông tin của những người chơi khác trong khu vực cho người chơi mới vào.
+     * @param player Người chơi cần nhận thông tin.
+     */
+    public void load_Another_To_Me(Player player) {
         try {
             if (MapService.gI().isMapOffline(this.map.mapId)) {
                 for (Player pl : this.humanoids) {
@@ -419,6 +579,10 @@ public class Zone {
         }
     }
 
+    /**
+     * Gửi thông tin của boss và các thực thể khác trong khu vực.
+     * @param boss Boss cần gửi thông tin.
+     */
     public void loadBoss(Boss boss) {
         try {
             if (MapService.gI().isMapOffline(this.map.mapId)) {
@@ -441,6 +605,11 @@ public class Zone {
         }
     }
 
+    /**
+     * Gửi thông tin chi tiết của một người chơi cho người chơi khác.
+     * @param plReceive Người chơi nhận thông tin.
+     * @param plInfo Người chơi cần gửi thông tin.
+     */
     private void infoPlayer(Player plReceive, Player plInfo) {
         Message msg;
         try {
@@ -481,11 +650,9 @@ public class Zone {
             msg.writer().writeByte(plInfo.cFlag);
             msg.writer().writeByte(0);
 
-            // if (plInfo.isPl()) {
             msg.writer().writeShort(plInfo.isPl() ? plInfo.idAura : -1); // idauraeff
             msg.writer().writeByte(-1); // idauraeff
             msg.writer().writeShort(-1); // seteff
-            // }
 
             plReceive.sendMessage(msg);
             msg.cleanup();
@@ -493,7 +660,7 @@ public class Zone {
             // Logger.logException(MapService.class, e);
         }
         Service.gI().sendFlagPlayerToMe(plReceive, plInfo);
-        if (!plInfo.isBoss && !plInfo.isPet &&!plInfo.isNewPet && !(plInfo instanceof BossDHVT) && !(plInfo instanceof Referee&& ! (plInfo instanceof TestDame))) {
+        if (!plInfo.isBoss && !plInfo.isPet && !plInfo.isNewPet && !(plInfo instanceof BossDHVT) && !(plInfo instanceof Referee && ! (plInfo instanceof TestDame))) {
             Service.gI().sendPetFollowToMe(plReceive, plInfo);
             if (plInfo.inventory.itemsBody.get(12).isNotNullItem()) {
                 Service.getInstance().sendFootRv(plInfo, plReceive, (short) plInfo.inventory.itemsBody.get(12).template.id);
@@ -501,7 +668,6 @@ public class Zone {
             if (plInfo.inventory.itemsBody.get(11).isNotNullItem()) {
                 Service.gI().sendTitleRv1(plInfo, plReceive, (short) (plInfo.inventory.itemsBody.get(11).template.id));
             }
-
         }
 
         try {
@@ -515,10 +681,13 @@ public class Zone {
                 msg.cleanup();
             }
         } catch (Exception e) {
-
         }
     }
 
+    /**
+     * Gửi thông tin bản đồ và các thực thể trong khu vực cho người chơi.
+     * @param pl Người chơi nhận thông tin.
+     */
     public void mapInfo(Player pl) {
         Message msg;
         try {
@@ -592,7 +761,6 @@ public class Zone {
             }
 
             // bg item
-            // msg.writer().writeShort(0);
             try {
                 byte[] bgItem = FileIO.readFile("data/girlkun/map/item_bg_map_data/" + this.map.mapId);
                 msg.writer().write(bgItem);
@@ -601,7 +769,6 @@ public class Zone {
             }
 
             // eff item
-            // msg.writer().writeShort(0);
             try {
                 byte[] effItem = FileIO.readFile("data/girlkun/map/eff_map/" + this.map.mapId);
                 msg.writer().write(effItem);
@@ -612,7 +779,6 @@ public class Zone {
             msg.writer().writeByte(this.map.bgType);
             msg.writer().writeByte(pl.iDMark.getIdSpaceShip());
             msg.writer().writeByte(this.map.mapId == 149 ? 1 : 0);
-//            msg.writer().writeByte(this.map.mapId == 149 ? 1 : 0);
             pl.sendMessage(msg);
 
             msg.cleanup();
@@ -622,6 +788,11 @@ public class Zone {
         }
     }
 
+    /**
+     * Kiểm tra xem người chơi có đang ở trong vùng bẫy hay không.
+     * @param player Người chơi cần kiểm tra.
+     * @return Bẫy mà người chơi đang ở trong hoặc null nếu không có.
+     */
     public TrapMap isInTrap(Player player) {
         for (TrapMap trap : this.trapMaps) {
             if (player.location.x >= trap.x && player.location.x <= trap.x + trap.w
@@ -632,6 +803,10 @@ public class Zone {
         return null;
     }
 
+    /**
+     * Lấy số lượng boss hiện tại trong khu vực.
+     * @return Số lượng boss.
+     */
     public int getNumOfBosses() {
         return this.bosses.size();
     }
