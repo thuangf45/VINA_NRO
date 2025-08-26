@@ -12,13 +12,33 @@ import com.girlkun.utils.Util;
 
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Drabura trong sự kiện Mabu 12h.
+ * Drabura có khả năng phòng thủ đặc biệt, có thể né đòn và phản ứng với khiên bảo vệ.
+ * Người chơi khi hạ gục sẽ nhận thưởng đa dạng (đồ TL, đồ cấp 12, hoặc NR).
+ * Đồng thời được cộng điểm sự kiện Mabu.
+ *
+ * @author Lucifer
+ */
 public class Drabura extends Boss {
 
+    /**
+     * Khởi tạo boss Drabura với ID ngẫu nhiên và dữ liệu từ BossesData.
+     *
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public Drabura() throws Exception {
         super(Util.randomBossId(), BossesData.DRABURA);
     }
 
-
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Drabura.
+     * - Tỉ lệ rơi đồ TL, NR, hoặc đồ cấp 12.
+     * - Ngoài ra có thể rơi item đặc biệt (ID 561).
+     * - Khi tiêu diệt sẽ cộng điểm sự kiện Mabu cho người chơi.
+     *
+     * @param plKill Người chơi hạ gục boss
+     */
     @Override
     public void reward(Player plKill) {
         byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -41,6 +61,20 @@ public class Drabura extends Boss {
         }
         plKill.fightMabu.changePoint((byte) 20);
     }
+
+    /**
+     * Xử lý khi Drabura bị tấn công.
+     * - Có thể né đòn dựa theo tỉ lệ né.
+     * - Nếu đang có khiên, giảm sát thương và có thể phá khiên.
+     * - Giới hạn sát thương tối đa là 1,000,000.
+     * - Nếu HP về 0, boss sẽ chết và gọi hàm die().
+     *
+     * @param plAtt Người chơi tấn công
+     * @param damage Sát thương gây ra
+     * @param piercing Có xuyên giáp hay không
+     * @param isMobAttack Có phải mob tấn công hay không
+     * @return Lượng sát thương thực tế đã trừ vào máu boss
+     */
     @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
