@@ -11,20 +11,37 @@ import com.girlkun.server.Manager;
 import com.girlkun.services.EffectSkillService;
 import com.girlkun.services.Service;
 import com.girlkun.utils.Util;
-import java.util.Random;
 
-
+/**
+ * Lớp đại diện cho boss Tàu Pảy Pảy trong game.
+ * @author Lucifer
+ */
 public class TauPayPay extends Boss {
 
+    /**
+     * Constructor khởi tạo boss Tàu Pảy Pảy với ID và dữ liệu từ BossesData.
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public TauPayPay() throws Exception {
         super(BossID.TAU_PAY_PAY_M, BossesData.TAU_PAY_PAY_BASE);
     }
 
+    /**
+     * Kích hoạt hành vi của boss Tàu Pảy Pảy.
+     */
     @Override
     public void active() {
         super.active();
-      
     }
+
+    /**
+     * Xử lý sát thương mà boss Tàu Pảy Pảy nhận từ người chơi hoặc quái.
+     * @param plAtt Người chơi tấn công boss
+     * @param damage Lượng sát thương gây ra
+     * @param piercing True nếu sát thương bỏ qua phòng thủ
+     * @param isMobAttack True nếu sát thương đến từ quái
+     * @return Lượng sát thương thực tế được áp dụng
+     */
     @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
@@ -37,7 +54,7 @@ public class TauPayPay extends Boss {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);
                 }
-                damage = damage/2;
+                damage = damage / 2;
             }
             this.nPoint.subHP(damage);
             if (isDie()) {
@@ -49,31 +66,12 @@ public class TauPayPay extends Boss {
             return 0;
         }
     }
+
+    /**
+     * Thêm boss Tàu Pảy Pảy vào bản đồ.
+     */
     @Override
     public void joinMap() {
-        super.joinMap(); //To change body of generated methods, choose Tools | Templates.
+        super.joinMap();
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
