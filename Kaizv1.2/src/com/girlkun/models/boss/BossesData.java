@@ -6,7 +6,7 @@ import com.girlkun.utils.Util;
 import com.girlkun.models.boss.BossID;
 
 /**
- * @Stole By BTH❤
+ * @author Lucifer
  */
 public class BossesData {
 
@@ -56,29 +56,29 @@ public class BossesData {
             new short[]{838, 839, 840, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             1000000, //dame
             new int[]{2000000000}, //hp
-            new int[]{167,168,169}, //map join
+            new int[]{167, 168, 169}, //map join
             new int[][]{
-                    {Skill.KHIEN_NANG_LUONG, 7, 100000},
-                    {Skill.DICH_CHUYEN_TUC_THOI, 7, 50000},},//skill
+                {Skill.KHIEN_NANG_LUONG, 7, 100000},
+                {Skill.DICH_CHUYEN_TUC_THOI, 7, 50000},},//skill
             new String[]{"|-2|Kia là ai thế",
-                    "|-1|Xin chào! Chúng tôi tới đây để tìm người!",
-                    "|-1|Ngài Berrus! Có vẻ hắn ta không có ở đây",
-                    "|-1|Ta có thể hỏi các ngươi",
-                    "|-2|Chuyện gì vậy?",
-                    "|-1|Các ngươi có biết tên Super Sayan God ở đâu không?",
-                    "|-2|Super Sayan God? đó là gì vậy?",
-                    "|-1|Có vẻ giấc mơ của ngài Berrus là bịp rồi! Hô Hô",
-                    "|0|Nếu các ngươi không biết hắn ở đâu",
-                    "|0|Chắc ta phải phá hủy hành tinh này vậy"
+                "|-1|Xin chào! Chúng tôi tới đây để tìm người!",
+                "|-1|Ngài Berrus! Có vẻ hắn ta không có ở đây",
+                "|-1|Ta có thể hỏi các ngươi",
+                "|-2|Chuyện gì vậy?",
+                "|-1|Các ngươi có biết tên Super Sayan God ở đâu không?",
+                "|-2|Super Sayan God? đó là gì vậy?",
+                "|-1|Có vẻ giấc mơ của ngài Berrus là bịp rồi! Hô Hô",
+                "|0|Nếu các ngươi không biết hắn ở đâu",
+                "|0|Chắc ta phải phá hủy hành tinh này vậy"
             }, //text chat 1
             new String[]{"|-1|Ta có thể ngồi ăn một chút được rồi!",
-                    "|-1|Các ngươi vẫn yếu vẫn như mọi khi",
-                    "|0|Thật là bực mình!",
-                    "|-2|Đây là sức mạnh của một thiên sứ sao?",
-                    "|-1|Hô Hô",
-                    "|-1|Các ngươi không đánh bại được ta đâu!",
-                    "|-2|Không thể nào",
-                    "|-2|Tại sao lại vậy chứ !",}, //text chat 2
+                "|-1|Các ngươi vẫn yếu vẫn như mọi khi",
+                "|0|Thật là bực mình!",
+                "|-2|Đây là sức mạnh của một thiên sứ sao?",
+                "|-1|Hô Hô",
+                "|-1|Các ngươi không đánh bại được ta đâu!",
+                "|-2|Không thể nào",
+                "|-2|Tại sao lại vậy chứ !",}, //text chat 2
             new String[]{"|-1|Ta đi về đây!Cảm ơn vì món ăn"}, //text chat 3
             REST_15_M, //second rest
             new int[]{BossID.THAN_HUY_DIET1}
@@ -89,16 +89,16 @@ public class BossesData {
             new short[]{508, 509, 510, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             1000000, //dame
             new int[]{2000000000}, //hp
-            new int[]{167,168,169}, //map join
+            new int[]{167, 168, 169}, //map join
             new int[][]{
-//                    {Skill.MASENKO, 7, 200},
-                    {Skill.LIEN_HOAN, 7, 300},},//skill//skill
+                //                    {Skill.MASENKO, 7, 200},
+                {Skill.LIEN_HOAN, 7, 300},},//skill//skill
             new String[]{}, //text chat 1
             new String[]{"|-1|Các ngươi thật là yếu ớt",
-                    "|-1|Ta sẽ phá hủy hành tinh này",
-                    "|-1|Chán quá!",
-                    "|-1|Ta vẫn chưa dùng hết sức đâu!",
-                    "|-2|Hắn ta không cần phòng thủ luôn!",}, //text chat 2
+                "|-1|Ta sẽ phá hủy hành tinh này",
+                "|-1|Chán quá!",
+                "|-1|Ta vẫn chưa dùng hết sức đâu!",
+                "|-2|Hắn ta không cần phòng thủ luôn!",}, //text chat 2
             new String[]{"|-1|Ta buồn ngủ quá!"}, //text chat 3
             TypeAppear.APPEAR_WITH_ANOTHER
     );
@@ -857,13 +857,13 @@ public class BossesData {
                 {Skill.KAMEJOKO, 7, 1000},},
             //skill
             new String[]{"|-2|Các ngươi nghĩ rằng mình có thể hạ được ta ?",
-                //                "|-1|.",
-                //                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
-                //                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
-                //                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
-                //                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
-                //                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
-                //                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
+                "|-1|.",
+                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
+                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
+                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
+                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
+                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
+                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
                 "|-1|Ta sẽ cho các ngươi 3 giây để biến khỏi đây",}, //text chat 1
             new String[]{"|-1|Đến đây",
                 "|-1|Ta sẽ không chừa đứa nào trong bọn bây",
@@ -894,13 +894,13 @@ public class BossesData {
                 {Skill.KAMEJOKO, 7, 1000},},
             //skill
             new String[]{"|-2|Các ngươi nghĩ rằng mình có thể hạ được ta ?",
-                //                "|-1|.",
-                //                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
-                //                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
-                //                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
-                //                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
-                //                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
-                //                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
+                                "|-1|.",
+                                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
+                                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
+                                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
+                                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
+                                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
+                                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
                 "|-1|Ta sẽ cho các ngươi 3 giây để biến khỏi đây",}, //text chat 1
             new String[]{"|-1|Đến đây",
                 "|-1|Ta sẽ không chừa đứa nào trong bọn bây",
@@ -931,13 +931,13 @@ public class BossesData {
                 {Skill.KAMEJOKO, 7, 1000},},
             //skill
             new String[]{"|-2|Các ngươi nghĩ rằng mình có thể hạ được ta ?",
-                //                "|-1|.",
-                //                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
-                //                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
-                //                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
-                //                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
-                //                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
-                //                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
+                "|-1|.",
+                "|-1|Được rồi, ta sẽ nói cho các ngươi biết đã xảy ra chuyện gì...",
+                "|-1|Ta cũng ngạc nhiên không kém đâu, hê hê hê...",
+                "|-1|Bên trong đầu ta có một khối nhỏ, đó là nơi chữa trị cho cơ thể ta khi ta bị thương tổn.",
+                "|-1|Nếu khối đó không bị hủy diệt thì ta vẫn còn có khả năng hồi phục lại toàn bộ cơ thể này.",
+                "|-1|Khi ta tự nổ tung, thật may mắn khi khối thịt đó không bị tổn thương gì...",
+                "|-1|Nói thật là việc này nằm ngoài dự tính của ta. Ta quả là gặp may mắn...",
                 "|-1|Ta sẽ cho các ngươi 3 giây để biến khỏi đây",}, //text chat 1
             new String[]{"|-1|Đến đây",
                 "|-1|Ta sẽ không chừa đứa nào trong bọn bây",
@@ -1324,44 +1324,44 @@ public class BossesData {
             new String[]{"|-1|Biến hình! Super Sayan Rose"}, //text chat 3
             TypeAppear.APPEAR_WITH_ANOTHER
     );
-//     public static final BossData TRUNG_UY_XANH_LO = new BossData(
-//            "Trung úy xanh lơ", //name
-//            ConstPlayer.TRAI_DAT, //gender
-//            new short[]{141, 142, 143, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-//            500000, //dame
-//            new int[]{1500000}, //hp
-//            new int[]{137}, //map join
-//            (int[][]) Util.addArray(FULL_DEMON), //skill
-//            new String[]{}, //text chat 1
-//            new String[]{"|-1|Nhóc con"}, //text chat 2
-//            new String[]{}, //text chat 3
-//            60
-//    );
-//    private static final BossData TRUNG_UY_TRANG = new BossData(
-//            "Trung úy trắng", //name
-//            ConstPlayer.TRAI_DAT, //gender
-//            new short[]{141, 142, 143, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-//            500, //dame
-//            new int[]{500}, //hp
-//            new int[]{1}, //map join
-//            new int[][]{
-//                {Skill.MASENKO, 3, 1000},
-//                {Skill.LIEN_HOAN, 7, 1000}},
-//            new String[]{"|-1|Hế lô em,anh đứng đây từ chiều",
-//                "|-1|Mày hiểu thế là sao chứ? Cuối cùng tao đã có thể giết mày!",
-//                "|-2|Tao lại sợ mày quá cơ,cho bố cái địa chỉ!",
-//                "|-1|Mày làm tao phấn khích rồi đấy hahaha.."
-//            }, //text chat 1
-//            new String[]{"|-1|Tao hơn hẳn mày, mày nên cầu cho may mắn ở phía mày đi",
-//                "|-1|Ha ha ha! Mắt mày mù à? Nhìn máy đo chỉ số đi!!",
-//                "|-1|Định chạy trốn hả, hử",
-//                "|-1|Ta sẽ tàn sát khu này trong vòng 5 phút nữa",
-//                "|-1|Hahaha mày đây rồi",
-//                "|-1|Tao đã có lệnh từ đại ca rồi"
-//            }, //text chat 2
-//            new String[]{"|-2|Đẹp trai nó phải thế"}, //text chat 3
-//            5 //second rest
-//    );
+    public static final BossData TRUNG_UY_XANH_LO = new BossData(
+            "Trung úy xanh lơ", //name
+            ConstPlayer.TRAI_DAT, //gender
+            new short[]{141, 142, 143, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
+            500000, //dame
+            new int[]{1500000}, //hp
+            new int[]{137}, //map join
+            (int[][]) Util.addArray(FULL_DEMON), //skill
+            new String[]{}, //text chat 1
+            new String[]{"|-1|Nhóc con"}, //text chat 2
+            new String[]{}, //text chat 3
+            60
+    );
+    private static final BossData TRUNG_UY_TRANG = new BossData(
+            "Trung úy trắng", //name
+            ConstPlayer.TRAI_DAT, //gender
+            new short[]{141, 142, 143, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
+            2000000, //dame
+            new int[]{10000000}, //hp
+            new int[]{1}, //map join
+            new int[][]{
+                {Skill.MASENKO, 3, 1000},
+                {Skill.LIEN_HOAN, 7, 1000}},
+            new String[]{"|-1|Hế lô em,anh đứng đây từ chiều",
+                "|-1|Mày hiểu thế là sao chứ? Cuối cùng tao đã có thể giết mày!",
+                "|-2|Tao lại sợ mày quá cơ,cho bố cái địa chỉ!",
+                "|-1|Mày làm tao phấn khích rồi đấy hahaha.."
+            }, //text chat 1
+            new String[]{"|-1|Tao hơn hẳn mày, mày nên cầu cho may mắn ở phía mày đi",
+                "|-1|Ha ha ha! Mắt mày mù à? Nhìn máy đo chỉ số đi!!",
+                "|-1|Định chạy trốn hả, hử",
+                "|-1|Ta sẽ tàn sát khu này trong vòng 5 phút nữa",
+                "|-1|Hahaha mày đây rồi",
+                "|-1|Tao đã có lệnh từ đại ca rồi"
+            }, //text chat 2
+            new String[]{"|-2|Đẹp trai nó phải thế"}, //text chat 3
+            5 //second rest
+    );
 
     public static final BossData SUPER_BLACK_GOKU = new BossData(
             "Super Black Goku Rose", //name
@@ -1492,26 +1492,26 @@ public class BossesData {
             //            new int[]{14}, //map join
 
             new int[][]{
-                //           {Skill.SUPER_KAME, 7, 1000},
-                //            {Skill.SUPER_KAME, 7, 10000},
-                //             {Skill.SUPER_KAME, 4, 1000},
+                {Skill.SUPER_KAME, 7, 1000},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.SUPER_KAME, 4, 1000},
                 {Skill.SUPER_KAME, 7, 30000}}, //skill
-            new String[]{"|-1|ai vậy sư phụ?", //                    "|-3|Ủa tên kia là ai vậy?",
-        //                    "|-2|Lẽ nào đúng như chúng ta đã nghĩ",
-        //                    "|-1|Lũ con người không đủ tư cách để nói chuyện với ta",
-        //                    "|-2|detu! Tại sao chứ !",
-        //                    "|-1|Ta sẽ cho người biết sức mạnh của một vị thần là như thế nào !"
-        }, //text chat 1
-            new String[]{"|-1|Ta là đetu của vũ trụ thứ 10 ", //                    "|-1|Tên của ta là detu, ta sẽ thay đổi thế giới này",
-        //                    "|-1|Lũ con người các ngươi là những thứ ta cần loại bỏ đầu tiên",
-        //                    "|-2|Tại sao các ngươi lại nhắm tới con người bọn ta chứ?",
-        //                    "|-1|Bởi vì ta muốn thực hiện kế hoạch đưa con người về số 0 !",
-        //                    "|-1|Lần này ta không nương tay đâu!",
-        //                    "|-2|Ngươi thực sự rất mạnh. Nhưng chưa đủ thực lực đâu!!",
-        //                    "|-1|Cái gì!? Đó là điều ngu ngốc nhất ta từng nghe! Mau biến đi",
-        //                    "|-1|Hắn thực sự rất mạnh, đúng là cuộc chiến hay",
-        //                    "|-3|Không lí nào ta lại run sợ bọn con người sao"
-        }, //text chat 2
+            new String[]{"|-1|ai vậy sư phụ?", "|-3|Ủa tên kia là ai vậy?",
+                "|-2|Lẽ nào đúng như chúng ta đã nghĩ",
+                "|-1|Lũ con người không đủ tư cách để nói chuyện với ta",
+                "|-2|detu! Tại sao chứ !",
+                "|-1|Ta sẽ cho người biết sức mạnh của một vị thần là như thế nào !"
+            }, //text chat 1
+            new String[]{"|-1|Ta là đetu của vũ trụ thứ 10 ", "|-1|Tên của ta là detu, ta sẽ thay đổi thế giới này",
+                "|-1|Lũ con người các ngươi là những thứ ta cần loại bỏ đầu tiên",
+                "|-2|Tại sao các ngươi lại nhắm tới con người bọn ta chứ?",
+                "|-1|Bởi vì ta muốn thực hiện kế hoạch đưa con người về số 0 !",
+                "|-1|Lần này ta không nương tay đâu!",
+                "|-2|Ngươi thực sự rất mạnh. Nhưng chưa đủ thực lực đâu!!",
+                "|-1|Cái gì!? Đó là điều ngu ngốc nhất ta từng nghe! Mau biến đi",
+                "|-1|Hắn thực sự rất mạnh, đúng là cuộc chiến hay",
+                "|-3|Không lí nào ta lại run sợ bọn con người sao"
+            }, //text chat 2
 
             new String[]{"|-1|Chỉ còn một cách duy nhất mà thôi",
                 "|-1|trùm!"}, //text chat 3
@@ -1526,9 +1526,11 @@ public class BossesData {
             new int[]{2100000000}, //hp
             new int[]{0, 7, 14}, //map join
             //            new int[]{14}, //map join
-            new int[][]{},
-            //        {Skill.BIEN_KHI, 1, 1}},
-            //skill
+            new int[][]{
+                {Skill.DICH_CHUYEN_TUC_THOI, 7, 10000},
+                {Skill.KAMEJOKO, 7, 1000},
+                {Skill.BIEN_KHI, 1, 1},}, //skill
+
             new String[]{}, //text chat 1
             new String[]{"|-1|Ta chính là người mang thân thể của Songoku",
                 "|-1|Sức mạnh của ta là không có giới hạn",
@@ -1553,26 +1555,26 @@ public class BossesData {
             //            new int[]{14}, //map join
 
             new int[][]{
-                //           {Skill.SUPER_KAME, 7, 1000},
-                //            {Skill.SUPER_KAME, 7, 10000},
-                //             {Skill.SUPER_KAME, 4, 1000},
+                {Skill.SUPER_KAME, 7, 1000},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.SUPER_KAME, 4, 1000},
                 {Skill.SUPER_KAME, 7, 30000}}, //skill
-            new String[]{"|-1|?", //                    "|-3|Ủa tên kia là ai vậy?",
-        //                    "|-2|Lẽ nào đúng như chúng ta đã nghĩ",
-        //                    "|-1|Lũ con người không đủ tư cách để nói chuyện với ta",
-        //                    "|-2|detu! Tại sao chứ !",
-        //                    "|-1|Ta sẽ cho người biết sức mạnh của một vị thần là như thế nào !"
-        }, //text chat 1
-            new String[]{"|-1| ", //                    "|-1|Tên của ta là detu, ta sẽ thay đổi thế giới này",
-        //                    "|-1|Lũ con người các ngươi là những thứ ta cần loại bỏ đầu tiên",
-        //                    "|-2|Tại sao các ngươi lại nhắm tới con người bọn ta chứ?",
-        //                    "|-1|Bởi vì ta muốn thực hiện kế hoạch đưa con người về số 0 !",
-        //                    "|-1|Lần này ta không nương tay đâu!",
-        //                    "|-2|Ngươi thực sự rất mạnh. Nhưng chưa đủ thực lực đâu!!",
-        //                    "|-1|Cái gì!? Đó là điều ngu ngốc nhất ta từng nghe! Mau biến đi",
-        //                    "|-1|Hắn thực sự rất mạnh, đúng là cuộc chiến hay",
-        //                    "|-3|Không lí nào ta lại run sợ bọn con người sao"
-        }, //text chat 2
+            new String[]{"|-1|?", "|-3|Ủa tên kia là ai vậy?",
+                "|-2|Lẽ nào đúng như chúng ta đã nghĩ",
+                "|-1|Lũ con người không đủ tư cách để nói chuyện với ta",
+                "|-2|detu! Tại sao chứ !",
+                "|-1|Ta sẽ cho người biết sức mạnh của một vị thần là như thế nào !"
+            }, //text chat 1
+            new String[]{"|-1| ", "|-1|Tên của ta là detu, ta sẽ thay đổi thế giới này",
+                "|-1|Lũ con người các ngươi là những thứ ta cần loại bỏ đầu tiên",
+                "|-2|Tại sao các ngươi lại nhắm tới con người bọn ta chứ?",
+                "|-1|Bởi vì ta muốn thực hiện kế hoạch đưa con người về số 0 !",
+                "|-1|Lần này ta không nương tay đâu!",
+                "|-2|Ngươi thực sự rất mạnh. Nhưng chưa đủ thực lực đâu!!",
+                "|-1|Cái gì!? Đó là điều ngu ngốc nhất ta từng nghe! Mau biến đi",
+                "|-1|Hắn thực sự rất mạnh, đúng là cuộc chiến hay",
+                "|-3|Không lí nào ta lại run sợ bọn con người sao"
+            }, //text chat 2
 
             new String[]{"|-1|Chỉ còn một cách duy nhất mà thôi",
                 "|-1| Đình Tân!"}, //text chat 3
@@ -2075,183 +2077,7 @@ public class BossesData {
             new String[]{}, //text chat 3
             REST_5_M
     );
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    public static final BossData SOI_HEC_QUYN = BossData.builder()
-//            .name("Sói Hẹc Quyn")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(1000)
-//            .hp(new int[]{10000})
-//            .outfit(new short[]{394, 395, 396, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData O_DO = BossData.builder()
-//            .name("Ở Dơ")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(3000)
-//            .hp(new int[]{25000})
-//            .outfit(new short[]{400, 401, 402, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData XINBATO = BossData.builder()
-//            .name("Xinbatô")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(6000)
-//            .hp(new int[]{50000})
-//            .outfit(new short[]{359, 360, 361, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData CHA_PA = BossData.builder()
-//            .name("Cha pa")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(9000)
-//            .hp(new int[]{100000})
-//            .outfit(new short[]{362, 363, 364, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData PON_PUT = BossData.builder()
-//            .name("Pon put")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(15000)
-//            .hp(new int[]{250000})
-//            .outfit(new short[]{365, 366, 367, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData CHAN_XU = BossData.builder()
-//            .name("Chan xư")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(20000)
-//            .hp(new int[]{500000})
-//            .outfit(new short[]{371, 372, 373, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1000}, {Skill.KAMEJOKO, 5, 1000}, {Skill.KAMEJOKO, 7, 1000}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData TAU_PAY_PAY = BossData.builder()
-//            .name("Tàu Pảy Pảy")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(30000)
-//            .hp(new int[]{2000000})
-//            .outfit(new short[]{92, 93, 94, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData YAMCHA = BossData.builder()
-//            .name("Yamcha")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(40000)
-//            .hp(new int[]{5000000})
-//            .outfit(new short[]{374, 375, 376, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData JACKY_CHUN = BossData.builder()
-//            .name("Jacky Chun")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(50000)
-//            .hp(new int[]{25000000})
-//            .outfit(new short[]{356, 357, 358, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData THIEN_XIN_HANG = BossData.builder()
-//            .name("Thiên Xin Hăng")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(100000)
-//            .hp(new int[]{75000000})
-//            .outfit(new short[]{368, 369, 370, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.THAI_DUONG_HA_SAN, 1, 30000}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData THIEN_XIN_HANG_CLONE = BossData.builder()
-//            .name("Thiên Xin Hăng")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(10000)
-//            .hp(new int[]{100000})
-//            .outfit(new short[]{368, 369, 370, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700}, //                    {Skill.THAI_DUONG_HA_SAN, 1, 15000}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
-//
-//    public static final BossData LIU_LIU = BossData.builder()
-//            .name("Lêu Lêu")
-//            .gender(ConstPlayer.TRAI_DAT)
-//            .dame(250000)
-//            .hp(new int[]{1000000000})
-//            .outfit(new short[]{397, 398, 399, -1, -1, -1})
-//            .mapJoin(new int[]{129})
-//            .skillTemp(new int[][]{
-//        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300}, {Skill.DRAGON, 7, 700},
-//        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200}, {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-//        {Skill.GALICK, 1, 100}
-//    })
-//            .secondsRest(REST_5_S)
-//            .build();
+
     public static final BossData AN_TROM = new BossData(
             "Ăn trộm",
             ConstPlayer.TRAI_DAT,
@@ -2274,12 +2100,12 @@ public class BossesData {
             .outfit(new short[]{394, 395, 396, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2291,12 +2117,12 @@ public class BossesData {
             .outfit(new short[]{400, 401, 402, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2308,12 +2134,12 @@ public class BossesData {
             .outfit(new short[]{359, 360, 361, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2325,12 +2151,12 @@ public class BossesData {
             .outfit(new short[]{362, 363, 364, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2342,12 +2168,12 @@ public class BossesData {
             .outfit(new short[]{365, 366, 367, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2359,12 +2185,12 @@ public class BossesData {
             .outfit(new short[]{371, 372, 373, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2376,12 +2202,12 @@ public class BossesData {
             .outfit(new short[]{92, 93, 94, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2393,12 +2219,12 @@ public class BossesData {
             .outfit(new short[]{374, 375, 376, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2410,12 +2236,12 @@ public class BossesData {
             .outfit(new short[]{356, 357, 358, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2427,11 +2253,11 @@ public class BossesData {
             .outfit(new short[]{368, 369, 370, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700}, // {Skill.THAI_DUONG_HA_SAN, 1, 15000}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700}, // {Skill.THAI_DUONG_HA_SAN, 1, 15000}
+    })
             .secondsRest(REST_5_S)
             .build();
 
@@ -2443,11 +2269,11 @@ public class BossesData {
             .outfit(new short[]{368, 369, 370, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700}, // {Skill.THAI_DUONG_HA_SAN, 1, 15000}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700}, // {Skill.THAI_DUONG_HA_SAN, 1, 15000}
+    })
             .secondsRest(REST_5_S)
             .build();
     public static final BossData LIU_LIU = BossData.builder()
@@ -2458,12 +2284,12 @@ public class BossesData {
             .outfit(new short[]{397, 398, 399, -1, -1, -1})
             .mapJoin(new int[]{129})
             .skillTemp(new int[][]{
-                {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
-                {Skill.DRAGON, 7, 700},
-                {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
-                {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
-                {Skill.GALICK, 1, 100}
-            })
+        {Skill.DRAGON, 1, 100}, {Skill.DRAGON, 2, 200}, {Skill.DRAGON, 3, 300},
+        {Skill.DRAGON, 7, 700},
+        {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1200},
+        {Skill.KAMEJOKO, 5, 1500}, {Skill.KAMEJOKO, 7, 1700},
+        {Skill.GALICK, 1, 100}
+    })
             .secondsRest(REST_5_S)
             .build();
 }
