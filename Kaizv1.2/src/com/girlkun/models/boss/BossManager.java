@@ -60,9 +60,11 @@ import java.util.List;
 
 public class BossManager implements Runnable {
 
+    // Instance duy nhất của BossManager (Singleton pattern)
     private static BossManager I;
-    public static final byte ratioReward = 50;
+    public static final byte ratioReward = 50; // Tỷ lệ phần thưởng cho boss
 
+    // Lấy instance của BossManager
     public static BossManager gI() {
         if (BossManager.I == null) {
             BossManager.I = new BossManager();
@@ -70,26 +72,33 @@ public class BossManager implements Runnable {
         return BossManager.I;
     }
 
+    // Biến kiểm soát xem đã load boss chưa
+    private boolean loadedBoss;
+    // Danh sách các boss trong game
+    private final List<Boss> bosses;
+
+    // Constructor riêng tư để khởi tạo danh sách boss
     private BossManager() {
         this.bosses = new ArrayList<>();
     }
 
-    private boolean loadedBoss;
-    private final List<Boss> bosses;
-
+    // Thêm boss vào danh sách
     public void addBoss(Boss boss) {
         this.bosses.add(boss);
     }
 
+    // Xóa boss khỏi danh sách
     public void removeBoss(Boss boss) {
         this.bosses.remove(boss);
     }
 
+    // Load tất cả các boss vào game
     public void loadBoss() {
         if (this.loadedBoss) {
-            return;
+            return; // Không load lại nếu đã load
         }
         try {
+            // Tạo các boss dựa trên ID của chúng
             this.createBoss(BossID.KING_KONG);
             this.createBoss(BossID.COOLER);
             this.createBoss(BossID.COOLER_GOLD);
@@ -122,26 +131,27 @@ public class BossManager implements Runnable {
             this.createBoss(BossID.THIEN_SU_WHIS);
         } catch (Exception e) {
             e.printStackTrace();
-
         }
         this.loadedBoss = true;
-        new Thread(BossManager.I, "Update boss").start();
+        // Khởi chạy luồng để cập nhật trạng thái các boss
+        new Thread(BossManager.I, "Cập nhật boss").start();
     }
 
+    // Tạo boss tùy chỉnh cho bản đồ kho báu
     public Boss createBossBdkb(int bossID, int dame, int hp, Zone zone) {
         try {
             switch (bossID) {
-//                case BossID.TRUNG_UY_XANH_LO_BDKB:
-//                    return new TrungUyXanhLoBdkb(dame, hp, zone);
+                // case BossID.TRUNG_UY_XANH_LO_BDKB:
+                //     return new TrungUyXanhLoBdkb(dame, hp, zone);
                 default:
                     return null;
             }
         } catch (Exception e) {
-
             return null;
         }
     }
 
+    // Tạo boss dựa trên ID
     public Boss createBoss(int bossID) {
         try {
             switch (bossID) {
@@ -240,23 +250,32 @@ public class BossManager implements Runnable {
         }
     }
 
+    // Kiểm tra xem có boss nào đang tồn tại trong khu vực của người chơi không
     public boolean existBossOnPlayer(Player player) {
         return player.zone.getBosses().size() > 0;
     }
 
+    // Hiển thị danh sách boss cho người chơi (chỉ dành cho admin)
     public void showListBoss(Player player) {
         if (!player.isAdmin()) {
-            return;
+            return; // Chỉ admin mới xem được danh sách
         }
         Message msg;
         try {
             msg = new Message(-96);
             msg.writer().writeByte(0);
             msg.writer().writeUTF("Boss");
-            msg.writer().writeByte((int) bosses.stream().filter(boss -> !MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0]) && !MapService.gI().isnguhs(boss.data[0].getMapJoin()[0])).count());
+            // Đếm số lượng boss không thuộc các map đặc biệt (MaBu, Bản đồ kho báu, Ngục tù)
+            msg.writer().writeByte((int) bosses.stream().filter(boss -> !MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) 
+                    && !MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0]) 
+                    && !MapService.gI().isnguhs(boss.data[0].getMapJoin()[0])).count());
             for (int i = 0; i < bosses.size(); i++) {
                 Boss boss = this.bosses.get(i);
-                if (MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0]) || MapService.gI().isnguhs(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0])) {
+                // Bỏ qua các boss ở map đặc biệt
+                if (MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) 
+                        || MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0]) 
+                        || MapService.gI().isnguhs(boss.data[0].getMapJoin()[0]) 
+                        || MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0])) {
                     continue;
                 }
                 msg.writer().writeInt((int) boss.id);
@@ -283,34 +302,31 @@ public class BossManager implements Runnable {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
+    // Hiển thị danh sách boss cho người chơi (dành cho thành viên)
     public void dobossmember(Player player) {
         Message msg;
         try {
             msg = new Message(-96);
             msg.writer().writeByte(0);
             msg.writer().writeUTF("Boss");
+            // Đếm số lượng boss không thuộc các map đặc biệt
             msg.writer().writeByte((int) bosses.stream().filter(boss -> !MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0])
                     && !MapService.gI().isMapDoanhTrai(boss.data[0].getMapJoin()[0])
-                    //                    && !MapService.gI().isMapTienMon(boss.data[0].getMapJoin()[0])
-                    //                    && !(boss instanceof MiNuong))
                     && !MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0])
                     && !MapService.gI().isMapKhiGas(boss.data[0].getMapJoin()[0])
-                    //                    && !MapService.gI().isMapNhanBan(boss.data[0].getMapJoin()[0])
                     && !MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0])).count());
             for (int i = 0; i < bosses.size(); i++) {
                 Boss boss = this.bosses.get(i);
+                // Bỏ qua các boss ở map đặc biệt
                 if (MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0])
-                        //                        || boss instanceof MiNuong 
                         || MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0])
                         || MapService.gI().isMapDoanhTrai(boss.data[0].getMapJoin()[0])
                         || MapService.gI().isMapBanDoKhoBau(boss.data[0].getMapJoin()[0])
-                        || MapService.gI().isMapKhiGas(boss.data[0].getMapJoin()[0])) //                        || MapService.gI().isMapNhanBan(boss.data[0].getMapJoin()[0]) 
-                //                        || MapService.gI().isMapTienMon(boss.data[0].getMapJoin()[0]))
-                {
+                        || MapService.gI().isMapKhiGas(boss.data[0].getMapJoin()[0])) {
                     continue;
                 }
                 msg.writer().writeInt((int) boss.id);
@@ -334,18 +350,21 @@ public class BossManager implements Runnable {
             msg.cleanup();
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("An error occurred: " + e.getMessage());
+            System.err.println("Đã xảy ra lỗi: " + e.getMessage());
         }
     }
 
+    // Gọi boss dựa trên mapId
     public synchronized void callBoss(Player player, int mapId) {
         try {
+            // Kiểm tra điều kiện: không có boss trong khu vực, không có ngọc rồng đen, không có người chơi giữ ngọc rồng đen
             if (BossManager.gI().existBossOnPlayer(player)
                     || player.zone.items.stream().anyMatch(itemMap -> ItemMapService.gI().isBlackBall(itemMap.itemTemplate.id))
                     || player.zone.getPlayers().stream().anyMatch(p -> p.iDMark.isHoldBlackBall())) {
                 return;
             }
             Boss k = null;
+            // Tạo boss tương ứng với mapId
             switch (mapId) {
                 case 85:
                     k = BossManager.gI().createBoss(BossID.Rong_1Sao);
@@ -371,29 +390,30 @@ public class BossManager implements Runnable {
             }
             if (k != null) {
                 k.currentLevel = 0;
-                k.joinMapByZone(player);
+                k.joinMapByZone(player); // Thêm boss vào khu vực của người chơi
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
+    // Lấy boss theo ID
     public Boss getBossById(int bossId) {
         return BossManager.gI().bosses.stream().filter(boss -> boss.id == bossId && !boss.isDie()).findFirst().orElse(null);
     }
 
+    // Luồng chạy liên tục để cập nhật trạng thái boss
     @Override
     public void run() {
         while (ServerManager.isRunning) {
             try {
                 long st = System.currentTimeMillis();
                 for (Boss boss : this.bosses) {
-                    boss.update();
+                    boss.update(); // Cập nhật trạng thái của từng boss
                 }
-                Thread.sleep(150 - (System.currentTimeMillis() - st));
+                Thread.sleep(150 - (System.currentTimeMillis() - st)); // Nghỉ để duy trì tốc độ cập nhật
             } catch (Exception ignored) {
             }
-
         }
     }
 }
