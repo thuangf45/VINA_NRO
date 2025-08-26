@@ -18,9 +18,7 @@ import java.util.logging.Logger;
  * rơi item tuỳ theo cấp độ khi bị hạ gục,
  * gọi boss khác khi chết (HaChiJack).
  * 
- * @author 
- *   BTH sieu cap vippr0 (code gốc)
- *   Lucifer (JavaDoc & comment)
+ * @author Lucifer 
  */
 public class DrLyChee extends Boss {
 
