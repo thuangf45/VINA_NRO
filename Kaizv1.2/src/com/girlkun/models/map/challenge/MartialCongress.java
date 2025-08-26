@@ -27,20 +27,46 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @author lucyonfire
+ * Lớp MartialCongress quản lý giải đấu võ thuật trong trò chơi, bao gồm các vòng đấu và tương tác giữa người chơi và boss.
+ * @author Lucifer
  */
 @Getter
 @Setter
 public class MartialCongress {
 
+    /**
+     * Người chơi tham gia giải đấu.
+     */
     private Player player;
+
+    /**
+     * Boss hiện tại trong vòng đấu.
+     */
     private Boss boss;
+
+    /**
+     * NPC quản lý giải đấu.
+     */
     private Player npc;
 
+    /**
+     * Thời gian còn lại của trận đấu (giây).
+     */
     private int time;
+
+    /**
+     * Vòng đấu hiện tại.
+     */
     private int round;
+
+    /**
+     * Thời gian chờ trước khi bắt đầu trận đấu (giây).
+     */
     private int timeWait;
 
+    /**
+     * Cập nhật trạng thái của giải đấu, kiểm tra thời gian, kết quả và chuyển vòng.
+     */
     public void update() {
         if (time > 0) {
             time--;
@@ -58,13 +84,11 @@ public class MartialCongress {
                     leave();
                 }
             } else {
-//                endChallenge();
                 if (boss != null) {
                     boss.leaveMap();
                 }
                 MartialCongressManager.gI().remove(this);
             }
-
         } else {
             timeOut();
         }
@@ -78,7 +102,7 @@ public class MartialCongress {
                     Service.getInstance().chat(npc, "Xin quý vị khán giả cho 1 tràng pháo tay để cổ vũ cho 2 đối thủ nào");
                     break;
                 case 4:
-                    Service.getInstance().chat(npc, "Mọi người ngồi sau hãy ổn định chỗ ngồi,trận đấu sẽ bắt đầu sau 3 giây nữa");
+                    Service.getInstance().chat(npc, "Mọi người ngồi sau hãy ổn định chỗ ngồi, trận đấu sẽ bắt đầu sau 3 giây nữa");
                     break;
                 case 2:
                     Service.getInstance().chat(npc, "Trận đấu bắt đầu");
@@ -92,6 +116,9 @@ public class MartialCongress {
         }
     }
 
+    /**
+     * Chuẩn bị cho trận đấu, làm choáng người chơi và boss, gửi hiệu ứng thời gian.
+     */
     public void ready() {
         EffectSkillService.gI().startStun(boss, System.currentTimeMillis(), 10000);
         EffectSkillService.gI().startStun(player, System.currentTimeMillis(), 10000);
@@ -106,6 +133,9 @@ public class MartialCongress {
         }, 10000);
     }
 
+    /**
+     * Chuyển sang vòng đấu tiếp theo, khởi tạo boss mới dựa trên vòng hiện tại.
+     */
     public void toTheNextRound() {
         try {
             PlayerService.gI().changeAndSendTypePK(player, ConstPlayer.NON_PK);
@@ -155,24 +185,35 @@ public class MartialCongress {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        if (round > 0 && round < 11) {
-//            bss.joinMap();
-//        }
-
     }
 
+    /**
+     * Thiết lập boss cho vòng đấu hiện tại.
+     * @param boss Boss mới cho vòng đấu.
+     */
     public void setBoss(Boss boss) {
         this.boss = boss;
     }
 
+    /**
+     * Thiết lập thời gian còn lại cho trận đấu.
+     * @param time Thời gian (giây).
+     */
     public void setTime(int time) {
         this.time = time;
     }
 
+    /**
+     * Thiết lập thời gian chờ trước khi bắt đầu trận đấu.
+     * @param timeWait Thời gian chờ (giây).
+     */
     public void setTimeWait(int timeWait) {
         this.timeWait = timeWait;
     }
 
+    /**
+     * Xử lý khi người chơi chết, kết thúc giải đấu.
+     */
     private void die() {
         Service.getInstance().sendThongBao(player, "Bạn bị xử thua vì chết queo");
         if (player.zone != null) {
@@ -180,16 +221,25 @@ public class MartialCongress {
         }
     }
 
+    /**
+     * Xử lý khi hết thời gian, kết thúc giải đấu.
+     */
     private void timeOut() {
         Service.getInstance().sendThongBao(player, "Bạn bị xử thua vì hết thời gian");
         endChallenge();
     }
 
+    /**
+     * Xử lý khi người chơi giành chức vô địch sau khi vượt qua tất cả các vòng.
+     */
     private void champion() {
         Service.getInstance().sendThongBao(player, "Chúc mừng " + player.name + " vừa đoạt giải vô địch");
         endChallenge();
     }
 
+    /**
+     * Xử lý khi người chơi rời võ đài, kết thúc giải đấu.
+     */
     public void leave() {
         setTime(0);
         EffectSkillService.gI().removeStun(player);
@@ -197,12 +247,18 @@ public class MartialCongress {
         endChallenge();
     }
 
+    /**
+     * Trao phần thưởng dựa trên số vòng người chơi đã vượt qua.
+     */
     private void reward() {
         if (player.levelWoodChest < round) {
             player.levelWoodChest = round;
         }
     }
 
+    /**
+     * Kết thúc giải đấu, trao phần thưởng và đưa người chơi ra khỏi võ đài.
+     */
     public void endChallenge() {
         reward();
         if (player.zone != null) {
