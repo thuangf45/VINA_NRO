@@ -5,7 +5,6 @@ import com.girlkun.models.boss.BossStatus;
 import com.girlkun.models.boss.BossesData;
 import com.girlkun.models.map.ItemMap;
 import com.girlkun.models.player.Player;
-import com.girlkun.services.EffectSkillService;
 import com.girlkun.server.Manager;
 import com.girlkun.services.EffectSkillService;
 import com.girlkun.services.Service;
@@ -13,12 +12,33 @@ import com.girlkun.utils.Util;
 
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Drabura2 trong sự kiện Mabu 12h.
+ * Đây là phiên bản nâng cấp của Drabura, với khả năng phòng thủ và rơi vật phẩm tương tự.
+ * Người chơi khi tiêu diệt sẽ nhận thưởng ngẫu nhiên (đồ TL, NR, đồ cấp 12 hoặc item đặc biệt).
+ * Đồng thời được cộng điểm sự kiện Mabu.
+ *
+ * @author Lucifer
+ */
 public class Drabura2 extends Boss {
 
+    /**
+     * Khởi tạo boss Drabura2 với ID ngẫu nhiên và dữ liệu từ BossesData.
+     *
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public Drabura2() throws Exception {
         super(Util.randomBossId(), BossesData.DRABURA_2);
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Drabura2.
+     * - Tỉ lệ rơi đồ TL, NR, hoặc đồ cấp 12.
+     * - Ngoài ra có thể rơi item đặc biệt (ID 561).
+     * - Khi tiêu diệt sẽ cộng điểm sự kiện Mabu cho người chơi.
+     *
+     * @param plKill Người chơi hạ gục boss
+     */
     @Override
     public void reward(Player plKill) {
         byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -42,6 +62,19 @@ public class Drabura2 extends Boss {
         plKill.fightMabu.changePoint((byte) 20);
     }
 
+    /**
+     * Xử lý khi Drabura2 bị tấn công.
+     * - Có thể né đòn dựa theo tỉ lệ né.
+     * - Nếu đang có khiên, giảm sát thương và có thể phá khiên.
+     * - Giới hạn sát thương tối đa là 1,000,000.
+     * - Nếu HP về 0, boss sẽ chết và gọi hàm die().
+     *
+     * @param plAtt Người chơi tấn công
+     * @param damage Sát thương gây ra
+     * @param piercing Có xuyên giáp hay không
+     * @param isMobAttack Có phải mob tấn công hay không
+     * @return Lượng sát thương thực tế đã trừ vào máu boss
+     */
     @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
@@ -70,24 +103,3 @@ public class Drabura2 extends Boss {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
