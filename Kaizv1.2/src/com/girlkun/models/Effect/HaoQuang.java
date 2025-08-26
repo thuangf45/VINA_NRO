@@ -1,23 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.girlkun.models.Effect;
 
 import com.girlkun.models.item.Item;
 import com.girlkun.models.player.Player;
 
 /**
- *
- * @author Administrator
+ * Lớp xử lý các chức năng liên quan đến hiệu ứng hào quang của nhân vật.
+ * @author Lucifer
  */
 public class HaoQuang {
 
+    /**
+     * Gán hiệu ứng hào quang cho nhân vật dựa trên vật phẩm và gửi thông báo đến bản đồ.
+     * @param pl Người chơi nhận hào quang
+     * @param item Vật phẩm chứa thông tin hào quang
+     */
     public static void SendHaoQuang(Player pl, Item item) {
         if (pl == null || item == null) {
-            return;
+            return; // Thoát nếu người chơi hoặc vật phẩm là null
         }
+        /** Gán ID hào quang dựa trên ID vật phẩm */
         switch (item.template.id) {
             case 1236:
                 pl.idAura = 24;
@@ -64,8 +65,8 @@ public class HaoQuang {
             case 1265:
                 pl.idAura = 26;
                 break;
-
         }
+        /** Gửi hiệu ứng hào quang đến tất cả người chơi trong bản đồ */
         EffectService.SendEffChartoMap(pl);
     }
 }
