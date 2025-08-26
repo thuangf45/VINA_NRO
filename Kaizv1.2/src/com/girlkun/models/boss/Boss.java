@@ -1,14 +1,7 @@
 package com.girlkun.models.boss;
 
 import com.girlkun.consts.ConstPlayer;
-import static com.girlkun.models.boss.BossStatus.ACTIVE;
-import static com.girlkun.models.boss.BossStatus.CHAT_E;
-import static com.girlkun.models.boss.BossStatus.CHAT_S;
-import static com.girlkun.models.boss.BossStatus.DIE;
-import static com.girlkun.models.boss.BossStatus.JOIN_MAP;
-import static com.girlkun.models.boss.BossStatus.LEAVE_MAP;
-import static com.girlkun.models.boss.BossStatus.RESPAWN;
-import static com.girlkun.models.boss.BossStatus.REST;
+import static com.girlkun.models.boss.BossStatus.*;
 import com.girlkun.models.boss.iboss.IBossNew;
 import com.girlkun.models.boss.iboss.IBossOutfit;
 import com.girlkun.models.boss.list_boss.NRD.*;
@@ -29,38 +22,68 @@ import com.girlkun.utils.SkillUtil;
 import com.girlkun.utils.Util;
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho Boss, kế thừa từ Player và triển khai các interface IBossNew, IBossOutfit.
+ * Quản lý các trạng thái và hành vi của Boss trong game.
+ */
 public class Boss extends Player implements IBossNew, IBossOutfit {
 
+    /** Cấp độ hiện tại của Boss */
     public int currentLevel = -1;
+    /** Dữ liệu cấu hình của Boss */
     protected final BossData[] data;
 
+    /** Trạng thái hiện tại của Boss */
     public BossStatus bossStatus;
 
+    /** Vùng bản đồ cuối cùng mà Boss xuất hiện */
     protected Zone lastZone;
 
+    /** Thời gian nghỉ cuối cùng */
     protected long lastTimeRest;
+    /** Thời gian nghỉ giữa các lần xuất hiện */
     protected int secondsRest;
 
+    /** Thời gian chat bắt đầu cuối cùng */
     protected long lastTimeChatS;
+    /** Thời gian chờ giữa các câu chat bắt đầu */
     protected int timeChatS;
+    /** Chỉ số câu chat bắt đầu */
     protected byte indexChatS;
 
+    /** Thời gian chat kết thúc cuối cùng */
     protected long lastTimeChatE;
+    /** Thời gian chờ giữa các câu chat kết thúc */
     protected int timeChatE;
+    /** Chỉ số câu chat kết thúc */
     protected byte indexChatE;
 
+    /** Thời gian chat ngẫu nhiên cuối cùng */
     protected long lastTimeChatM;
+    /** Thời gian chờ giữa các câu chat ngẫu nhiên */
     protected int timeChatM;
 
+    /** Thời gian nhắm mục tiêu người chơi cuối cùng */
     protected long lastTimeTargetPlayer;
+    /** Thời gian chờ để nhắm mục tiêu mới */
     protected int timeTargetPlayer;
+    /** Người chơi đang bị nhắm làm mục tiêu */
     protected Player playerTarger;
 
+    /** Boss cha (nếu có) */
     protected Boss parentBoss;
+    /** Danh sách các Boss xuất hiện cùng */
     public Boss[][] bossAppearTogether;
 
+    /** Vùng bản đồ cuối cùng của Boss */
     public Zone zoneFinal = null;
 
+    /**
+     * Khởi tạo một Boss mới với ID và dữ liệu cấu hình.
+     * @param id Mã định danh của Boss
+     * @param data Dữ liệu cấu hình của Boss
+     * @throws Exception Nếu dữ liệu không hợp lệ
+     */
     public Boss(int id, BossData... data) throws Exception {
         this.id = id;
         this.isBoss = true;
@@ -69,7 +92,7 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
         this.data = data;
         this.secondsRest = this.data[0].getSecondsRest();
-        this.bossStatus = BossStatus.REST;
+        this.bossStatus = REST;
         BossManager.gI().addBoss(this);
 
         this.bossAppearTogether = new Boss[this.data.length][];
@@ -87,6 +110,9 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
     }
 
+    /**
+     * Khởi tạo các thông số cơ bản của Boss dựa trên cấp độ hiện tại.
+     */
     @Override
     public void initBase() {
         BossData data = this.data[this.currentLevel];
@@ -101,6 +127,9 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         this.resetBase();
     }
 
+    /**
+     * Khởi tạo kỹ năng của Boss dựa trên dữ liệu cấu hình.
+     */
     protected void initSkill() {
         for (Skill skill : this.playerSkill.skills) {
             skill.dispose();
@@ -117,6 +146,9 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
     }
 
+    /**
+     * Đặt lại các thông số cơ bản của Boss.
+     */
     protected void resetBase() {
         this.lastTimeChatS = 0;
         this.lastTimeChatE = 0;
@@ -126,7 +158,10 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         this.indexChatE = 0;
     }
 
-    //.outfit.
+    /**
+     * Lấy ID phần đầu của Boss (head).
+     * @return ID phần đầu
+     */
     @Override
     public short getHead() {
         if (effectSkill != null && effectSkill.isMonkey) {
@@ -135,6 +170,10 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         return this.data[this.currentLevel].getOutfit()[0];
     }
 
+    /**
+     * Lấy ID phần thân của Boss (body).
+     * @return ID phần thân
+     */
     @Override
     public short getBody() {
         if (effectSkill != null && effectSkill.isMonkey) {
@@ -143,43 +182,68 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         return this.data[this.currentLevel].getOutfit()[1];
     }
 
+    /**
+     * Lấy ID phần chân của Boss (leg).
+     * @return ID phần chân
+     */
     @Override
     public short getLeg() {
         if (effectSkill != null && effectSkill.isMonkey) {
             return 194;
         }
         return this.data[this.currentLevel].getOutfit()[2];
-
     }
 
+    /**
+     * Lấy ID cờ túi của Boss.
+     * @return ID cờ túi
+     */
     @Override
     public short getFlagBag() {
         return this.data[this.currentLevel].getOutfit()[3];
     }
 
+    /**
+     * Lấy ID hào quang của Boss.
+     * @return ID hào quang
+     */
     @Override
     public byte getAura() {
         return (byte) this.data[this.currentLevel].getOutfit()[4];
     }
 
+    /**
+     * Lấy ID hiệu ứng phía trước của Boss.
+     * @return ID hiệu ứng phía trước
+     */
     @Override
     public byte getEffFront() {
         return (byte) this.data[this.currentLevel].getOutfit()[5];
     }
 
+    /**
+     * Lấy bản đồ mà Boss sẽ tham gia.
+     * @return Vùng bản đồ
+     */
     public Zone getMapJoin() {
         int mapId = this.data[this.currentLevel].getMapJoin()[Util.nextInt(0, this.data[this.currentLevel].getMapJoin().length - 1)];
         Zone map = MapService.gI().getMapWithRandZone(mapId);
-        //to do: check boss in map
-
         return map;
     }
 
+    /**
+     * Thay đổi trạng thái của Boss.
+     * @param status Trạng thái mới
+     */
     @Override
     public void changeStatus(BossStatus status) {
         this.bossStatus = status;
     }
 
+    /**
+     * Lấy người chơi để tấn công.
+     * @return Người chơi mục tiêu
+     */
     @Override
     public Player getPlayerAttack() {
         if (this.playerTarger != null && (this.playerTarger.isDie() && !this.isNewPet || !this.name.equals("binn") || !this.zone.equals(this.playerTarger.zone))) {
@@ -193,20 +257,28 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         return this.playerTarger;
     }
 
+    /**
+     * Chuyển Boss sang trạng thái PK (tấn công tất cả).
+     */
     @Override
     public void changeToTypePK() {
         PlayerService.gI().changeAndSendTypePK(this, ConstPlayer.PK_ALL);
     }
 
+    /**
+     * Chuyển Boss sang trạng thái không PK.
+     */
     @Override
     public void changeToTypeNonPK() {
         PlayerService.gI().changeAndSendTypePK(this, ConstPlayer.NON_PK);
     }
 
-   @Override
+    /**
+     * Cập nhật trạng thái và hành vi của Boss.
+     */
+    @Override
     public void update() {
         super.update();
-        // System.out.println("this status: " + this.bossStatus + " (" + this.id + ")");
         this.nPoint.mp = this.nPoint.mpg;
         if (this.effectSkill.isHaveEffectSkill()) {
             return;
@@ -217,18 +289,18 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
                 break;
             case RESPAWN:
                 this.respawn();
-                this.changeStatus(BossStatus.JOIN_MAP);
+                this.changeStatus(JOIN_MAP);
                 break;
             case JOIN_MAP:
                 this.joinMap();
-                this.changeStatus(BossStatus.CHAT_S);
+                this.changeStatus(CHAT_S);
                 break;
             case CHAT_S:
                 if (chatS()) {
                     this.doneChatS();
                     this.lastTimeChatM = System.currentTimeMillis();
                     this.timeChatM = 5000;
-                    this.changeStatus(BossStatus.ACTIVE);
+                    this.changeStatus(ACTIVE);
                 }
                 break;
             case ACTIVE:
@@ -239,12 +311,12 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
                 this.active();
                 break;
             case DIE:
-                this.changeStatus(BossStatus.CHAT_E);
+                this.changeStatus(CHAT_E);
                 break;
             case CHAT_E:
                 if (chatE()) {
                     this.doneChatE();
-                    this.changeStatus(BossStatus.LEAVE_MAP);
+                    this.changeStatus(LEAVE_MAP);
                 }
                 break;
             case LEAVE_MAP:
@@ -253,7 +325,9 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
     }
 
-    //loop
+    /**
+     * Xử lý trạng thái nghỉ của Boss.
+     */
     @Override
     public void rest() {
         int nextLevel = this.currentLevel + 1;
@@ -262,10 +336,13 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
         if (this.data[nextLevel].getTypeAppear() == TypeAppear.DEFAULT_APPEAR
                 && Util.canDoWithTime(lastTimeRest, secondsRest * 1000)) {
-            this.changeStatus(BossStatus.RESPAWN);
+            this.changeStatus(RESPAWN);
         }
     }
 
+    /**
+     * Tái sinh Boss với cấp độ mới.
+     */
     @Override
     public void respawn() {
         this.currentLevel++;
@@ -276,6 +353,9 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         this.changeToTypeNonPK();
     }
 
+    /**
+     * Tham gia bản đồ của Boss.
+     */
     @Override
     public void joinMap() {
         if (zoneFinal != null) {
@@ -309,14 +389,21 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
     }
 
+    /**
+     * Tham gia bản đồ dựa trên vùng của người chơi.
+     * @param player Người chơi
+     */
     public void joinMapByZone(Player player) {
         if (player.zone != null) {
             this.zone = player.zone;
             ChangeMapService.gI().changeMapBySpaceShip(this, this.zone, -1);
         }
-
     }
 
+    /**
+     * Tham gia bản đồ dựa trên vùng chỉ định.
+     * @param zone Vùng bản đồ
+     */
     public void joinMapByZone(Zone zone) {
         if (zone != null) {
             this.zone = zone;
@@ -324,17 +411,23 @@ public class Boss extends Player implements IBossNew, IBossOutfit {
         }
     }
 
+    /**
+     * Thông báo khi Boss tham gia bản đồ.
+     */
     protected void notifyJoinMap() {
-if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
-    return;
-}
-        if (this.zone.map.mapId == 140 || this.zone.map.mapId == 143 || this.zone.map.mapId == 131 || this.zone.map.mapId == 132 || this.zone.map.mapId == 133 || MapService.gI().isMapMaBu(this.zone.map.mapId) || MapService.gI().isMapBlackBallWar(this.zone.map.mapId )) {
+        if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
             return;
         }
-            ServerNotify.gI().notify("BOSS " + this.name + " vừa xuất hiện tại " + this.zone.map.mapName);
-        
+        if (this.zone.map.mapId == 140 || this.zone.map.mapId == 143 || this.zone.map.mapId == 131 || this.zone.map.mapId == 132 || this.zone.map.mapId == 133 || MapService.gI().isMapMaBu(this.zone.map.mapId) || MapService.gI().isMapBlackBallWar(this.zone.map.mapId)) {
+            return;
+        }
+        ServerNotify.gI().notify("BOSS " + this.name + " vừa xuất hiện tại " + this.zone.map.mapName);
     }
 
+    /**
+     * Xử lý đoạn hội thoại bắt đầu của Boss.
+     * @return True nếu hoàn thành đoạn hội thoại
+     */
     @Override
     public boolean chatS() {
         if (Util.canDoWithTime(lastTimeChatS, timeChatS)) {
@@ -357,11 +450,16 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         return false;
     }
 
+    /**
+     * Hoàn thành đoạn hội thoại bắt đầu.
+     */
     @Override
     public void doneChatS() {
-
     }
 
+    /**
+     * Xử lý đoạn hội thoại ngẫu nhiên trong trận chiến.
+     */
     @Override
     public void chatM() {
         if (this.typePk == ConstPlayer.NON_PK) {
@@ -381,6 +479,9 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         this.timeChatM = Util.nextInt(3000, 20000);
     }
 
+    /**
+     * Kích hoạt trạng thái tấn công của Boss.
+     */
     @Override
     public void active() {
         if (this.typePk == ConstPlayer.NON_PK) {
@@ -389,8 +490,12 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         this.attack();
     }
 
+    /** Thời gian tấn công cuối cùng */
     protected long lastTimeAttack;
 
+    /**
+     * Xử lý hành vi tấn công của Boss.
+     */
     @Override
     public void attack() {
         if (Util.canDoWithTime(this.lastTimeAttack, 100) && this.typePk == ConstPlayer.PK_ALL) {
@@ -421,18 +526,24 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
                     }
                 }
             } catch (Exception ex) {
-
             }
         }
     }
 
+    /**
+     * Kiểm tra xem người chơi có bị chết sau khi bị tấn công không.
+     * @param player Người chơi bị tấn công
+     */
     @Override
     public void checkPlayerDie(Player player) {
         if (player.isDie()) {
-
         }
     }
 
+    /**
+     * Lấy phạm vi tấn công của kỹ năng được chọn.
+     * @return Khoảng cách tấn công
+     */
     protected int getRangeCanAttackWithSkillSelect() {
         int skillId = this.playerSkill.skillSelect.template.id;
         if (skillId == Skill.KAMEJOKO || skillId == Skill.MASENKO || skillId == Skill.ANTOMIC) {
@@ -443,6 +554,10 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         return 752002;
     }
 
+    /**
+     * Xử lý khi Boss bị tiêu diệt.
+     * @param plKill Người chơi tiêu diệt Boss
+     */
     @Override
     public void die(Player plKill) {
         if (plKill != null) {
@@ -452,33 +567,48 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
                 plKill.PointBoss += 1;
             }
         }
-        this.changeStatus(BossStatus.DIE);
+        this.changeStatus(DIE);
     }
 
+    /**
+     * Thưởng cho người chơi khi tiêu diệt Boss.
+     * @param plKill Người chơi tiêu diệt Boss
+     */
     @Override
     public void reward(Player plKill) {
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
     }
 
+    /**
+     * Thưởng vật phẩm cho Boss tương lai.
+     * @param plKill Người chơi tiêu diệt Boss
+     */
     public void rewardFutureBoss(Player plKill) {
-        int[] itemDos = new int[]{16,17};
+        int[] itemDos = new int[]{16, 17};
         int randomnro = new Random().nextInt(itemDos.length);
         byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
         if (Util.isTrue(70, 100)) {
             Service.gI().dropItemMap(this.zone, new ItemMap(zone, itemDos[randomnro], 1, this.location.x, zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
         } else {
             Service.gI().dropItemMap(this.zone, Util.ratiItem(zone, Manager.itemIds_TL[randomDo], 1, this.location.x, this.location.y, plKill.id));
-
         }
     }
 
+    /**
+     * Thưởng vật phẩm cho Boss rừng.
+     * @param plKill Người chơi tiêu diệt Boss
+     */
     public void rewardBossForest(Player plKill) {
         int random = Util.nextInt(100);
-           if (random <= 40) {
+        if (random <= 40) {
             Service.gI().dropItemMap(this.zone, new ItemMap(zone, 674, 1, this.location.x, zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
-        } 
+        }
     }
 
+    /**
+     * Xử lý đoạn hội thoại kết thúc của Boss.
+     * @return True nếu hoàn thành đoạn hội thoại
+     */
     @Override
     public boolean chatE() {
         if (Util.canDoWithTime(lastTimeChatE, timeChatE)) {
@@ -501,27 +631,39 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         return false;
     }
 
+    /**
+     * Hoàn thành đoạn hội thoại kết thúc.
+     */
     @Override
     public void doneChatE() {
-
     }
 
+    /**
+     * Rời khỏi bản đồ.
+     */
     @Override
     public void leaveMap() {
         if (this.currentLevel < this.data.length - 1) {
             this.lastZone = this.zone;
-            this.changeStatus(BossStatus.RESPAWN);
+            this.changeStatus(RESPAWN);
         } else {
             ChangeMapService.gI().spaceShipArrive(this, (byte) 2, ChangeMapService.DEFAULT_SPACE_SHIP);
             ChangeMapService.gI().exitMap(this);
             this.lastZone = null;
             this.lastTimeRest = System.currentTimeMillis();
-            this.changeStatus(BossStatus.REST);
+            this.changeStatus(REST);
         }
         this.wakeupAnotherBossWhenDisappear();
     }
-    //end loop
 
+    /**
+     * Xử lý sát thương mà Boss nhận vào.
+     * @param plAtt Người chơi tấn công
+     * @param damage Sát thương gây ra
+     * @param piercing Có xuyên giáp hay không
+     * @param isMobAttack Có phải do quái tấn công không
+     * @return Sát thương thực tế
+     */
     @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
@@ -546,19 +688,33 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         }
     }
 
+    /**
+     * Di chuyển Boss đến vị trí của người chơi.
+     * @param player Người chơi mục tiêu
+     */
     @Override
     public void moveToPlayer(Player player) {
         this.moveTo(player.location.x, player.location.y);
     }
 
+    /**
+     * Tham gia bản đồ tại vị trí cụ thể.
+     * @param zone Vùng bản đồ
+     * @param x Tọa độ X
+     * @param y Tọa độ Y
+     */
     public void joinMapByZone(Zone zone, int x, int y) {
         if (zone != null) {
             this.zone = zone;
             ChangeMapService.gI().changeMapYardrat(this, this.zone, x, y);
         }
-
     }
 
+    /**
+     * Di chuyển Boss đến vị trí cụ thể.
+     * @param x Tọa độ X
+     * @param y Tọa độ Y
+     */
     @Override
     public void moveTo(int x, int y) {
         byte dir = (byte) (this.location.x - x < 0 ? 1 : -1);
@@ -566,10 +722,20 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         PlayerService.gI().playerMove(this, this.location.x + (dir == 1 ? move : -move), y + (Util.isTrue(3, 10) ? -50 : 0));
     }
 
+    /**
+     * Gửi đoạn chat của Boss.
+     * @param text Nội dung chat
+     */
     public void chat(String text) {
         Service.gI().chat(this, text);
     }
 
+    /**
+     * Xử lý đoạn chat với tiền tố và nội dung.
+     * @param prefix Tiền tố chat
+     * @param textChat Nội dung chat
+     * @return True nếu chat thành công
+     */
     protected boolean chat(int prefix, String textChat) {
         if (prefix == -1) {
             this.chat(textChat);
@@ -601,13 +767,12 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
         return true;
     }
 
+    /**
+     * Kích hoạt các Boss khác khi Boss này xuất hiện.
+     */
     @Override
     public void wakeupAnotherBossWhenAppear() {
-           System.out.println("Loading ----> "+this.name);
-           // System.out.println("Name: "+this.name + ":" + this.zone.map.mapName + " ----> " + this.zone.zoneId + "(" + this.zone.map.mapId + ")");
         if (!MapService.gI().isMapMaBu(this.zone.map.mapId) && MapService.gI().isMapBlackBallWar(this.zone.map.mapId)) {
-                System.out.println("Loading ----> "+this.name);
-                //System.out.println("Name: " + this.name + " : " + this.zone.map.mapName + " ----> " + this.zone.zoneId + "(" + this.zone.map.mapId + ")");
         }
         if (this.bossAppearTogether == null || this.bossAppearTogether[this.currentLevel] == null) {
             return;
@@ -626,14 +791,15 @@ if ((this.id >= -22 && this.id <= -20) || (this.id >= -9 && this.id <= -12)) {
                 if (boss.zone != null) {
                     boss.leaveMap();
                 }
-                boss.changeStatus(BossStatus.RESPAWN);
+                boss.changeStatus(RESPAWN);
             }
         }
     }
 
+    /**
+     * Kích hoạt các Boss khác khi Boss này biến mất.
+     */
     @Override
     public void wakeupAnotherBossWhenDisappear() {
-        System.out.println("Name " + this.name + " Killer");
     }
-
 }
