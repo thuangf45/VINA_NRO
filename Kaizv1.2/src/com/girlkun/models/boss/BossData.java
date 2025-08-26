@@ -3,43 +3,57 @@ package com.girlkun.models.boss;
 import lombok.Builder;
 import lombok.Data;
 
-
+/**
+ * Chứa dữ liệu định nghĩa 1 Boss trong game:
+ * - Thông tin cơ bản (tên, giới tính, trang phục)
+ * - Chỉ số chiến đấu (damage, HP, skill)
+ * - Thông tin bản đồ xuất hiện, lời thoại
+ * - Cấu hình cách xuất hiện (thời gian nghỉ, loại xuất hiện, boss đi cùng)
+ *
+ * Class này chủ yếu dùng để khởi tạo dữ liệu cho Boss,
+ * không xử lý logic chiến đấu.
+ * 
+ * @author Lucifer
+ */
 @Data
 public class BossData {
 
-    public static final int DEFAULT_APPEAR = 0;
-    public static final int APPEAR_WITH_ANOTHER = 1;
-    public static final int ANOTHER_LEVEL = 2;
+    // Các kiểu xuất hiện của Boss
+    public static final int DEFAULT_APPEAR = 0;       // xuất hiện bình thường
+    public static final int APPEAR_WITH_ANOTHER = 1;  // xuất hiện cùng boss khác
+    public static final int ANOTHER_LEVEL = 2;        // xuất hiện dạng level khác
 
-    private String name;
+    // Thông tin cơ bản
+    private String name;       // tên boss
+    private byte gender;       // giới tính
+    private short[] outfit;    // trang phục (id các item mặc)
 
-    private byte gender;
+    // Chỉ số chiến đấu
+    private int dame;          // damage
+    private int[] hp;          // máu (có thể nhiều mốc theo level)
+    private int[][] skillTemp; // danh sách skill
 
-    private short[] outfit;
-
-    private int dame;
-
-    private int[] hp;
-
+    // Bản đồ xuất hiện
     private int[] mapJoin;
 
-    private int[][] skillTemp;
+    // Lời thoại
+    private String[] textS;    // khi spawn
+    private String[] textM;    // khi đang chiến đấu
+    private String[] textE;    // khi chết
 
-    private String[] textS;
+    // Cấu hình xuất hiện
+    private int secondsRest;           // thời gian nghỉ (hồi sinh)
+    private TypeAppear typeAppear;     // kiểu xuất hiện
+    private int[] bossesAppearTogether; // danh sách boss xuất hiện cùng
 
-    private String[] textM;
-
-    private String[] textE;
-
-    private int secondsRest;
-
-    private TypeAppear typeAppear;
-
-    private int[] bossesAppearTogether;
-
+    /**
+     * Constructor cơ bản, mặc định:
+     * - secondsRest = 0
+     * - typeAppear = DEFAULT_APPEAR
+     */
     private BossData(String name, byte gender, short[] outfit, int dame, int[] hp,
-            int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
-            String[] textE) {
+                     int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
+                     String[] textE) {
         this.name = name;
         this.gender = gender;
         this.outfit = outfit;
@@ -54,35 +68,43 @@ public class BossData {
         this.typeAppear = TypeAppear.DEFAULT_APPEAR;
     }
 
+    // Constructor có thêm thời gian nghỉ
     public BossData(String name, byte gender, short[] outfit, int dame, int[] hp,
-            int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
-            String[] textE, int secondsRest) {
+                    int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
+                    String[] textE, int secondsRest) {
         this(name, gender, outfit, dame, hp, mapJoin, skillTemp, textS, textM, textE);
         this.secondsRest = secondsRest;
     }
 
+    // Constructor có thêm thời gian nghỉ và boss đi cùng
     public BossData(String name, byte gender, short[] outfit, int dame, int[] hp,
-            int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
-            String[] textE, int secondsRest, int[] bossesAppearTogether) {
+                    int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
+                    String[] textE, int secondsRest, int[] bossesAppearTogether) {
         this(name, gender, outfit, dame, hp, mapJoin, skillTemp, textS, textM, textE, secondsRest);
         this.bossesAppearTogether = bossesAppearTogether;
     }
 
+    // Constructor có thêm loại xuất hiện
     public BossData(String name, byte gender, short[] outfit, int dame, int[] hp,
-            int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
-            String[] textE, TypeAppear typeAppear) {
+                    int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
+                    String[] textE, TypeAppear typeAppear) {
         this(name, gender, outfit, dame, hp, mapJoin, skillTemp, textS, textM, textE);
         this.typeAppear = typeAppear;
     }
 
+    // Constructor có thêm thời gian nghỉ và loại xuất hiện
     public BossData(String name, byte gender, short[] outfit, int dame, int[] hp,
-            int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
-            String[] textE, int secondsRest, TypeAppear typeAppear) {
+                    int[] mapJoin, int[][] skillTemp, String[] textS, String[] textM,
+                    String[] textE, int secondsRest, TypeAppear typeAppear) {
         this(name, gender, outfit, dame, hp, mapJoin, skillTemp, textS, textM, textE, secondsRest);
         this.typeAppear = typeAppear;
     }
 
-
+    /**
+     * Constructor dùng @Builder của Lombok.
+     * Cho phép build BossData linh hoạt mà không cần truyền đủ tất cả tham số.
+     * Một số field như textS, textM, textE mặc định rỗng.
+     */
     @Builder
     public BossData(String name, byte gender, int dame, int[] hp,
                     short[] outfit, int[] mapJoin, int[][] skillTemp,
@@ -101,8 +123,3 @@ public class BossData {
         this.textE = new String[]{};
     }
 }
-
-/**
- * Vui lòng không sao chép mã nguồn này dưới mọi hình thức. Hãy tôn trọng tác
- * giả của mã nguồn này. Xin cảm ơn! - GirlBeo
- */
