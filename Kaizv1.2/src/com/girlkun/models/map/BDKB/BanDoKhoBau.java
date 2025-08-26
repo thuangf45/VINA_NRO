@@ -16,18 +16,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author BTH
+ * Lớp BanDoKhoBau đại diện cho bản đồ kho báu trong trò chơi, quản lý các khu vực, bang hội và hoạt động liên quan.
+ * @author Lucifer
  */
 public class BanDoKhoBau {
 
+    /**
+     * Sức mạnh tối thiểu để tham gia bản đồ kho báu.
+     */
     public static final long POWER_CAN_GO_TO_DBKB = 1500000000L;
 
+    /**
+     * Danh sách các bản đồ kho báu được tạo sẵn.
+     */
     public static final List<BanDoKhoBau> BAN_DO_KHO_BAUS;
+
+    /**
+     * Số lượng bản đồ kho báu tối đa có thể tạo.
+     */
     public static final int MAX_AVAILABLE = 50;
+
+    /**
+     * Thời gian tồn tại của bản đồ kho báu (mili giây).
+     */
     public static final int TIME_BAN_DO_KHO_BAU = 1800000;
 
+    /**
+     * Người chơi liên quan đến bản đồ kho báu.
+     */
     private Player player;
 
+    /**
+     * Khởi tạo danh sách bản đồ kho báu với số lượng tối đa.
+     */
     static {
         BAN_DO_KHO_BAUS = new ArrayList<>();
         for (int i = 0; i < MAX_AVAILABLE; i++) {
@@ -35,21 +56,53 @@ public class BanDoKhoBau {
         }
     }
 
+    /**
+     * Boss Trung Úy Xanh Lơ trong bản đồ kho báu.
+     */
     TrungUyXanhLo boss;
 
+    /**
+     * ID của bản đồ kho báu.
+     */
     public int id;
+
+    /**
+     * Cấp độ của bản đồ kho báu.
+     */
     public byte level;
+
+    /**
+     * Danh sách các khu vực trong bản đồ kho báu.
+     */
     public final List<Zone> zones;
 
+    /**
+     * Bang hội sở hữu bản đồ kho báu.
+     */
     public Clan clan;
+
+    /**
+     * Trạng thái mở của bản đồ kho báu.
+     */
     public boolean isOpened;
+
+    /**
+     * Thời điểm lần cuối mở bản đồ kho báu.
+     */
     private long lastTimeOpen;
 
+    /**
+     * Khởi tạo một bản đồ kho báu với ID cụ thể.
+     * @param id ID của bản đồ kho báu.
+     */
     public BanDoKhoBau(int id) {
         this.id = id;
         this.zones = new ArrayList<>();
     }
 
+    /**
+     * Cập nhật trạng thái của bản đồ kho báu, kiểm tra thời gian tồn tại.
+     */
     public void update() {
         if (this.isOpened) {
             if (Util.canDoWithTime(lastTimeOpen, TIME_BAN_DO_KHO_BAU)) {
@@ -58,6 +111,12 @@ public class BanDoKhoBau {
         }
     }
 
+    /**
+     * Mở bản đồ kho báu cho một bang hội với cấp độ cụ thể.
+     * @param plOpen Người chơi mở bản đồ.
+     * @param clan Bang hội sở hữu bản đồ.
+     * @param level Cấp độ của bản đồ.
+     */
     public void openBanDoKhoBau(Player plOpen, Clan clan, byte level) {
         this.level = level;
         this.lastTimeOpen = System.currentTimeMillis();
@@ -72,6 +131,9 @@ public class BanDoKhoBau {
         sendTextBanDoKhoBau();
     }
 
+    /**
+     * Đặt lại trạng thái của bản đồ kho báu, bao gồm quái vật và bẫy.
+     */
     private void resetBanDo() {
         for (Zone zone : zones) {
             for (TrapMap trap : zone.trapMaps) {
@@ -88,7 +150,9 @@ public class BanDoKhoBau {
         }
     }
 
-    //kết thúc bản đồ kho báu
+    /**
+     * Kết thúc bản đồ kho báu, đưa tất cả người chơi ra ngoài.
+     */
     public void finish() {
         List<Player> plOutBD = new ArrayList<>();
         for (int i = 0; i < zones.size(); i++) {
@@ -110,6 +174,10 @@ public class BanDoKhoBau {
         this.isOpened = false;
     }
 
+    /**
+     * Đưa người chơi ra khỏi bản đồ kho báu.
+     * @param player Người chơi cần đưa ra ngoài.
+     */
     private void kickOutOfBDKB(Player player) {
         if (MapService.gI().isMapBanDoKhoBau(player.zone.map.mapId)) {
             Service.getInstance().sendThongBao(player, "Hang Kho Báu Đã Sập Bạn Đang Được Đưa Ra Ngoài");
@@ -118,6 +186,11 @@ public class BanDoKhoBau {
         }
     }
 
+    /**
+     * Lấy khu vực trong bản đồ kho báu theo ID bản đồ.
+     * @param mapId ID của bản đồ.
+     * @return Khu vực tương ứng hoặc null nếu không tìm thấy.
+     */
     public Zone getMapById(int mapId) {
         for (Zone zone : zones) {
             if (zone.map.mapId == mapId) {
@@ -127,10 +200,18 @@ public class BanDoKhoBau {
         return null;
     }
 
+    /**
+     * Thêm một khu vực vào bản đồ kho báu.
+     * @param idBanDo ID của bản đồ kho báu.
+     * @param zone Khu vực cần thêm.
+     */
     public static void addZone(int idBanDo, Zone zone) {
         BAN_DO_KHO_BAUS.get(idBanDo).zones.add(zone);
     }
 
+    /**
+     * Gửi thông báo văn bản về bản đồ kho báu cho các thành viên bang hội.
+     */
     private void sendTextBanDoKhoBau() {
         for (Player pl : this.clan.membersInGame) {
             ItemTimeService.gI().sendTextBanDoKhoBau(pl);
