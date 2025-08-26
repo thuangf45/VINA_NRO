@@ -19,7 +19,7 @@ import com.girlkun.models.item.Item;
 import com.girlkun.models.map.WayPoint;
 import com.girlkun.models.map.gas.TopGas;
 import com.girlkun.models.matches.TOP;
-//import com.girlkun.models.matches.pvp.DaiHoiVoThuat;
+import com.girlkun.models.matches.pvp.DaiHoiVoThuat;
 import com.girlkun.models.npc.Npc;
 import com.girlkun.models.npc.NpcFactory;
 import com.girlkun.models.player.Referee;
@@ -103,7 +103,7 @@ public class Manager {
     public static final List<Clan> CLANS = new ArrayList<>();
     public static final List<TopGas> TopGas = new ArrayList<>();
     public static final List<String> NOTIFY = new ArrayList<>();
-//    public static final ArrayList<DaiHoiVoThuat> LIST_DHVT = new ArrayList<>();
+    public static final ArrayList<DaiHoiVoThuat> LIST_DHVT = new ArrayList<>();
     public static final List<Item> RUBY_REWARDS = new ArrayList<>();
 
     public static final String queryTopSM = "SELECT id, CAST( split_str(data_point,',',2) AS UNSIGNED) AS sm FROM player ORDER BY CAST( split_str(data_point,',',2) AS UNSIGNED) DESC LIMIT 20;";
