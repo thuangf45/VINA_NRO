@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.girlkun.models.map.gas;
 
 import com.girlkun.models.player.Player;
@@ -12,11 +8,16 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- *
- * @author Administrator
+ * Lớp TopGasService quản lý bảng xếp hạng bản đồ Khí Gas, bao gồm sắp xếp và gửi thông tin top cho người chơi.
+ * @author Lucifer
  */
 public class TopGasService {
 
+    /**
+     * Sắp xếp danh sách top Khí Gas theo cấp độ và thời gian hoàn thành.
+     * @param topsort Danh sách các TopGas cần sắp xếp.
+     * @return Danh sách đã sắp xếp, tối đa 50 phần tử.
+     */
     public static List<TopGas> Sort(List<TopGas> topsort) {
         Collections.sort(topsort, new Comparator<TopGas>() {
             @Override
@@ -37,6 +38,11 @@ public class TopGasService {
         }
     }
 
+    /**
+     * Chuyển đổi thời gian hoàn thành (mili giây) sang định dạng phút và giây.
+     * @param Time Thời gian hoàn thành (mili giây).
+     * @return Chuỗi định dạng thời gian hoàn thành (phút:giây).
+     */
     public static String GetTimeDone(long Time) {
         int phut = 0;
         int giay = 0;
@@ -51,10 +57,20 @@ public class TopGasService {
         return "Thời Gian Hoàn Thành :" + phut + "p:" + giay + "s";
     }
 
+    /**
+     * Lấy chuỗi mô tả cấp độ hoàn thành.
+     * @param level Cấp độ hoàn thành.
+     * @return Chuỗi mô tả cấp độ hoàn thành.
+     */
     public static String GetLevelDone(int level) {
         return "Level Hoàn Thành :" + level;
     }
 
+    /**
+     * Gửi thông tin bảng xếp hạng Khí Gas cho người chơi.
+     * @param tops Danh sách top Khí Gas.
+     * @param player Người chơi nhận thông tin.
+     */
     public static void SendTop(List<TopGas> tops, Player player) {
         Message msg;
         try {
@@ -78,7 +94,7 @@ public class TopGasService {
             msg.cleanup();
         } catch (Exception e) {
             System.err.print("\nError at 172\n");
-             e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }
