@@ -9,31 +9,69 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Đại diện cho một vật phẩm trong game.
+ * <p>
+ * Vật phẩm có thể chứa các thuộc tính như số lượng, hạn sử dụng, các tùy chọn
+ * đặc biệt {@link ItemOption}, cũng như nhiều phân loại khác nhau (Đá nâng cấp, 
+ * Mảnh trang sức, Thức ăn, Công thức,...).
+ * </p>
+ *
+ * @author Lucifer
+ */
 public class Item {
 
+    /** ID định danh của item */
     public int id;
+
+    /** Cho biết item có hạn sử dụng hay không */
     public boolean isExpires = false;
+
+    /** Cho biết item có thể xếp chồng hay không */
     public boolean isUpToUp;
+
+    /** Số lượng tạm (dùng khi stack hoặc giao dịch) */
     public int quantityTemp = 1;
+
+    /** ID icon head tạm */
     public short headTemp;
+
+    /** ID icon body tạm */
     public short bodyTemp;
+
+    /** ID icon leg tạm */
     public short legTemp;
+
+    /** ID template tạm */
     public int idTemp;
+
+    /** Thông tin template gốc của item */
     public ItemTemplate template;
 
+    /** Chuỗi thông tin mô tả item */
     public String info;
 
+    /** Chuỗi nội dung bổ sung của item */
     public String content;
 
+    /** Số lượng hiện tại */
     public int quantity;
 
+    /** Số lượng trong giao dịch */
     public int quantityGD = 0;
 
+    /** Danh sách các tùy chọn (option) của item */
     public List<ItemOption> itemOptions;
 
+    /** Thời gian khởi tạo item (theo millis) */
     public long createTime;
 
-    public Item(Item _item) { //INIT ITEM TU TEMPLATE
+    /**
+     * Khởi tạo item từ một item khác (clone).
+     * 
+     * @param _item item gốc cần sao chép
+     */
+    public Item(Item _item) { 
         this.id = _item.id;
         this.template = _item.template;
         this.info = _item.info;
@@ -45,33 +83,41 @@ public class Item {
         this.bodyTemp = _item.bodyTemp;
         this.legTemp = _item.legTemp;
         this.idTemp = _item.idTemp;
-//        this.itemOptions = _item.itemOptions;
-        this.itemOptions = new ArrayList<ItemOption>();
+        this.itemOptions = new ArrayList<>();
         for (ItemOption _option : _item.itemOptions) {
             this.itemOptions.add(new ItemOption(_option.optionTemplate.id, _option.param));
         }
         this.quantity = 1;
     }
 
+    /** @return tên item */
     public String Name() {
         return this.template.name;
     }
 
+    /** @return true nếu item hợp lệ (khác null) */
     public boolean isNotNullItem() {
         return this.template != null;
     }
 
+    /** Constructor mặc định */
     public Item() {
         this.itemOptions = new ArrayList<>();
         this.createTime = System.currentTimeMillis();
     }
 
+    /**
+     * Khởi tạo item theo id template
+     * 
+     * @param itemId id template
+     */
     public Item(short itemId) {
         this.template = ItemService.gI().getTemplate(itemId);
         this.itemOptions = new ArrayList<>();
         this.createTime = System.currentTimeMillis();
     }
 
+    /** @return chuỗi mô tả các tùy chọn (option) của item */
     public String getInfo() {
         String strInfo = "";
         for (ItemOption itemOption : itemOptions) {
@@ -80,6 +126,7 @@ public class Item {
         return strInfo;
     }
 
+    /** @return chuỗi mô tả đầy đủ thông tin item */
     public String getInfoItem() {
         String strInfo = "|1|" + template.name + "\n|0|";
         for (ItemOption itemOption : itemOptions) {
@@ -89,10 +136,12 @@ public class Item {
         return strInfo;
     }
 
+    /** @return nội dung điều kiện sử dụng item */
     public String getContent() {
         return "Yêu cầu sức mạnh " + this.template.strRequire + " trở lên";
     }
 
+    /** Giải phóng dữ liệu item */
     public void dispose() {
         this.template = null;
         this.info = null;
@@ -106,37 +155,70 @@ public class Item {
         this.itemOptions = null;
     }
 
+    /**
+     * Đại diện cho tùy chọn (option) của một item.
+     * <p>
+     * Mỗi option có một template gốc và một giá trị param.
+     * </p>
+     */
     public static class ItemOption {
 
-        private static Map<String, String> OPTION_STRING = new HashMap<String, String>();
+        /** Bảng ánh xạ tùy chọn sang chuỗi hiển thị */
+        private static Map<String, String> OPTION_STRING = new HashMap<>();
 
+        /** Giá trị của option */
         public int param;
 
+        /** Template gốc của option */
         public Template.ItemOptionTemplate optionTemplate;
 
+        /** Danh sách tùy chọn con (nếu có) */
+        public List<ItemOption> itemOptions;
+
+        /** Constructor mặc định */
         public ItemOption() {
         }
 
+        /**
+         * Copy constructor.
+         *
+         * @param io option gốc
+         */
         public ItemOption(ItemOption io) {
             this.param = io.param;
             this.optionTemplate = io.optionTemplate;
         }
-        public List<ItemOption> itemOptions;
 
+        /**
+         * Constructor với id template và param.
+         *
+         * @param tempId id template
+         * @param param giá trị option
+         */
         public ItemOption(int tempId, int param) {
             this.optionTemplate = ItemService.gI().getItemOptionTemplate(tempId);
             this.param = param;
         }
 
+        /**
+         * Constructor với template và param.
+         *
+         * @param temp template gốc
+         * @param param giá trị option
+         */
         public ItemOption(Template.ItemOptionTemplate temp, int param) {
             this.optionTemplate = temp;
             this.param = param;
         }
 
+        /**
+         * @return chuỗi mô tả option theo format template
+         */
         public String getOptionString() {
             return Util.replace(this.optionTemplate.name, "#", String.valueOf(this.param));
         }
 
+        /** Giải phóng dữ liệu option */
         public void dispose() {
             this.optionTemplate = null;
         }
@@ -151,6 +233,7 @@ public class Item {
         }
     }
 
+    /** @return true nếu item là SKH (Set Kích Hoạt) */
     public boolean isSKH() {
         for (ItemOption itemOption : itemOptions) {
             if (itemOption.optionTemplate.id >= 127 && itemOption.optionTemplate.id <= 135) {
@@ -160,63 +243,47 @@ public class Item {
         return false;
     }
 
+    /** @return true nếu item là Đá Tăng Sao (DTS) */
     public boolean isDTS() {
-        if (this.template.id >= 1048 && this.template.id <= 1062) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 1048 && this.template.id <= 1062;
     }
 
+    /** @return true nếu item là Thức ăn */
     public boolean isThucAn() {
-        if (this.template.id >= 663 && this.template.id <= 667) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 663 && this.template.id <= 667;
     }
 
+    /** @return true nếu item là Đá Thần Linh (DTL) */
     public boolean isDTL() {
-        if (this.template.id >= 555 && this.template.id <= 567) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 555 && this.template.id <= 567;
     }
 
+    /** @return true nếu item là Đá Hủy Diệt (DHD) */
     public boolean isDHD() {
-        if (this.template.id >= 650 && this.template.id <= 662) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 650 && this.template.id <= 662;
     }
 
+    /** @return true nếu item là Mảnh Trang Sức */
     public boolean isManhTS() {
-        if (this.template.id >= 1066 && this.template.id <= 1070) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 1066 && this.template.id <= 1070;
     }
 
+    /** @return true nếu item là Công thức VIP */
     public boolean isCongThucVip() {
-        if (this.template.id >= 1084 && this.template.id <= 1086) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 1084 && this.template.id <= 1086;
     }
 
+    /** @return true nếu item là Đá nâng cấp */
     public boolean isDaNangCap() {
-        if (this.template.id >= 1074 && this.template.id <= 1078) {
-            return true;
-        } else if (this.template.id == -1) {
-        }
-        return false;
+        return this.template.id >= 1074 && this.template.id <= 1078;
     }
 
+    /** @return true nếu item là Đá may mắn */
     public boolean isDaMayMan() {
-        if (this.template.id >= 1079 && this.template.id <= 1083) {
-            return true;
-        }
-        return false;
+        return this.template.id >= 1079 && this.template.id <= 1083;
     }
 
+    /** @return tên loại trang bị (Áo, Quần, Găng, Giày, Rada) */
     public String typeName() {
         switch (this.template.type) {
             case 0:
@@ -234,18 +301,16 @@ public class Item {
         }
     }
 
+    /** @return hành tinh tương ứng với item */
     public String typeHanhTinh() {
         switch (this.template.id) {
             case 1071:
-                return "Trái đất";
             case 1084:
                 return "Trái đất";
             case 1072:
-                return "Namếc";
             case 1085:
                 return "Namếc";
             case 1073:
-                return "Xayda";
             case 1086:
                 return "Xayda";
             default:
@@ -253,6 +318,7 @@ public class Item {
         }
     }
 
+    /** @return id loại mảnh trang sức (0-4) */
     public byte typeIdManh() {
         if (!isManhTS()) {
             return -1;
@@ -273,6 +339,7 @@ public class Item {
         }
     }
 
+    /** @return tên loại mảnh trang sức */
     public String typeNameManh() {
         switch (this.template.id) {
             case 1066:
@@ -290,6 +357,7 @@ public class Item {
         }
     }
 
+    /** @return cấp độ của Đá nâng cấp */
     public String typeDanangcap() {
         switch (this.template.id) {
             case 1074:
@@ -307,6 +375,7 @@ public class Item {
         }
     }
 
+    /** @return cấp độ của Đá may mắn */
     public String typeDaMayman() {
         switch (this.template.id) {
             case 1079:
