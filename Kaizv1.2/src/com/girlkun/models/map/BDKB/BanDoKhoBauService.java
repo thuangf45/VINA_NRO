@@ -3,7 +3,6 @@ package com.girlkun.models.map.BDKB;
 import com.girlkun.models.boss.list_boss.BDKB.TrungUyXanhLo;
 //import com.girlkun.models.boss.list_boss.phoban.TrungUyXanhLoBdkb1;
 import com.girlkun.models.item.Item;
-import com.girlkun.models.boss.list_boss.BDKB.TrungUyXanhLo;
 import com.girlkun.models.map.BDKB.BanDoKhoBau;
 import static com.girlkun.models.map.BDKB.BanDoKhoBau.TIME_BAN_DO_KHO_BAU;
 import com.girlkun.models.player.Player;
@@ -16,25 +15,38 @@ import com.girlkun.utils.Util;
 import java.util.List;
 
 /**
- *
- * @author BTH
- *
+ * Lớp BanDoKhoBauService quản lý việc mở và khởi tạo bản đồ kho báu trong trò chơi.
+ * @author Lucifer
  */
 public class BanDoKhoBauService {
 
+    /**
+     * Thể hiện duy nhất của lớp BanDoKhoBauService (mô hình Singleton).
+     */
     private static BanDoKhoBauService i;
 
+    /**
+     * Khởi tạo đối tượng BanDoKhoBauService (private để hỗ trợ Singleton).
+     */
     private BanDoKhoBauService() {
-
     }
 
+    /**
+     * Lấy thể hiện duy nhất của lớp BanDoKhoBauService.
+     * @return Thể hiện của BanDoKhoBauService.
+     */
     public static BanDoKhoBauService gI() {
         if (i == null) {
             i = new BanDoKhoBauService();
         }
         return i;
     }
-    
+
+    /**
+     * Mở bản đồ kho báu cho người chơi với cấp độ cụ thể.
+     * @param player Người chơi muốn mở bản đồ.
+     * @param level Cấp độ của bản đồ kho báu.
+     */
     public void openBanDoKhoBau(Player player, byte level) {
         if (level >= 1 && level <= 110) {
             if (player.clan != null && player.clan.BanDoKhoBau == null) {
@@ -64,7 +76,6 @@ public class BanDoKhoBauService {
                             );
                         } catch (Exception e) {
                             Logger.logException(BanDoKhoBauService.class, e, "Error initializing boss");
-                                     
                         }
                     } else {
                         Service.getInstance().sendThongBao(player, "Bản đồ kho báu đã đầy, vui lòng quay lại sau");
