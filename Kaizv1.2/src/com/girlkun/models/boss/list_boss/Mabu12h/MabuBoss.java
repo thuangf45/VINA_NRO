@@ -12,12 +12,31 @@ import com.girlkun.utils.Util;
 
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Mabu trong sự kiện Mabu 12h.
+ * - Đây là boss chính, có khả năng đặc biệt (bản năng vô cực) giúp né đòn với tỉ lệ nhất định.
+ * - Khi tiêu diệt sẽ rơi các vật phẩm ngẫu nhiên: đồ TL, NR, đồ cấp 12, hoặc item đặc biệt (ID 1142).
+ * 
+ * @author Lucifer
+ */
 public class MabuBoss extends Boss {
 
+    /**
+     * Khởi tạo boss Mabu với ID ngẫu nhiên và dữ liệu từ BossesData.
+     *
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public MabuBoss() throws Exception {
         super(Util.randomBossId(), BossesData.MABU_12H);
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Mabu.
+     * - Có tỉ lệ rơi đồ TL, NR hoặc đồ cấp 12.
+     * - Ngoài ra có thể rơi item đặc biệt (ID 1142).
+     *
+     * @param plKill Người chơi hạ gục boss
+     */
     @Override
     public void reward(Player plKill) {
        byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -38,7 +57,20 @@ public class MabuBoss extends Boss {
             Service.gI().dropItemMap(this.zone, new ItemMap(zone, Manager.itemIds_NR_SB[randomNR], 1, this.location.x, this.location.y, plKill.id));
         }
     }
-     @Override
+
+    /**
+     * Xử lý khi Mabu bị tấn công.
+     * - Có cơ chế né đòn đặc biệt (bản năng vô cực), kèm theo các câu thoại khi kích hoạt.
+     * - Nếu đang có khiên, sát thương sẽ được giảm và có thể phá khiên khi damage quá lớn.
+     * - Khi HP về 0, boss sẽ chết và gọi hàm die().
+     *
+     * @param plAtt Người chơi tấn công
+     * @param damage Sát thương gây ra
+     * @param piercing Có xuyên giáp hay không
+     * @param isMobAttack Có phải mob tấn công hay không
+     * @return Lượng sát thương thực tế đã trừ vào máu boss
+     */
+    @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (Util.isTrue(50, 100) && plAtt != null) {//tỉ lệ hụt của thiên sứ
             Util.isTrue(this.nPoint.tlNeDon, 100000);
@@ -82,24 +114,3 @@ public class MabuBoss extends Boss {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
