@@ -9,14 +9,28 @@ import com.girlkun.services.Service;
 import com.girlkun.utils.Util;
 import java.util.Random;
 
-
+/**
+ * Lớp đại diện cho boss Fide Robot trong game.
+ * Fide Robot có phần thưởng đa dạng và hành vi đặc biệt khi chiến đấu.
+ * 
+ * @author Lucifer
+ */
 public class FideRobot extends Boss {
 
+    /**
+     * Constructor khởi tạo boss Fide Robot với ID và dữ liệu từ BossesData.
+     * 
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public FideRobot() throws Exception {
         super(BossID.FIDE_ROBOT, BossesData.FIDE_ROBOT);
     }
 
-      @Override
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Fide Robot.
+     * @param plKill Người chơi đã tiêu diệt boss
+     */
+    @Override
     public void reward(Player plKill) {
         int[] itemDos = new int[]{555, 557, 559, 556, 558, 560, 562, 564, 566, 563, 565, 567};
         int[] NRs = new int[]{15, 16};
@@ -33,33 +47,35 @@ public class FideRobot extends Boss {
         }
     }
 
+    /**
+     * Kích hoạt hành vi của Fide Robot, bao gồm tự động tấn công người chơi.
+     */
     @Override
     public void active() {
         this.attack();
     }
 
-//    @Override
-//    public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
-//        if (plAtt != null) {
-//            switch (plAtt.playerSkill.skillSelect.template.id) {
-//                case Skill.KAMEJOKO:
-//                case Skill.MASENKO:
-//                case Skill.ANTOMIC:
-//                    int hpHoi = (int) ((long) damage * 80 / 100);
-//                    PlayerService.gI().hoiPhuc(this, hpHoi, 0);
-//                    if (Util.isTrue(1, 5)) {
-//                        this.chat("Hahaha,Các ngươi nghĩ sao vậy?");
-//                    }
-//                    return 0;
-//            }
-//        }
-//        return super.injured(plAtt, damage, piercing, isMobAttack);
-//    }
-
- 
+    /**
+     * Xử lý sát thương mà Fide Robot nhận từ người chơi hoặc quái (đã bị vô hiệu hóa).
+     * Boss có khả năng hồi phục HP khi bị tấn công bởi một số kỹ năng đặc biệt.
+     */
+    /*
+    @Override
+    public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
+        if (plAtt != null) {
+            switch (plAtt.playerSkill.skillSelect.template.id) {
+                case Skill.KAMEJOKO:
+                case Skill.MASENKO:
+                case Skill.ANTOMIC:
+                    int hpHoi = (int) ((long) damage * 80 / 100);
+                    PlayerService.gI().hoiPhuc(this, hpHoi, 0);
+                    if (Util.isTrue(1, 5)) {
+                        this.chat("Hahaha, Các ngươi nghĩ sao vậy?");
+                    }
+                    return 0;
+            }
+        }
+        return super.injured(plAtt, damage, piercing, isMobAttack);
+    }
+    */
 }
-
-/**
- * Vui lòng không sao chép mã nguồn này dưới mọi hình thức. Hãy tôn trọng tác
- * giả của mã nguồn này. Xin cảm ơn! - GirlBeo
- */
