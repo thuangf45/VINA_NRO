@@ -13,14 +13,32 @@ import com.girlkun.services.PetService;
 import com.girlkun.utils.Util;
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Broly trong game.
+ * Xử lý hành vi, cơ chế chiến đấu và phần thưởng khi bị hạ gục.
+ * 
+ * @author Lucifer
+ */
 public class Broly extends Boss {
 
+    /**
+     * Trạng thái Super của Broly (chưa sử dụng).
+     */
     private boolean supper;
 
+    /**
+     * Constructor khởi tạo boss Broly với ID và dữ liệu từ BossesData.
+     * 
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public Broly() throws Exception {
         super(BossID.BROLY, BossesData.BROLY_1);
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Broly.
+     * @param plKill Người chơi đã tiêu diệt boss
+     */
     @Override
     public void reward(Player plKill) {
         if (Util.isTrue(5, 10)) {
@@ -29,21 +47,41 @@ public class Broly extends Boss {
         }
     }
 
+    /**
+     * Kích hoạt hành vi của Broly, bao gồm tự động rời bản đồ sau 15 phút.
+     */
     @Override
     public void active() {
-        super.active(); //To change body of generated methods, choose Tools | Templates.
+        super.active();
         if (Util.canDoWithTime(st, 900000)) {
             this.changeStatus(BossStatus.LEAVE_MAP);
         }
     }
 
+    /**
+     * Thêm Broly vào bản đồ và ghi lại thời gian bắt đầu.
+     */
     @Override
     public void joinMap() {
-        super.joinMap(); //To change body of generated methods, choose Tools | Templates.
+        super.joinMap();
         st = System.currentTimeMillis();
     }
+
+    /**
+     * Thời gian bắt đầu khi Broly tham gia bản đồ.
+     */
     private long st;
 
+    /**
+     * Xử lý sát thương mà Broly nhận từ người chơi hoặc quái.
+     * Giảm sát thương theo các cơ chế phòng thủ và hiệu ứng kỹ năng.
+     * 
+     * @param plAtt Người chơi tấn công boss
+     * @param damage Lượng sát thương gây ra
+     * @param piercing True nếu sát thương bỏ qua phòng thủ
+     * @param isMobAttack True nếu sát thương đến từ quái
+     * @return Lượng sát thương thực tế được áp dụng
+     */
     @Override
     public int injured(Player plAtt, int damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
