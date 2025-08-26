@@ -11,12 +11,31 @@ import com.girlkun.utils.Util;
 
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho boss Bui Bui 2 trong sự kiện Mabu 12h.
+ * Boss có phần thưởng đa dạng bao gồm đồ TL, NR, và đồ cấp 12.
+ * Ngoài ra, tiêu diệt boss sẽ cộng điểm sự kiện cho người chơi.
+ *
+ * @author Lucifer
+ */
 public class BuiBui2 extends Boss {
 
+    /**
+     * Constructor khởi tạo boss Bui Bui 2 với ID ngẫu nhiên và dữ liệu từ BossesData.
+     *
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public BuiBui2() throws Exception {
         super(Util.randomBossId(), BossesData.BUI_BUI_2);
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt Bui Bui 2.
+     * Người chơi có thể nhận đồ TL, đồ cấp 12, hoặc ngọc rồng.
+     * Đồng thời, người chơi được cộng điểm sự kiện Mabu.
+     *
+     * @param plKill Người chơi đã tiêu diệt boss
+     */
     @Override
     public void reward(Player plKill) {
         byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -55,24 +74,3 @@ public class BuiBui2 extends Boss {
 //    private long st;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
