@@ -13,6 +13,7 @@ import com.girlkun.services.Service;
 
 /**
  * Đại diện cho một vật phẩm xuất hiện trên bản đồ (ItemMap).
+ * @author Lucifer
  */
 public class ItemMap {
 

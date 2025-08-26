@@ -8,6 +8,7 @@ import com.girlkun.services.ItemTimeService;
 
 /**
  * Quản lý thời gian hiệu lực của các item đặc biệt (buff, vật phẩm sự kiện, EXP, v.v).
+ * @author Lucifer
  */
 public class ItemTime {
 
