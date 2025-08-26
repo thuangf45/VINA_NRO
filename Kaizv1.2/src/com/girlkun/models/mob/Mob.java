@@ -32,28 +32,95 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
+/**
+ * Lớp đại diện cho các quái vật (Mob) trong game, quản lý trạng thái, hành vi
+ * và phần thưởng.
+ *
+ * @author Lucifer
+ */
 public class Mob {
 
+    /**
+     * ID của quái vật trong bản đồ.
+     */
     public int id;
+
+    /**
+     * Khu vực (zone) mà quái vật thuộc về.
+     */
     public Zone zone;
+
+    /**
+     * ID mẫu của quái vật.
+     */
     public int tempId;
+
+    /**
+     * Tên của quái vật.
+     */
     public String name;
+
+    /**
+     * Cấp độ của quái vật.
+     */
     public byte level;
 
+    /**
+     * Đối tượng quản lý chỉ số (HP, dame) của quái vật.
+     */
     public MobPoint point;
+
+    /**
+     * Đối tượng quản lý hiệu ứng kỹ năng của quái vật.
+     */
     public MobEffectSkill effectSkill;
+
+    /**
+     * Vị trí của quái vật trong bản đồ.
+     */
     public Location location;
 
+    /**
+     * Phần trăm sát thương của quái vật.
+     */
     public byte pDame;
+
+    /**
+     * Phần trăm tiềm năng nhận được khi đánh bại quái vật.
+     */
     public int pTiemNang;
+
+    /**
+     * Tiềm năng tối đa của quái vật.
+     */
     private long maxTiemNang;
 
+    /**
+     * Thời gian quái vật chết gần nhất.
+     */
     public long lastTimeDie;
+
+    /**
+     * Cấp độ siêu quái (nếu > 0, là siêu quái).
+     */
     public int lvMob = 0;
+
+    /**
+     * Trạng thái của quái vật (mặc định là 5).
+     */
     public int status = 5;
 
+    /**
+     * Xác định xem đây có phải là Mob Me (quái vật được triệu hồi bởi người
+     * chơi) hay không.
+     */
     public boolean isMobMe;
 
+    /**
+     * Constructor sao chép một quái vật từ một đối tượng Mob khác.
+     *
+     * @param mob Quái vật để sao chép
+     */
     public Mob(Mob mob) {
         this.point = new MobPoint(this);
         this.effectSkill = new MobEffectSkill(this);
@@ -70,26 +137,51 @@ public class Mob {
         this.setTiemNang();
     }
 
+    /**
+     * Constructor mặc định khởi tạo quái vật với các thuộc tính cơ bản.
+     */
     public Mob() {
         this.point = new MobPoint(this);
         this.effectSkill = new MobEffectSkill(this);
         this.location = new Location();
     }
 
+    /**
+     * Thiết lập tiềm năng tối đa của quái vật dựa trên HP và phần trăm tiềm
+     * năng.
+     */
     public void setTiemNang() {
         this.maxTiemNang = (long) this.point.getHpFull() * (this.pTiemNang + Util.nextInt(-2, 2)) / 100;
     }
 
+    /**
+     * Khởi tạo chỉ số cho quái vật trong Bản Đồ Kho Báu.
+     *
+     * @param mob Quái vật cần khởi tạo
+     * @param level Cấp độ của quái vật
+     */
     public static void initMobBanDoKhoBau(Mob mob, byte level) {
         mob.point.dame = level * 3250 * mob.level * 4;
         mob.point.maxHp = level * 12472 * mob.level * 2 + level * 7263 * mob.tempId;
     }
 
+    /**
+     * Khởi tạo chỉ số cho quái vật trong bản đồ Khí Gas.
+     *
+     * @param mob Quái vật cần khởi tạo
+     * @param level Cấp độ của quái vật
+     */
     public static void initMopbKhiGas(Mob mob, int level) {
         mob.point.maxHp = 20000000 * level;
         mob.point.dame = 10000 * level;
     }
 
+    /**
+     * Hồi sinh quái vật, đặt lại HP và gửi thông báo đến tất cả người chơi
+     * trong bản đồ.
+     *
+     * @param mob Quái vật cần hồi sinh
+     */
     public static void hoiSinhMob(Mob mob) {
         mob.point.hp = mob.point.maxHp;
         mob.setTiemNang();
@@ -107,16 +199,36 @@ public class Mob {
         }
     }
 
+    /**
+     * Thời gian gần nhất quái vật tấn công người chơi.
+     */
     private long lastTimeAttackPlayer;
 
+    /**
+     * Kiểm tra xem quái vật đã chết hay chưa.
+     *
+     * @return True nếu quái vật đã chết, false nếu còn sống
+     */
     public boolean isDie() {
         return this.point.gethp() <= 0;
     }
 
+    /**
+     * Kiểm tra xem quái vật có phải là siêu quái hay không.
+     *
+     * @return True nếu là siêu quái, false nếu không
+     */
     public boolean isSieuQuai() {
         return this.lvMob > 0;
     }
 
+    /**
+     * Xử lý quái vật bị tấn công và nhận sát thương từ người chơi.
+     *
+     * @param plAtt Người chơi tấn công
+     * @param damage Sát thương gây ra
+     * @param dieWhenHpFull Có cho phép chết khi HP đầy hay không
+     */
     public synchronized void injured(Player plAtt, int damage, boolean dieWhenHpFull) {
         if (!this.isDie()) {
             if (damage >= this.point.hp) {
@@ -175,6 +287,13 @@ public class Mob {
         }
     }
 
+    /**
+     * Tính tiềm năng nhận được cho người chơi dựa trên sát thương và cấp độ.
+     *
+     * @param pl Người chơi
+     * @param dame Sát thương gây ra
+     * @return Số tiềm năng nhận được
+     */
     public long getTiemNangForPlayer(Player pl, long dame) {
         int levelPlayer = Service.gI().getCurrLevel(pl);
         int n = levelPlayer - this.level;
@@ -210,6 +329,12 @@ public class Mob {
         return tiemNang;
     }
 
+    /**
+     * Kiểm tra xem người chơi có tồn tại trong khu vực của quái vật hay không.
+     *
+     * @param CharID ID của người chơi
+     * @return True nếu người chơi tồn tại, false nếu không
+     */
     public boolean FindChar(int CharID) {
         List<Player> players = this.zone.getPlayers();
         for (int i = 0; i < players.size(); i++) {
@@ -221,6 +346,10 @@ public class Mob {
         return false;
     }
 
+    /**
+     * Cập nhật trạng thái của quái vật, bao gồm hồi sinh, tấn công người chơi
+     * và cập nhật hiệu ứng kỹ năng.
+     */
     public void update() {
         if (this.isDie() && !Maintenance.isRuning) {
             switch (zone.map.type) {
@@ -267,6 +396,9 @@ public class Mob {
         attackPlayer();
     }
 
+    /**
+     * Thực hiện hành động tấn công người chơi của quái vật.
+     */
     private void attackPlayer() {
         if (!isDie() && !effectSkill.isHaveEffectSkill() && !(tempId == 0)) {
 
@@ -304,6 +436,12 @@ public class Mob {
         }
     }
 
+    /**
+     * Gửi thông báo quái vật tấn công nhóm người chơi trong Bản Đồ Kho Báu.
+     *
+     * @param players Danh sách người chơi bị tấn công
+     * @param dame Sát thương gây ra
+     */
     private void sendMobBossBdkbAttack(List<Player> players, long dame) {
         if (this.tempId == 72) {
             try {
@@ -340,6 +478,11 @@ public class Mob {
         }
     }
 
+    /**
+     * Lấy danh sách người chơi có thể bị tấn công bởi quái vật.
+     *
+     * @return Danh sách người chơi hợp lệ
+     */
     private List<Player> getListPlayerCanAttack() {
         List<Player> plAttack = new ArrayList<>();
         int distance = (this.tempId == 71 ? 250 : 600);
@@ -360,6 +503,11 @@ public class Mob {
         return plAttack;
     }
 
+    /**
+     * Lấy người chơi gần nhất có thể bị tấn công bởi quái vật.
+     *
+     * @return Người chơi hợp lệ hoặc null nếu không tìm thấy
+     */
     private Player getPlayerCanAttack() {
         int distance = 100;
         Player plAttack = null;
@@ -383,6 +531,11 @@ public class Mob {
     }
 
     //**************************************************************************
+    /**
+     * Quái vật tấn công một người chơi và gây sát thương.
+     *
+     * @param player Người chơi bị tấn công
+     */
     private void mobAttackPlayer(Player player) {
         int dameMob = this.point.getDameAttack();
         if (player.charms.tdDaTrau > System.currentTimeMillis()) {
@@ -396,6 +549,13 @@ public class Mob {
         this.sendMobAttackPlayer(player);
     }
 
+    /**
+     * Gửi thông báo quái vật tấn công người chơi (góc nhìn của người chơi bị
+     * tấn công).
+     *
+     * @param player Người chơi bị tấn công
+     * @param dame Sát thương gây ra
+     */
     private void sendMobAttackMe(Player player, int dame) {
         if (!player.isPet && !player.isNewPet) {
             Message msg;
@@ -411,6 +571,12 @@ public class Mob {
         }
     }
 
+    /**
+     * Gửi thông báo quái vật tấn công người chơi đến các người chơi khác trong
+     * bản đồ.
+     *
+     * @param player Người chơi bị tấn công
+     */
     private void sendMobAttackPlayer(Player player) {
         Message msg;
         try {
@@ -425,18 +591,27 @@ public class Mob {
         }
     }
 
+    /**
+     * Ngẫu nhiên hóa quái vật thành siêu quái với tỷ lệ nhỏ.
+     */
     public void randomSieuQuai() {
         if (this.tempId != 0 && MapService.gI().isMapKhongCoSieuQuai(this.zone.map.mapId) && Util.nextInt(0, 150) < 1) {
             this.lvMob = 1;
         }
     }
 
+    /**
+     * Hồi sinh quái vật, đặt lại trạng thái và HP.
+     */
     public void hoiSinh() {
         this.status = 5;
         this.point.hp = this.point.maxHp;
         this.setTiemNang();
     }
 
+    /**
+     * Gửi thông báo hồi sinh quái vật đến tất cả người chơi trong bản đồ.
+     */
     public void sendMobHoiSinh() {
         Message msg;
         try {
@@ -453,6 +628,12 @@ public class Mob {
     }
 
     //**************************************************************************
+    /**
+     * Gửi thông báo quái vật chết sau khi bị tấn công và thả phần thưởng.
+     *
+     * @param plKill Người chơi tiêu diệt quái vật
+     * @param dameHit Sát thương cuối cùng
+     */
     private void sendMobDieAffterAttacked(Player plKill, int dameHit) {
         Message msg;
         try {
@@ -469,6 +650,13 @@ public class Mob {
         }
     }
 
+    /**
+     * Gửi thông báo quái vật chết sau khi bị Mob Me tấn công và thả phần
+     * thưởng.
+     *
+     * @param plKill Người chơi tiêu diệt quái vật
+     * @param dameHit Sát thương cuối cùng
+     */
     public void sendMobDieAfterMobMeAttacked(Player plKill, int dameHit) {
         this.status = 0;
         Message msg;
@@ -502,6 +690,12 @@ public class Mob {
         this.lastTimeDie = System.currentTimeMillis();
     }
 
+    /**
+     * Xử lý việc nhặt vật phẩm tự động nếu người chơi có charm thu hút.
+     *
+     * @param player Người chơi nhận vật phẩm
+     * @param items Danh sách vật phẩm thả ra
+     */
     private void hutItem(Player player, List<ItemMap> items) {
         if (!player.isPet && !player.isNewPet) {
             if (player.charms.tdThuHut > System.currentTimeMillis()) {
@@ -522,6 +716,14 @@ public class Mob {
         }
     }
 
+    /**
+     * Tạo danh sách vật phẩm phần thưởng khi quái vật bị tiêu diệt.
+     *
+     * @param player Người chơi tiêu diệt quái vật
+     * @param itemTask Vật phẩm nhiệm vụ
+     * @param msg Thông báo gửi đến client
+     * @return Danh sách vật phẩm phần thưởng
+     */
     private List<ItemMap> mobReward(Player player, ItemMap itemTask, Message msg) {
         List<ItemMap> itemReward = new ArrayList<>();
         try {
@@ -533,15 +735,15 @@ public class Mob {
             if (itemTask != null) {
                 itemReward.add(itemTask);
             }
-            //   for (ItemMap itemMap : itemReward) {
-            //      if (itemMap.itemTemplate.type <= 4 && itemMap.itemTemplate.name.contains("Thần")) {
-            //          itemReward.remove(itemMap);
-            //      }
-            // }
-//            if (Util.isTrue(2, 100)) {
-//                ItemMap mvbt = new ItemMap(this.zone, Util.nextInt(649,649), 1, this.location.x, this.location.y, player.id);
-//                itemReward.add(mvbt);
-//            }            // ti le roi do su kien lavie trung thu
+            for (ItemMap itemMap : itemReward) {
+                if (itemMap.itemTemplate.type <= 4 && itemMap.itemTemplate.name.contains("Thần")) {
+                    itemReward.remove(itemMap);
+                }
+            }
+            if (Util.isTrue(2, 100)) {
+                ItemMap mvbt = new ItemMap(this.zone, Util.nextInt(649, 649), 1, this.location.x, this.location.y, player.id);
+                itemReward.add(mvbt);
+            }            // ti le roi do su kien lavie trung thu
             if (Util.isTrue(1, 100000)) {
                 if (MapService.gI().isMapCold(player.zone.map)) {
                     byte randomDo = (byte) new Random().nextInt(Manager.itemIds_TL.length - 1);
@@ -567,10 +769,24 @@ public class Mob {
         return itemReward;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ bắt đầu hay không.
+     *
+     * @param mapid ID của bản đồ
+     * @return True nếu là bản đồ bắt đầu, false nếu không
+     */
     private boolean MapStart(int mapid) {
         return mapid == 0 || mapid == 1 || mapid == 2 || mapid == 7 || mapid == 8 || mapid == 9 || mapid == 14 || mapid == 15 || mapid == 16;
     }
 
+    /**
+     * Tạo danh sách vật phẩm phần thưởng khi quái vật bị tiêu diệt.
+     *
+     * @param player Người chơi tiêu diệt quái vật
+     * @param x Tọa độ X
+     * @param yEnd Tọa độ Y
+     * @return Danh sách vật phẩm phần thưởng
+     */
     public List<ItemMap> getItemMobReward(Player player, int x, int yEnd) {
         List<ItemMap> list = new ArrayList<>();
         MobReward mobReward = Manager.MOB_REWARDS.get(this.tempId);
@@ -598,7 +814,7 @@ public class Mob {
                 list.add(itemMap);
             }
         }
-        
+
         if (player.itemTime.isUseMayDo && Util.isTrue(5, 100) && this.tempId > 57 && this.tempId < 66) {
             list.add(new ItemMap(zone, 380, 1, x, player.location.y, player.id));
         }// vat phẩm rơi khi user maaáy dò adu hoa r o day ti code choa
@@ -615,10 +831,11 @@ public class Mob {
                 list.add(new ItemMap(zone, 1279, 1, x, player.location.y, player.id));
             }
         }
-        //    if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId <= 159 && player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2) {
-//        if (Util.isTrue(10, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, 2076, 1, x, player.location.y, player.id));}
-        //    }
+        if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId <= 159 && player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2) {
+            if (Util.isTrue(10, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, 2076, 1, x, player.location.y, player.id));
+            }
+        }
         if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId
                 <= 159) {
             if (Util.isTrue(10, 100)) {    //up bí kíp
@@ -700,7 +917,7 @@ public class Mob {
                         + Quanthanlinh.template.name);
             }
         }
-        
+
         if (this.zone.map.mapId >= 105 && this.zone.map.mapId <= 110) {
             if (Util.isTrue(1, 50000)) {
                 Item Quanthanlinhnm = ItemService.gI().createNewItem((short) (558));
@@ -747,142 +964,142 @@ public class Mob {
                         + Giaythanlinhxd.template.name);
             }
         }
-//        if (this.tempId>0 && this.zone.map.mapId>=156 && this.zone.map.mapId<=159 && player.fusion.typeFusion==ConstPlayer.HOP_THE_PORATA3){
-//        if (Util.isTrue(10, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, 2077, 1, x, player.location.y, player.id));}}
-//        if (this.tempId>0 && this.zone.map.mapId>=156 && this.zone.map.mapId<=159 && player.fusion.typeFusion==ConstPlayer.HOP_THE_PORATA3){
-//        if (Util.isTrue(10, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, 2036, 1, x, player.location.y, player.id));}}
-//        if (this.tempId>0 && this.zone.map.mapId>=156 && this.zone.map.mapId<=159 && player.fusion.typeFusion==ConstPlayer.HOP_THE_PORATA4){
-//        if (Util.isTrue(10, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, 2036, 1, x, player.location.y, player.id));}}
-//        if (player.setClothes.setGod() && this.zone.map.mapId>=105 && this.zone.map.mapId<=111){
-//        if (Util.isTrue(10, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, Util.nextInt(663,667), 1, x, player.location.y, player.id));}
-//        }
-//        if (player.setClothes.setGod14() && this.zone.map.mapId== 155){
-//        if (Util.isTrue(5, 100)) {    //up bí kíp
-//            list.add(new ItemMap(zone, Util.nextInt(1066,1070), 1, x, player.location.y, player.id));}
-//        }
-
-//        Item item = player.inventory.itemsBody.get(11); tu dau nhe lavie
-//        if (this.zone.map.mapId > 0) {
-//            if (item.isNotNullItem()) {
-//                if (item.template.id == 2081) {
-//                    if (Util.isTrue(15, 100)) {    //up bí kíp
-//                        list.add(new ItemMap(zone, Util.nextInt(2083, 2083), 1, x, player.location.y, player.id));
-//                    }
-//                } else if (item.template.id != 2081) {
-//                    if (Util.isTrue(0, 1)) {
-//                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-//                    }
-//                }
-//            }
-//        }
-//        if (this.zone.map.mapId >= 0) {
-//            if (item.isNotNullItem()) {
-//                if (item.template.id == 2085) {
-//                    if (Util.isTrue(10, 100)) {    //up bí kíp
-//                        list.add(new ItemMap(zone, Util.nextInt(1004, 1004), 1, x, player.location.y, player.id));
-//                    }
-//                } else if (item.template.id != 2084) {
-//                    if (Util.isTrue(0, 1)) {
-//                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-//                    }
-//                }
-//            }
-//        }day lavie
-//        if (this.zone.map.mapId > 0) {
-//            if (item.isNotNullItem()) {
-//                if (item.template.id == 693) {
-//                    if (Util.isTrue(10, 100)) {    //up bí kíp
-//                        list.add(new ItemMap(zone, Util.nextInt(19, 20), 1, x, player.location.y, player.id));
-//                    }
-//                } else if (item.template.id != 691 && item.template.id != 692 && item.template.id != 693) {
-//                    if (Util.isTrue(0, 1)) {
-//                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-//                    }
-//                }
-//            }
-//        }
-            for (Item item : player.inventory.itemsBody) {
-                if (this.zone.map.mapId >= 0) {
-                    if (item.isNotNullItem()) {
-                        if (item.template.id == 2081) {
-                            if (Util.isTrue(100, 100)) {
-                                list.add(new ItemMap(zone, Util.nextInt(2083, 2083), 1, x, player.location.y, player.id));
-                            }
-                        } else if (item.template.id != 2081) {
-                            if (Util.isTrue(0, 1)) {
-                                list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-                            }
-                        }
-                    }
-                }
-                if (this.zone.map.mapId >= 0) {
-                    if (item.isNotNullItem()) {
-                        if (item.template.id == 2081) {
-                            if (Util.isTrue(100, 100)) {
-                                list.add(new ItemMap(zone, Util.nextInt(1280, 1280), 1, x, player.location.y, player.id));
-                            }
-                        } else if (item.template.id != 2081) {
-                            if (Util.isTrue(0, 1)) {
-                                list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-                            }
-                        }
-                    }
-                }
-                if (this.zone.map.mapId >= 0) {
-                    if (item.isNotNullItem()) {
-                        if (item.template.id == 1411) {
-                            if (Util.isTrue(10, 100)) {    //up bí kíp
-                                list.add(new ItemMap(zone, Util.nextInt(1004, 1004), 1, x, player.location.y, player.id));
-                            }
-                        } else if (item.template.id != 1411) {
-                            if (Util.isTrue(0, 1)) {
-                                list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
-                            }
-                        }
-                    }
-                }
+        if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId <= 159 && player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA3) {
+            if (Util.isTrue(10, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, 2077, 1, x, player.location.y, player.id));
             }
-
-            if (this.zone.map.mapId
-                    == 250 && Util.isTrue(
-                            3, 100)) {
-                ItemMap itemx = new ItemMap(zone, 2000 + player.gender, 1, x, player.location.y, player.id);
-                list.add(itemx);
+        }
+        if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId <= 159 && player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA3) {
+            if (Util.isTrue(10, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, 2036, 1, x, player.location.y, player.id));
             }
-            if (player.zone != null && player.zone.map
-                    != null && MapService.gI()
-                    .isMapBanDoKhoBau(player.zone.map.mapId)) {
-                if (player.clan != null && player.clan.BanDoKhoBau != null) {
-                    int level = player.clan.BanDoKhoBau.level;
-                    int slhn = Util.nextInt(1, 3) * (level / 10);
-                    slhn = slhn < 5 ? 5 : slhn;
-                    if (Util.nextInt(0, 100) < 100) {
-
-                        list.add(new ItemMap(zone, 861, slhn, x, player.location.y, player.id));
-                    }
-                }
+        }
+        if (this.tempId > 0 && this.zone.map.mapId >= 156 && this.zone.map.mapId <= 159 && player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA4) {
+            if (Util.isTrue(10, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, 2036, 1, x, player.location.y, player.id));
             }
-            return list;
+        }
+        if (player.setClothes.setThanLinh() && this.zone.map.mapId >= 105 && this.zone.map.mapId <= 111) {
+            if (Util.isTrue(10, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, Util.nextInt(663, 667), 1, x, player.location.y, player.id));
+            }
+        }
+        if (player.setClothes.setHuyDiet() && this.zone.map.mapId == 155) {
+            if (Util.isTrue(5, 100)) {    //up bí kíp
+                list.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, player.location.y, player.id));
+            }
         }
 
-    
+        Item item = player.inventory.itemsBody.get(11);
+        if (this.zone.map.mapId > 0) {
+            if (item.isNotNullItem()) {
+                if (item.template.id == 2081) {
+                    if (Util.isTrue(15, 100)) {    //up bí kíp
+                        list.add(new ItemMap(zone, Util.nextInt(2083, 2083), 1, x, player.location.y, player.id));
+                    }
+                } else if (item.template.id != 2081) {
+                    if (Util.isTrue(0, 1)) {
+                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                    }
+                }
+            }
+        }
+        if (this.zone.map.mapId >= 0) {
+            if (item.isNotNullItem()) {
+                if (item.template.id == 2085) {
+                    if (Util.isTrue(10, 100)) {    //up bí kíp
+                        list.add(new ItemMap(zone, Util.nextInt(1004, 1004), 1, x, player.location.y, player.id));
+                    }
+                } else if (item.template.id != 2084) {
+                    if (Util.isTrue(0, 1)) {
+                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                    }
+                }
+            }
+        }
+        if (this.zone.map.mapId > 0) {
+            if (item.isNotNullItem()) {
+                if (item.template.id == 693) {
+                    if (Util.isTrue(10, 100)) {    //up bí kíp
+                        list.add(new ItemMap(zone, Util.nextInt(19, 20), 1, x, player.location.y, player.id));
+                    }
+                } else if (item.template.id != 691 && item.template.id != 692 && item.template.id != 693) {
+                    if (Util.isTrue(0, 1)) {
+                        list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                    }
+                }
+            }
+        }
+        for (Item bodyItem : player.inventory.itemsBody) {
+            if (this.zone.map.mapId >= 0) {
+                if (bodyItem.isNotNullItem()) {
+                    if (bodyItem.template.id == 2081) {
+                        if (Util.isTrue(100, 100)) {
+                            list.add(new ItemMap(zone, Util.nextInt(2083, 2083), 1, x, player.location.y, player.id));
+                        }
+                    } else if (bodyItem.template.id != 2081) {
+                        if (Util.isTrue(0, 1)) {
+                            list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                        }
+                    }
+                }
+            }
+            if (this.zone.map.mapId >= 0) {
+                if (bodyItem.isNotNullItem()) {
+                    if (bodyItem.template.id == 2081) {
+                        if (Util.isTrue(100, 100)) {
+                            list.add(new ItemMap(zone, Util.nextInt(1280, 1280), 1, x, player.location.y, player.id));
+                        }
+                    } else if (bodyItem.template.id != 2081) {
+                        if (Util.isTrue(0, 1)) {
+                            list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                        }
+                    }
+                }
+            }
+            if (this.zone.map.mapId >= 0) {
+                if (bodyItem.isNotNullItem()) {
+                    if (bodyItem.template.id == 1411) {
+                        if (Util.isTrue(10, 100)) {    //up bí kíp
+                            list.add(new ItemMap(zone, Util.nextInt(1004, 1004), 1, x, player.location.y, player.id));
+                        }
+                    } else if (bodyItem.template.id != 1411) {
+                        if (Util.isTrue(0, 1)) {
+                            list.add(new ItemMap(zone, 76, 1, x, player.location.y, player.id));
+                        }
+                    }
+                }
+            }
+        }
 
-    
+        if (this.zone.map.mapId
+                == 250 && Util.isTrue(
+                        3, 100)) {
+            ItemMap itemx = new ItemMap(zone, 2000 + player.gender, 1, x, player.location.y, player.id);
+            list.add(itemx);
+        }
+        if (player.zone != null && player.zone.map
+                != null && MapService.gI()
+                        .isMapBanDoKhoBau(player.zone.map.mapId)) {
+            if (player.clan != null && player.clan.BanDoKhoBau != null) {
+                int level = player.clan.BanDoKhoBau.level;
+                int slhn = Util.nextInt(1, 3) * (level / 10);
+                slhn = slhn < 5 ? 5 : slhn;
+                if (Util.nextInt(0, 100) < 100) {
 
-    
+                    list.add(new ItemMap(zone, 861, slhn, x, player.location.y, player.id));
+                }
+            }
+        }
+        return list;
+    }
 
-    
-
-    
-
-    
-
-    
-
+    /**
+     * Thả vật phẩm nhiệm vụ khi quái vật bị tiêu diệt.
+     *
+     * @param player Người chơi tiêu diệt quái vật
+     * @return Vật phẩm nhiệm vụ hoặc null nếu không có
+     */
     private ItemMap dropItemTask(Player player) {
         ItemMap itemMap = null;
         switch (this.tempId) {
@@ -900,6 +1117,12 @@ public class Mob {
         return null;
     }
 
+    /**
+     * Gửi thông báo quái vật còn sống sau khi bị tấn công.
+     *
+     * @param dameHit Sát thương gây ra
+     * @param crit Có phải đòn chí mạng hay không
+     */
     private void sendMobStillAliveAffterAttacked(int dameHit, boolean crit) {
         Message msg;
         try {
