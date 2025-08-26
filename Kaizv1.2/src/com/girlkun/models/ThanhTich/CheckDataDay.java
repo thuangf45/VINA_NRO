@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 
 /**
  * Xử lý dữ liệu thành tích/ngày của người chơi
+ * @author Lucifer
  */
 public class CheckDataDay {
 
