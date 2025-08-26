@@ -14,10 +14,25 @@ import com.girlkun.utils.Logger;
 import com.girlkun.utils.SkillUtil;
 import com.girlkun.utils.Util;
 
+/**
+ * Lớp đại diện cho boss Trung Úy Xanh Lơ trong sự kiện Bản Đồ Kho Báu (BDKB).
+ * @author Lucifer
+ */
 public class TrungUyXanhLo extends Boss {
 
+    /**
+     * Mảng chứa các kỹ năng DEMON với các cấp độ từ 1 đến 7.
+     */
     private static final int[][] FULL_DEMON = new int[][]{{Skill.DEMON, 1}, {Skill.DEMON, 2}, {Skill.DEMON, 3}, {Skill.DEMON, 4}, {Skill.DEMON, 5}, {Skill.DEMON, 6}, {Skill.DEMON, 7}};
 
+    /**
+     * Constructor khởi tạo boss Trung Úy Xanh Lơ với khu vực, cấp độ, sát thương và máu.
+     * @param zone Khu vực mà boss xuất hiện
+     * @param level Cấp độ của boss
+     * @param dame Sát thương cơ bản của boss
+     * @param hp Máu cơ bản của boss
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     public TrungUyXanhLo(Zone zone, int level, int dame, int hp) throws Exception {
         super(BossID.TRUNG_UY_TRANG, new BossData(
                 "Trung úy xanh lơ",
@@ -35,19 +50,28 @@ public class TrungUyXanhLo extends Boss {
         this.zone = zone;
     }
 
+    /**
+     * Xử lý phần thưởng khi người chơi tiêu diệt boss Trung Úy Xanh Lơ.
+     * @param plKill Người chơi đã tiêu diệt boss
+     */
     @Override
     public void reward(Player plKill) {
         ItemMap it = new ItemMap(this.zone, 17, 7, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
                 this.location.y - 24), plKill.id);
         Service.getInstance().dropItemMap(this.zone, it);
-
     }
 
+    /**
+     * Kích hoạt hành vi của boss Trung Úy Xanh Lơ.
+     */
     @Override
     public void active() {
         super.active();
     }
 
+    /**
+     * Thêm boss Trung Úy Xanh Lơ vào bản đồ với tọa độ cụ thể.
+     */
     @Override
     public void joinMap() {
         if (zoneFinal != null) {
@@ -56,6 +80,9 @@ public class TrungUyXanhLo extends Boss {
         }
     }
 
+    /**
+     * Xóa boss Trung Úy Xanh Lơ khỏi bản đồ và thực hiện dọn dẹp tài nguyên.
+     */
     @Override
     public void leaveMap() {
         BossManager.gI().removeBoss(this);
@@ -63,6 +90,9 @@ public class TrungUyXanhLo extends Boss {
         ChangeMapService.gI().exitMap(this);
     }
 
+    /**
+     * Thực hiện hành động tấn công của boss Trung Úy Xanh Lơ.
+     */
     public void attack() {
         if (Util.canDoWithTime(this.lastTimeAttack, 100) && this.typePk == ConstPlayer.PK_ALL) {
             this.lastTimeAttack = System.currentTimeMillis();
@@ -71,8 +101,7 @@ public class TrungUyXanhLo extends Boss {
                 if (pl == null || pl.isDie()) {
                     return;
                 }
-                if (pl.location.x > 50 && pl.location.x < 800 && pl.location.y > 300)
-                {
+                if (pl.location.x > 50 && pl.location.x < 800 && pl.location.y > 300) {
                     this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, this.playerSkill.skills.size() - 1));
                     if (Util.getDistance(this, pl) <= 200) {
                         if (Util.isTrue(5, 10)) {
@@ -92,11 +121,14 @@ public class TrungUyXanhLo extends Boss {
                 }
             } catch (Exception ex) {
                 Logger.logException(Boss.class, ex);
-                         
             }
         }
     }
 
+    /**
+     * Lấy người chơi mục tiêu để boss Trung Úy Xanh Lơ tấn công.
+     * @return Người chơi mục tiêu hoặc null nếu không tìm thấy
+     */
     @Override
     public Player getPlayerAttack() {
         if (this.playerTarger != null && (this.playerTarger.isDie() || !this.zone.equals(this.playerTarger.zone))) {
