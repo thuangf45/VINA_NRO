@@ -969,8 +969,7 @@ public class GodGK {
                             for (int j = 0; j < options.size(); j++) {
                                 JSONArray opt = (JSONArray) jv.parse(String.valueOf(options.get(j)));
                                 item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
-                                        Integer.parseInt(String.valueOf(opt.get(1)))))
-                                        ;
+                                        Integer.parseInt(String.valueOf(opt.get(1)))));
                             }
                             item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                             if (ItemService.gI().isOutOfDateTime(item)) {
@@ -1699,4 +1698,224 @@ public class GodGK {
         }
         return player;
     }
+
+    public static List<Player> getAllPlayer() {
+        try {
+            List<Player> players = new ArrayList<>();
+            GirlkunResultSet rs = null;
+            try {
+                Player player = new Player();
+                rs = GirlkunDB.executeQuery("select * from player");
+                while (rs.next()) {
+                    int plHp = 200000000;
+                    int plMp = 200000000;
+                    JSONValue jv = new JSONValue();
+                    JSONArray dataArray = null;
+
+                    player = new Player();
+
+                    //base info
+                    player.id = rs.getInt("id");
+                    player.name = rs.getString("name");
+                    player.head = rs.getShort("head");
+                    player.gender = rs.getByte("gender");
+                    player.haveTennisSpaceShip = rs.getBoolean("have_tennis_space_ship");
+
+                    //data body
+                    dataArray = (JSONArray) jv.parse(rs.getString("item_mails_box"));
+                    for (int i = 0; i < dataArray.size(); i++) {
+                        Item item = null;
+                        JSONArray dataItem = (JSONArray) jv.parse(dataArray.get(i).toString());
+                        short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
+                        if (tempId != -1) {
+                            item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                            JSONArray options = (JSONArray) jv.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
+                            for (int j = 0; j < options.size(); j++) {
+                                JSONArray opt = (JSONArray) jv.parse(String.valueOf(options.get(j)));
+                                item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
+                                        Integer.parseInt(String.valueOf(opt.get(1)))));
+                            }
+                            item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
+                            if (ItemService.gI().isOutOfDateTime(item)) {
+                                item = ItemService.gI().createItemNull();
+                            }
+                        } else {
+                            item = ItemService.gI().createItemNull();
+                        }
+                        player.inventory.itemsMailBox.add(item);
+                    }
+                    dataArray.clear();
+                    player.nPoint.hp = plHp;
+                    player.nPoint.mp = plMp;
+                    player.iDMark.setLoadedAllDataPlayer(true);
+                    players.add(player);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (rs != null) {
+                    rs.dispose();
+                }
+            }
+
+            return players;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean updateMailBox(Player player) {
+        try {
+            JSONArray dataArray = new JSONArray();
+            JSONArray dataItem = new JSONArray();
+            for (Item item : player.inventory.itemsMailBox) {
+                JSONArray opt = new JSONArray();
+                if (item.isNotNullItem()) {
+                    dataItem.add(item.template.id);
+                    dataItem.add(item.quantity);
+                    JSONArray options = new JSONArray();
+                    for (Item.ItemOption io : item.itemOptions) {
+                        opt.add(io.optionTemplate.id);
+                        opt.add(io.param);
+                        options.add(opt.toJSONString());
+                        opt.clear();
+                    }
+                    dataItem.add(options.toJSONString());
+                } else {
+                    dataItem.add(-1);
+                    dataItem.add(0);
+                    dataItem.add(opt.toJSONString());
+                }
+                dataItem.add(item.createTime);
+                dataArray.add(dataItem.toJSONString());
+                dataItem.clear();
+            }
+            String itemsBox = dataArray.toJSONString();
+            dataArray.clear();
+            PreparedStatement ps = null;
+            Connection con = GirlkunDB.getConnection();
+            ps = con.prepareStatement("update `player` set item_mails_box = ? where id = ?");
+            ps.setString(1, itemsBox);
+            ps.setLong(2, player.id);
+            ps.executeUpdate();
+            ps.close();
+            con.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<Item> getMailBox(Player player) {
+        try {
+            List<Item> mailBoxs = new ArrayList<>();
+            JSONValue jv = new JSONValue();
+            JSONArray dataArray = null;
+            player.inventory.itemsMailBox.clear();
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            Connection con = GirlkunDB.getConnection();
+            ps = con.prepareStatement("select `item_mails_box` from player where id = ?");
+            ps.setLong(1, player.id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                dataArray = (JSONArray) JSONValue.parse(rs.getString("item_mails_box"));
+                for (int i = 0; i < dataArray.size(); i++) {
+                    Item item = null;
+                    JSONArray dataItem = (JSONArray) JSONValue.parse(dataArray.get(i).toString());
+                    short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
+                    if (tempId != -1) {
+                        item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                        JSONArray options = (JSONArray) JSONValue.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
+                        for (int j = 0; j < options.size(); j++) {
+                            JSONArray opt = (JSONArray) JSONValue.parse(String.valueOf(options.get(j)));
+                            item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
+                                    Integer.parseInt(String.valueOf(opt.get(1)))));
+                        }
+                        item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
+                        if (ItemService.gI().isOutOfDateTime(item)) {
+                            item = ItemService.gI().createItemNull();
+                        }
+                    } else {
+                        item = ItemService.gI().createItemNull();
+                    }
+                    mailBoxs.add(item);
+                }
+                dataArray.clear();
+            }
+            rs.close();
+            ps.close();
+            con.close();
+            return mailBoxs;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Player loadPlayerByName(String name) {
+        Player player = null;
+        GirlkunResultSet rs = null;
+        try {
+            rs = GirlkunDB.executeQuery("select * from player where name = ? limit 1", name);
+            if (rs.first()) {
+                int plHp = 200000000;
+                int plMp = 200000000;
+                JSONValue jv = new JSONValue();
+                JSONArray dataArray = null;
+
+                player = new Player();
+
+                //base info
+                player.id = rs.getInt("id");
+                player.name = rs.getString("name");
+                player.head = rs.getShort("head");
+                player.gender = rs.getByte("gender");
+                player.haveTennisSpaceShip = rs.getBoolean("have_tennis_space_ship");
+
+                //data body
+                dataArray = (JSONArray) jv.parse(rs.getString("item_mails_box"));
+                for (int i = 0; i < dataArray.size(); i++) {
+                    Item item = null;
+                    JSONArray dataItem = (JSONArray) jv.parse(dataArray.get(i).toString());
+                    short tempId = Short.parseShort(String.valueOf(dataItem.get(0)));
+                    if (tempId != -1) {
+                        item = ItemService.gI().createNewItem(tempId, Integer.parseInt(String.valueOf(dataItem.get(1))));
+                        JSONArray options = (JSONArray) jv.parse(String.valueOf(dataItem.get(2)).replaceAll("\"", ""));
+                        for (int j = 0; j < options.size(); j++) {
+                            JSONArray opt = (JSONArray) jv.parse(String.valueOf(options.get(j)));
+                            item.itemOptions.add(new Item.ItemOption(Integer.parseInt(String.valueOf(opt.get(0))),
+                                    Integer.parseInt(String.valueOf(opt.get(1)))));
+                        }
+                        item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
+                        if (ItemService.gI().isOutOfDateTime(item)) {
+                            item = ItemService.gI().createItemNull();
+                        }
+                    } else {
+                        item = ItemService.gI().createItemNull();
+                    }
+                    player.inventory.itemsMailBox.add(item);
+                }
+                dataArray.clear();
+                player.nPoint.hp = plHp;
+                player.nPoint.mp = plMp;
+                player.iDMark.setLoadedAllDataPlayer(true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            player.dispose();
+            player = null;
+            Logger.logException(GodGK.class, e);
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
+        }
+        return player;
+    }
+
 }
