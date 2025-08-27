@@ -14,21 +14,44 @@ import com.girlkun.utils.Util;
 
 import java.util.List;
 
-
+/**
+ * Lớp quản lý các hoạt động liên quan đến cửa hàng trong game, bao gồm mở cửa hàng, mua và bán vật phẩm.
+ * @author Lucifer
+ */
 public class ShopServiceNew {
 
+    /** Hằng số đại diện cho loại thanh toán bằng vàng. */
     private static final byte COST_GOLD = 0;
+
+    /** Hằng số đại diện cho loại thanh toán bằng ngọc lục bảo. */
     private static final byte COST_GEM = 1;
+
+    /** Hằng số đại diện cho loại thanh toán bằng vật phẩm đặc biệt. */
     private static final byte COST_ITEM_SPEC = 2;
+
+    /** Hằng số đại diện cho loại thanh toán bằng hồng ngọc. */
     private static final byte COST_RUBY = 3;
+
+    /** Hằng số đại diện cho loại thanh toán bằng phiếu giảm giá. */
     private static final byte COST_COUPON = 4;
 
+    /** Hằng số đại diện cho cửa hàng thông thường. */
     private static final byte NORMAL_SHOP = 0;
+
+    /** Hằng số đại diện cho cửa hàng đặc biệt. */
     private static final byte SPEC_SHOP = 3;
+
+    /** Hằng số đại diện cho rương phần thưởng. */
     private static final byte BOX = 4;
 
+    /** Thể hiện singleton của lớp ShopServiceNew. */
     private static ShopServiceNew I;
 
+    /**
+     * Lấy thể hiện singleton của lớp ShopServiceNew.
+     *
+     * @return Thể hiện singleton của ShopServiceNew.
+     */
     public static ShopServiceNew gI() {
         if (ShopServiceNew.I == null) {
             ShopServiceNew.I = new ShopServiceNew();
@@ -36,35 +59,49 @@ public class ShopServiceNew {
         return ShopServiceNew.I;
     }
 
-    public void opendShop(Player player, String tagName, boolean allGender) {//Zalo: 0358124452//Name: EMTI 
-        if(tagName.equals("ITEMS_MAIL_BOX")){
-             openShopType4(player, tagName, player.inventory.itemsMailBox);
+    /**
+     * Mở cửa hàng cho người chơi dựa trên tên thẻ và tùy chọn giới tính.
+     *
+     * @param player Người chơi mở cửa hàng.
+     * @param tagName Tên thẻ của cửa hàng.
+     * @param allGender Cho phép hiển thị tất cả vật phẩm bất kể giới tính.
+     */
+    public void opendShop(Player player, String tagName, boolean allGender) {
+        if (tagName.equals("ITEMS_MAIL_BOX")) {
+            openShopType4(player, tagName, player.inventory.itemsMailBox);
             return;
         }
-        if (tagName.equals("ITEMS_LUCKY_ROUND")) {//Zalo: 0358124452//Name: EMTI 
+        if (tagName.equals("ITEMS_LUCKY_ROUND")) {
             openShopType4(player, tagName, player.inventory.itemsBoxCrackBall);
             return;
-        } else if (tagName.equals("ITEMS_REWARD")) {//Zalo: 0358124452//Name: EMTI 
+        } else if (tagName.equals("ITEMS_REWARD")) {
             player.getSession().initItemsReward();
             return;
         }
-        try {//Zalo: 0358124452//Name: EMTI 
+        try {
             Shop shop = this.getShop(tagName);
             shop = this.resolveShop(player, shop, allGender);
-            switch (shop.typeShop) {//Zalo: 0358124452//Name: EMTI 
+            switch (shop.typeShop) {
                 case NORMAL_SHOP:
                     openShopType0(player, shop);
-                    break;                                //Zalo: 0358124452                                //Name: EMTI 
+                    break;
                 case SPEC_SHOP:
                     openShopType3(player, shop);
-                    break;                                //Zalo: 0358124452                                //Name: EMTI 
+                    break;
             }
-        } catch (Exception ex) {//Zalo: 0358124452//Name: EMTI 
+        } catch (Exception ex) {
             ex.printStackTrace();
             Service.gI().sendThongBao(player, ex.getMessage());
         }
     }
 
+    /**
+     * Lấy thông tin cửa hàng dựa trên tên thẻ.
+     *
+     * @param tagName Tên thẻ của cửa hàng.
+     * @return Đối tượng Shop tương ứng.
+     * @throws Exception Nếu cửa hàng không tồn tại.
+     */
     private Shop getShop(String tagName) throws Exception {
         for (Shop s : Manager.SHOPS) {
             if (s.tagName != null && s.tagName.equals(tagName)) {
@@ -74,18 +111,29 @@ public class ShopServiceNew {
         throw new Exception("Shop " + tagName + " không tồn tại!");
     }
 
-    private void _________________Xử_lý_cửa_hàng_trước_khi_gửi_______________() {
-        //**********************************************************************
-    }
-
-     private Shop resolveShop(Player player, Shop shop, boolean allGender) {//Zalo: 0358124452//Name: EMTI 
+    /**
+     * Xử lý cửa hàng trước khi gửi thông tin, điều chỉnh dữ liệu theo giới tính hoặc loại bùa.
+     *
+     * @param player Người chơi mở cửa hàng.
+     * @param shop Cửa hàng cần xử lý.
+     * @param allGender Cho phép hiển thị tất cả vật phẩm bất kể giới tính.
+     * @return Cửa hàng đã được xử lý.
+     */
+    private Shop resolveShop(Player player, Shop shop, boolean allGender) {
         if (shop.tagName != null && (shop.tagName.equals("BUA_1H")
-                || shop.tagName.equals("BUA_8H") || shop.tagName.equals("BUA_1M"))) {//Zalo: 0358124452//Name: EMTI 
+                || shop.tagName.equals("BUA_8H") || shop.tagName.equals("BUA_1M"))) {
             return this.resolveShopBua(player, new Shop(shop));
         }
         return allGender ? new Shop(shop) : new Shop(shop, player.gender);
     }
 
+    /**
+     * Xử lý cửa hàng bùa, cập nhật thời gian hiệu lực của các bùa.
+     *
+     * @param player Người chơi mở cửa hàng.
+     * @param s Cửa hàng bùa cần xử lý.
+     * @return Cửa hàng bùa đã được cập nhật.
+     */
     private Shop resolveShopBua(Player player, Shop s) {
         for (TabShop tabShop : s.tabShops) {
             for (ItemShop item : tabShop.itemShops) {
@@ -95,7 +143,6 @@ public class ShopServiceNew {
                         long timeTriTue = player.charms.tdTriTue;
                         long current = System.currentTimeMillis();
                         min = (timeTriTue - current) / 60000;
-
                         break;
                     case 214:
                         min = (player.charms.tdManhMe - System.currentTimeMillis()) / 60000;
@@ -140,182 +187,203 @@ public class ShopServiceNew {
         return s;
     }
 
-    private void _________________Gửi_cửa_hàng_cho_người_chơi________________() {
-        //**********************************************************************
-    }
-
-    private void openShopType0(Player player, Shop shop) {//Zalo: 0358124452//Name: EMTI 
+    /**
+     * Mở cửa hàng thông thường (type 0) và gửi thông tin cửa hàng đến người chơi.
+     *
+     * @param player Người chơi mở cửa hàng.
+     * @param shop Cửa hàng cần mở.
+     */
+    private void openShopType0(Player player, Shop shop) {
         player.iDMark.setShopOpen(shop);
         player.iDMark.setTagNameShop(shop.tagName);
-        if (shop != null) {//Zalo: 0358124452//Name: EMTI 
+        if (shop != null) {
             Message msg;
-            try {//Zalo: 0358124452//Name: EMTI 
+            try {
                 msg = new Message(-44);
                 msg.writer().writeByte(NORMAL_SHOP);
                 msg.writer().writeByte(shop.tabShops.size());
-                for (TabShop tab : shop.tabShops) {//Zalo: 0358124452//Name: EMTI 
+                for (TabShop tab : shop.tabShops) {
                     msg.writer().writeUTF(tab.name);
                     msg.writer().writeByte(tab.itemShops.size());
-                    for (ItemShop itemShop : tab.itemShops) {//Zalo: 0358124452//Name: EMTI 
+                    for (ItemShop itemShop : tab.itemShops) {
                         msg.writer().writeShort(itemShop.temp.id);
-                        if (itemShop.typeSell == COST_GOLD) {//Zalo: 0358124452//Name: EMTI 
+                        if (itemShop.typeSell == COST_GOLD) {
                             msg.writer().writeInt(itemShop.cost);
                             msg.writer().writeInt(0);
-                        } else if (itemShop.typeSell == COST_GEM) {//Zalo: 0358124452//Name: EMTI 
+                        } else if (itemShop.typeSell == COST_GEM) {
                             msg.writer().writeInt(0);
                             msg.writer().writeInt(itemShop.cost);
-                        } else if (itemShop.typeSell == COST_RUBY) {//Zalo: 0358124452//Name: EMTI 
+                        } else if (itemShop.typeSell == COST_RUBY) {
                             msg.writer().writeInt(0);
                             msg.writer().writeInt(itemShop.cost);
-                        } else if (itemShop.typeSell == COST_COUPON) {//Zalo: 0358124452//Name: EMTI 
+                        } else if (itemShop.typeSell == COST_COUPON) {
                             msg.writer().writeInt(0);
                             msg.writer().writeInt(itemShop.cost);
                         }
                         msg.writer().writeByte(itemShop.options.size());
-                        for (Item.ItemOption option : itemShop.options) {//Zalo: 0358124452//Name: EMTI 
+                        for (Item.ItemOption option : itemShop.options) {
                             msg.writer().writeByte(option.optionTemplate.id);
                             msg.writer().writeShort(option.param);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
-                        if (itemShop.temp.type == 5) {//Zalo: 0358124452//Name: EMTI 
+                        if (itemShop.temp.type == 5) {
                             msg.writer().writeByte(1);
                             msg.writer().writeShort(itemShop.temp.head);
                             msg.writer().writeShort(itemShop.temp.body);
                             msg.writer().writeShort(itemShop.temp.leg);
                             msg.writer().writeShort(-1);
-                        } else {//Zalo: 0358124452//Name: EMTI 
+                        } else {
                             msg.writer().writeByte(0);
                         }
                     }
                 }
                 player.sendMessage(msg);
                 msg.cleanup();
-            } catch (Exception e) {//Zalo: 0358124452//Name: EMTI 
+            } catch (Exception e) {
                 e.printStackTrace();
-                Logger.logException(ShopServiceNew.class, e);
+                Logger.logException(ShopServiceNew.class, e, "Lỗi khi mở cửa hàng loại 0");
             }
         }
     }
 
-     private void openShopType3(Player player, Shop shop) {//Zalo: 0358124452//Name: EMTI 
+    /**
+     * Mở cửa hàng đặc biệt (type 3) và gửi thông tin cửa hàng đến người chơi.
+     *
+     * @param player Người chơi mở cửa hàng.
+     * @param shop Cửa hàng cần mở.
+     */
+    private void openShopType3(Player player, Shop shop) {
         player.iDMark.setShopOpen(shop);
         player.iDMark.setTagNameShop(shop.tagName);
-        if (shop != null) {//Zalo: 0358124452//Name: EMTI 
+        if (shop != null) {
             Message msg;
-            try {//Zalo: 0358124452//Name: EMTI 
+            try {
                 msg = new Message(-44);
                 msg.writer().writeByte(SPEC_SHOP);
                 msg.writer().writeByte(shop.tabShops.size());
-                for (TabShop tab : shop.tabShops) {//Zalo: 0358124452//Name: EMTI 
+                for (TabShop tab : shop.tabShops) {
                     msg.writer().writeUTF(tab.name);
                     msg.writer().writeByte(tab.itemShops.size());
-                    for (ItemShop itemShop : tab.itemShops) {//Zalo: 0358124452//Name: EMTI 
+                    for (ItemShop itemShop : tab.itemShops) {
                         msg.writer().writeShort(itemShop.temp.id);
                         msg.writer().writeShort(itemShop.iconSpec);
                         msg.writer().writeInt(itemShop.cost);
                         msg.writer().writeByte(itemShop.options.size());
-                        for (Item.ItemOption option : itemShop.options) {//Zalo: 0358124452//Name: EMTI 
+                        for (Item.ItemOption option : itemShop.options) {
                             msg.writer().writeByte(option.optionTemplate.id);
                             msg.writer().writeShort(option.param);
                         }
                         msg.writer().writeByte(itemShop.isNew ? 1 : 0);
-                        if (itemShop.temp.type == 5) {//Zalo: 0358124452//Name: EMTI 
+                        if (itemShop.temp.type == 5) {
                             msg.writer().writeByte(1);
                             msg.writer().writeShort(itemShop.temp.head);
                             msg.writer().writeShort(itemShop.temp.body);
                             msg.writer().writeShort(itemShop.temp.leg);
                             msg.writer().writeShort(-1);
-                        } else {//Zalo: 0358124452//Name: EMTI 
+                        } else {
                             msg.writer().writeByte(0);
                         }
                     }
                 }
                 player.sendMessage(msg);
                 msg.cleanup();
-            } catch (Exception e) {//Zalo: 0358124452//Name: EMTI 
+            } catch (Exception e) {
                 e.printStackTrace();
-                Logger.logException(ShopServiceNew.class, e);
+                Logger.logException(ShopServiceNew.class, e, "Lỗi khi mở cửa hàng loại 3");
             }
         }
     }
 
-    private void openShopType4(Player player, String tagName, List<Item> items) {//Zalo: 0358124452//Name: EMTI 
-        if (items == null) {//Zalo: 0358124452//Name: EMTI 
+    /**
+     * Mở rương phần thưởng (type 4) và gửi thông tin vật phẩm đến người chơi.
+     *
+     * @param player Người chơi mở rương.
+     * @param tagName Tên thẻ của rương.
+     * @param items Danh sách vật phẩm trong rương.
+     */
+    private void openShopType4(Player player, String tagName, List<Item> items) {
+        if (items == null) {
             return;
         }
         player.iDMark.setTagNameShop(tagName);
         Message msg;
-        try {//Zalo: 0358124452//Name: EMTI 
+        try {
             msg = new Message(-44);
-            msg.writer().writeByte(4);
+            msg.writer().writeByte(BOX);
             msg.writer().writeByte(1);
             msg.writer().writeUTF("Phần\nthưởng");
             msg.writer().writeByte(items.size());
-            for (Item item : items) {//Zalo: 0358124452//Name: EMTI 
+            for (Item item : items) {
                 msg.writer().writeShort(item.template.id);
                 msg.writer().writeUTF("\n|7|Ngọc Rồng Green");
                 msg.writer().writeByte(item.itemOptions.size() + 1);
-                for (Item.ItemOption io : item.itemOptions) {//Zalo: 0358124452//Name: EMTI 
+                for (Item.ItemOption io : item.itemOptions) {
                     msg.writer().writeByte(io.optionTemplate.id);
                     msg.writer().writeShort(io.param);
                 }
-                //số lượng
                 msg.writer().writeByte(31);
                 msg.writer().writeShort(item.quantity);
-                //
                 msg.writer().writeByte(1);
-                if (item.template.type == 5) {//Zalo: 0358124452//Name: EMTI 
+                if (item.template.type == 5) {
                     msg.writer().writeByte(1);
                     msg.writer().writeShort(item.template.head);
                     msg.writer().writeShort(item.template.body);
                     msg.writer().writeShort(item.template.leg);
                     msg.writer().writeShort(-1);
-                } else {//Zalo: 0358124452//Name: EMTI 
+                } else {
                     msg.writer().writeByte(0);
                 }
             }
             player.sendMessage(msg);
             msg.cleanup();
-        } catch (Exception e) {//Zalo: 0358124452//Name: EMTI 
-
+        } catch (Exception e) {
             e.printStackTrace();
+            Logger.logException(ShopServiceNew.class, e, "Lỗi khi mở rương phần thưởng");
         }
     }
 
-    private void _________________Mua_vật_phẩm______________________________() {
-        //**********************************************************************
-    }
-
-    public void takeItem(Player player, byte type, int tempId, int quantity) {//Zalo: 0358124452//Name: EMTI 
+    /**
+     * Xử lý việc người chơi lấy vật phẩm từ cửa hàng hoặc rương.
+     *
+     * @param player Người chơi thực hiện hành động.
+     * @param type Loại hành động (0: nhận, 1: xóa, 2: nhận hết).
+     * @param tempId ID template của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     */
+    public void takeItem(Player player, byte type, int tempId, int quantity) {
         String tagName = player.iDMark.getTagNameShop();
-        if (tagName == null || tagName.length() <= 0) {//Zalo: 0358124452//Name: EMTI 
+        if (tagName == null || tagName.length() <= 0) {
             return;
         }
-        
-        if (tagName.equals("ITEMS_MAIL_BOX")) {//Zalo: 0358124452//Name: EMTI 
+        if (tagName.equals("ITEMS_MAIL_BOX")) {
             getItemSideBoxLuckyRound(player, player.inventory.itemsMailBox, type, tempId);
             return;
-        } 
-
-        if (tagName.equals("ITEMS_LUCKY_ROUND")) {//Zalo: 0358124452//Name: EMTI 
+        }
+        if (tagName.equals("ITEMS_LUCKY_ROUND")) {
             getItemSideBoxLuckyRound(player, player.inventory.itemsBoxCrackBall, type, tempId);
             return;
-        } else if (tagName.equals("ITEMS_REWARD")) {//Zalo: 0358124452//Name: EMTI 
+        } else if (tagName.equals("ITEMS_REWARD")) {
             return;
         }
-
-        if (player.iDMark.getShopOpen() == null) {//Zalo: 0358124452//Name: EMTI 
+        if (player.iDMark.getShopOpen() == null) {
             Service.gI().sendThongBao(player, "Không thể thực hiện");
             return;
         }
-        if (tagName.equals("BUA_1H") || tagName.equals("BUA_8H") || tagName.equals("BUA_1M")) {//Zalo: 0358124452//Name: EMTI 
+        if (tagName.equals("BUA_1H") || tagName.equals("BUA_8H") || tagName.equals("BUA_1M")) {
             buyItemBua(player, tempId);
-        } else {//Zalo: 0358124452//Name: EMTI 
+        } else {
             buyItem(player, tempId);
         }
         Service.gI().sendMoney(player);
     }
 
+    /**
+     * Trừ tiền hoặc tài nguyên của người chơi dựa trên loại thanh toán của vật phẩm.
+     *
+     * @param player Người chơi thực hiện mua.
+     * @param is Vật phẩm trong cửa hàng.
+     * @return true nếu trừ thành công, false nếu không đủ tài nguyên.
+     */
     private boolean subMoneyByItemShop(Player player, ItemShop is) {
         int gold = 0;
         int gem = 0;
@@ -334,7 +402,6 @@ public class ShopServiceNew {
             case COST_COUPON:
                 coupon = is.cost;
                 break;
-
         }
         if (player.inventory.gold < gold) {
             Service.gI().sendThongBao(player, "Bạn không có đủ vàng");
@@ -357,10 +424,10 @@ public class ShopServiceNew {
     }
 
     /**
-     * Mua bùa
+     * Xử lý việc mua bùa từ cửa hàng.
      *
-     * @param player người chơi
-     * @param itemTempId id template vật phẩm
+     * @param player Người chơi thực hiện mua.
+     * @param itemTempId ID template của bùa.
      */
     private void buyItemBua(Player player, int itemTempId) {
         Shop shop = player.iDMark.getShopOpen();
@@ -378,10 +445,10 @@ public class ShopServiceNew {
     }
 
     /**
-     * Mua vật phẩm trong cửa hàng
+     * Xử lý việc mua vật phẩm từ cửa hàng.
      *
-     * @param player người chơi
-     * @param itemTempId id template vật phẩm
+     * @param player Người chơi thực hiện mua.
+     * @param itemTempId ID template của vật phẩm.
      */
     public void buyItem(Player player, int itemTempId) {
         Shop shop = player.iDMark.getShopOpen();
@@ -394,46 +461,55 @@ public class ShopServiceNew {
             Service.gI().sendThongBao(player, "Hành trang đã đầy");
             return;
         }
-
-        // Kiểm tra nếu là vật phẩm hủy diệt và không đủ thức ăn
         if (isHuyDietItem(is) && !hasEnoughThucAn(player)) {
             Service.gI().sendThongBao(player, "Không đủ thức ăn để mua đồ!");
             return;
         }
-
-        if (shop.typeShop == ShopServiceNew.NORMAL_SHOP) {
+        if (shop.typeShop == NORMAL_SHOP) {
             if (!subMoneyByItemShop(player, is)) {
                 return;
             }
-        } else if (shop.typeShop == ShopServiceNew.SPEC_SHOP) {
+        } else if (shop.typeShop == SPEC_SHOP) {
             if (!this.subIemByItemShop(player, is)) {
                 return;
             }
         }
-
         Item item = ItemService.gI().createItemFromItemShop(is);
         InventoryServiceNew.gI().addItemBag(player, item);
         InventoryServiceNew.gI().sendItemBags(player);
         Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);
     }
 
-// Kiểm tra nếu là vật phẩm hủy diệt
+    /**
+     * Kiểm tra xem vật phẩm có phải là vật phẩm hủy diệt hay không.
+     *
+     * @param itemShop Vật phẩm trong cửa hàng.
+     * @return true nếu là vật phẩm hủy diệt, false nếu không.
+     */
     private boolean isHuyDietItem(ItemShop itemShop) {
         int itemId = itemShop.temp.id;
         return itemId >= 650 && itemId <= 662;
     }
 
-// Kiểm tra nếu có đủ thức ăn
+    /**
+     * Kiểm tra xem người chơi có đủ thức ăn để mua vật phẩm hủy diệt hay không.
+     *
+     * @param player Người chơi cần kiểm tra.
+     * @return true nếu có đủ thức ăn, false nếu không.
+     */
     private boolean hasEnoughThucAn(Player player) {
         return player.inventory.itemsBag.stream()
                 .filter(item -> item.isNotNullItem() && item.isThucAn() && item.quantity >= 99)
                 .findFirst().isPresent();
     }
 
-    private void _________________Bán_vật_phẩm______________________________() {
-        //**********************************************************************
-    }
-
+    /**
+     * Trừ vật phẩm đặc biệt từ túi đồ của người chơi khi mua vật phẩm từ cửa hàng đặc biệt.
+     *
+     * @param pl Người chơi thực hiện mua.
+     * @param itemShop Vật phẩm trong cửa hàng đặc biệt.
+     * @return true nếu trừ thành công, false nếu không đủ vật phẩm.
+     */
     private boolean subIemByItemShop(Player pl, ItemShop itemShop) {
         boolean isBuy = false;
         short itSpec = ItemService.gI().getItemIdByIcon((short) itemShop.iconSpec);
@@ -477,8 +553,14 @@ public class ShopServiceNew {
         return isBuy;
     }
 
+    /**
+     * Hiển thị xác nhận bán vật phẩm cho người chơi.
+     *
+     * @param pl Người chơi thực hiện bán.
+     * @param where Vị trí vật phẩm (0: trên người, khác: trong túi).
+     * @param index Vị trí của vật phẩm trong danh sách.
+     */
     public void showConfirmSellItem(Player pl, int where, int index) {
-
         TransactionService.gI().cancelTrade(pl);
         if (index < 0) {
             return;
@@ -519,11 +601,18 @@ public class ShopServiceNew {
                 pl.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
-                   
+                Logger.logException(ShopServiceNew.class, e, "Lỗi khi hiển thị xác nhận bán vật phẩm");
             }
         }
     }
 
+    /**
+     * Xử lý việc bán vật phẩm của người chơi.
+     *
+     * @param pl Người chơi thực hiện bán.
+     * @param where Vị trí vật phẩm (0: trên người, khác: trong túi).
+     * @param index Vị trí của vật phẩm trong danh sách.
+     */
     public void sellItem(Player pl, int where, int index) {
         Item item = null;
         if (index < 0) {
@@ -534,7 +623,7 @@ public class ShopServiceNew {
         } else {
             item = pl.inventory.itemsBag.get(index);
         }
-        if (item != null && item.template.id != 921 && item.template.id != 454 && item.template.id != 194) { // Thêm điều kiện kiểm tra id của vật phẩm khác với 921
+        if (item != null && item.template.id != 921 && item.template.id != 454 && item.template.id != 194) {
             int quantity = item.quantity;
             int cost = item.template.gold;
             if (item.template.id == 457) {
@@ -568,43 +657,45 @@ public class ShopServiceNew {
         }
     }
 
-    private void _________________Nhận_vật_phẩm_từ_rương_đặc_biệt___________() {
-        //**********************************************************************
-    }
-
-    private void getItemSideBoxLuckyRound(Player player, List<Item> items, byte type, int index) {//Zalo: 0358124452//Name: EMTI 
-        if (items == null || items.isEmpty() || index >= items.size()) {//Zalo: 0358124452//Name: EMTI 
-            // Handle the error and notify the user
+    /**
+     * Xử lý việc nhận hoặc xóa vật phẩm từ rương đặc biệt hoặc hộp thư.
+     *
+     * @param player Người chơi thực hiện hành động.
+     * @param items Danh sách vật phẩm trong rương hoặc hộp thư.
+     * @param type Loại hành động (0: nhận, 1: xóa, 2: nhận hết).
+     * @param index Vị trí của vật phẩm trong danh sách.
+     */
+    private void getItemSideBoxLuckyRound(Player player, List<Item> items, byte type, int index) {
+        if (items == null || items.isEmpty() || index >= items.size()) {
             Service.gI().sendThongBao(player, "Có lỗi xảy ra khi xử lý yêu cầu");
             return;
         }
-
         Item item = items.get(index);
-        switch (type) {//Zalo: 0358124452//Name: EMTI 
+        switch (type) {
             case 0: // nhận
-                if (item.isNotNullItem()) {//Zalo: 0358124452//Name: EMTI 
-                    if (InventoryServiceNew.gI().getCountEmptyBag(player) != 0) {//Zalo: 0358124452//Name: EMTI 
+                if (item.isNotNullItem()) {
+                    if (InventoryServiceNew.gI().getCountEmptyBag(player) != 0) {
                         InventoryServiceNew.gI().addItemBag(player, item);
                         Service.gI().sendThongBao(player,
                                 "Bạn nhận được " + (item.template.id == 189
                                         ? Util.numberToMoney(item.quantity) + " vàng" : item.template.name));
                         InventoryServiceNew.gI().sendItemBags(player);
                         items.remove(index);
-                    } else {//Zalo: 0358124452//Name: EMTI 
+                    } else {
                         Service.gI().sendThongBao(player, "Hành trang đã đầy");
                     }
-                } else {//Zalo: 0358124452//Name: EMTI 
+                } else {
                     Service.gI().sendThongBao(player, "Không thể thực hiện");
                 }
-                break;                                //Zalo: 0358124452                                //Name: EMTI 
+                break;
             case 1: // xóa
                 items.remove(index);
                 Service.gI().sendThongBao(player, "Xóa vật phẩm thành công");
-                break;                                //Zalo: 0358124452                                //Name: EMTI 
+                break;
             case 2: // nhận hết
-                for (int i = items.size() - 1; i >= 0; i--) {//Zalo: 0358124452//Name: EMTI 
+                for (int i = items.size() - 1; i >= 0; i--) {
                     item = items.get(i);
-                    if (InventoryServiceNew.gI().addItemBag(player, item)) {//Zalo: 0358124452//Name: EMTI 
+                    if (InventoryServiceNew.gI().addItemBag(player, item)) {
                         Service.gI().sendThongBao(player,
                                 "Bạn nhận được " + (item.template.id == 189
                                         ? Util.numberToMoney(item.quantity) + " vàng" : item.template.name));
@@ -612,13 +703,8 @@ public class ShopServiceNew {
                     }
                 }
                 InventoryServiceNew.gI().sendItemBags(player);
-                break;                                //Zalo: 0358124452                                //Name: EMTI 
+                break;
         }
         openShopType4(player, player.iDMark.getTagNameShop(), items);
     }
 }
-
-/**
- * Vui lòng không sao chép mã nguồn này dưới mọi hình thức. Hãy tôn trọng tác
- * giả của mã nguồn này. Xin cảm ơn! - Girl Béo
- */
