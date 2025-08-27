@@ -1,11 +1,14 @@
 package com.girlkun.network.server;
 
-public interface IServerClose {
-  void serverClose();
-}
-
-
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\server\IServerClose.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Giao diện định nghĩa phương thức để xử lý sự kiện khi máy chủ đóng.
+ *
+ * @author Lucifer
  */
+public interface IServerClose {
+
+    /**
+     * Thực hiện các hành động cần thiết khi máy chủ được đóng.
+     */
+    void serverClose();
+}
