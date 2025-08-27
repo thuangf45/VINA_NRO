@@ -1,9 +1,7 @@
 package com.girlkun.server;
 
 import com.girlkun.database.GirlkunDB;
-
 import java.net.ServerSocket;
-
 import com.arriety.kygui.ShopKyGuiManager;
 import com.arriety.kygui.ShopKyGuiService;
 import com.girlkun.models.ThanhTich.CheckDataDay;
@@ -43,22 +41,59 @@ import java.util.logging.Level;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * Lớp ServerManager quản lý toàn bộ hoạt động của server game, bao gồm khởi tạo, chạy server,
+ * quản lý kết nối client, và xử lý các lệnh quản trị từ giao diện dòng lệnh.
+ * Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * 
+ * @author Lucifer
+ */
 public class ServerManager {
 
+    /**
+     * Số lượng luồng bản đồ đang chạy.
+     */
     public int threadMap;
 
+    /**
+     * Thời gian khởi động server, định dạng "dd/MM/yyyy HH:mm:ss".
+     */
     public static String timeStart;
 
+    /**
+     * Danh sách các client đang kết nối, ánh xạ địa chỉ IP với số lượng kết nối.
+     */
     public static final Map CLIENTS = new HashMap();
 
+    /**
+     * Tên của server.
+     */
     public static String NAME = "Girlkun75";
+
+    /**
+     * Cổng kết nối của server.
+     */
     public static int PORT = 14445;
 
+    /**
+     * Thể hiện duy nhất của lớp ServerManager (singleton pattern).
+     */
     private static ServerManager instance;
 
+    /**
+     * Socket lắng nghe kết nối từ client.
+     */
     public static ServerSocket listenSocket;
+
+    /**
+     * Trạng thái hoạt động của server (true nếu đang chạy, false nếu dừng).
+     */
     public static boolean isRunning;
 
+    /**
+     * Khởi tạo server, tải dữ liệu từ Manager và đặt lại thời gian đăng nhập/đăng xuất
+     * trong cơ sở dữ liệu nếu không chạy ở chế độ local.
+     */
     public void init() {
         Manager.gI();
         try {
@@ -73,6 +108,12 @@ public class ServerManager {
         }
     }
 
+    /**
+     * Lấy thể hiện duy nhất của lớp ServerManager.
+     * Nếu chưa có, tạo mới một thể hiện và gọi hàm khởi tạo.
+     * 
+     * @return Thể hiện của lớp ServerManager.
+     */
     public static ServerManager gI() {
         if (instance == null) {
             instance = new ServerManager();
@@ -81,14 +122,24 @@ public class ServerManager {
         return instance;
     }
 
+    /**
+     * Phương thức chính để khởi động server.
+     * Khởi tạo thời gian bắt đầu và chạy server.
+     * 
+     * @param args Tham số dòng lệnh (không sử dụng).
+     */
     public static void main(String[] args) {
         timeStart = TimeUtil.getTimeNow("dd/MM/yyyy HH:mm:ss");
         ServerManager serverManager = ServerManager.gI();
         serverManager.run();
         // Tạo và chạy player ảo
-//        Playerao.createVirtualPlayers(1); // Thay đổi số lượng player ảo tùy thích
+        // Playerao.createVirtualPlayers(1); // Thay đổi số lượng player ảo tùy thích
     }
 
+    /**
+     * Chạy server, khởi tạo giao diện quản trị, kích hoạt dòng lệnh,
+     * socket server, và các luồng cập nhật game.
+     */
     public void run() {
         JFrame frame = new JFrame("Menu server manger");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,7 +150,7 @@ public class ServerManager {
 
         activeCommandLine();
         activeGame();
-        activeServerSocket();   
+        activeServerSocket();
         isRunning = true;
         new Thread(() -> {
             while (isRunning) {
@@ -119,9 +170,14 @@ public class ServerManager {
         } catch (InterruptedException ex) {
             java.util.logging.Logger.getLogger(BossManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
+    /**
+     * Kích hoạt socket server để chấp nhận kết nối từ client.
+     * Cấu hình xử lý phiên kết nối và đóng server.
+     * 
+     * @throws Exception Nếu có lỗi khi khởi tạo socket server.
+     */
     private void act() throws Exception {
         GirlkunServer.gI().init().setAcceptHandler(new ISessionAcceptHandler() {
             @Override
@@ -151,16 +207,27 @@ public class ServerManager {
                 .start(PORT);
     }
 
+    /**
+     * Kích hoạt socket server để lắng nghe kết nối từ client.
+     */
     private void activeServerSocket() {
         if (true) {
             try {
                 this.act();
             } catch (Exception e) {
+                // Bỏ qua lỗi để tiếp tục chạy server
             }
             return;
         }
     }
 
+    /**
+     * Kiểm tra xem một địa chỉ IP có thể kết nối tới server hay không.
+     * Giới hạn số lượng kết nối tối đa từ một IP theo cấu hình.
+     * 
+     * @param ipAddress Địa chỉ IP của client.
+     * @return true nếu IP được phép kết nối, false nếu vượt quá giới hạn.
+     */
     private boolean canConnectWithIp(String ipAddress) {
         Object o = CLIENTS.get(ipAddress);
         if (o == null) {
@@ -178,6 +245,11 @@ public class ServerManager {
         }
     }
 
+    /**
+     * Ngắt kết nối của một phiên client và cập nhật số lượng kết nối từ IP tương ứng.
+     * 
+     * @param session Phiên kết nối của client.
+     */
     public void disconnect(MySession session) {
         Object o = CLIENTS.get(session.getIP());
         if (o != null) {
@@ -190,13 +262,17 @@ public class ServerManager {
         }
     }
 
+    /**
+     * Kích hoạt giao diện dòng lệnh để xử lý các lệnh quản trị server.
+     * Hỗ trợ các lệnh như bảo trì, lưu dữ liệu, gửi thông báo, và tặng quà cho người chơi.
+     */
     private void activeCommandLine() {
         new Thread(() -> {
             Scanner sc = new Scanner(System.in);
             while (true) {
                 String line = sc.nextLine();
                 if (line.equals("savekigui")) {
-//                    ShopKyGuiManager.gI().save();
+                    // ShopKyGuiManager.gI().save();
                 }
                 if (line.equals("baotri")) {
                     Maintenance.gI().start(0);
@@ -220,7 +296,6 @@ public class ServerManager {
                         java.util.logging.Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     Logger.log(Logger.PURPLE, "Thread" + (Thread.activeCount() - threadMap) + "\nOnline:" + Client.gI().getPlayers().size());
-
                 } else if (line.equals("nplayer")) {
                     Logger.error("Player in game: " + Client.gI().getPlayers().size() + "\n");
                 } else if (line.equals("admin")) {
@@ -233,10 +308,8 @@ public class ServerManager {
                             ClanService.gI().close();
                             Logger.error("Save " + Manager.CLANS.size() + " bang");
                         } catch (Exception e) {
-
                             e.printStackTrace();
                             Logger.error("Thông báo: lỗi lưu dữ liệu bang hội.\n");
-
                         }
                     }, "bangThread").start();
                 } else if (line.startsWith("a")) {
@@ -268,38 +341,18 @@ public class ServerManager {
                     } catch (Exception e) {
                         e.printStackTrace();
                         System.out.println("Lỗi quà");
-
                     }
                 }
             }
         }, "activeCommandLineThread").start();
     }
 
-//    private void activeGame() {
-//        long delay = 5000; // Cập nhật thông tin game và player // lavie mo cai nay lem, loi thi tat di
-//        MartialCongressManager.gI().update();
-//        new Thread(()
-//                -> {
-//                    while (!isBaoTri) {
-//                        try {
-//                            //   NgocRongNamecService.gI().update();
-//                            for (BanDoKhoBau bando : BanDoKhoBau.BAN_DO_KHO_BAUS) {
-//                                bando.update();
-//                            }
-//                            ClanService.gI().saveclan();
-//                            Service.gI().AutoSavePlayerData();
-//                            ShopKyGuiManager.gI().save();
-//                            ShopKyGuiService.update();
-//                            Thread.sleep(delay);
-//                        } catch (Exception e) {
-//                            System.err.print("\nError at 314\n");
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }, "activeGame").start(); // tat den day ne
-//    }
+    /**
+     * Kích hoạt luồng cập nhật game, bao gồm cập nhật bản đồ kho báu, đại hội võ thuật,
+     * lưu dữ liệu bang hội, người chơi, và cửa hàng ký gửi.
+     */
     private void activeGame() {
-        final long delay = 8000; // Thời gian delay là 5000ms (5 giây)
+        final long delay = 8000; // Thời gian delay là 8000ms (8 giây)
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -327,6 +380,11 @@ public class ServerManager {
         executor.shutdown();
     }
 
+    /**
+     * Đóng server và lưu toàn bộ dữ liệu trước khi thoát.
+     * 
+     * @param delay Thời gian chờ (miligiây) trước khi đóng server.
+     */
     public void close(long delay) {
         isRunning = false;
         try {
