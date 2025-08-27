@@ -15,44 +15,122 @@ import com.girlkun.services.SkillService;
 import com.girlkun.services.func.ChangeMapService;
 import com.girlkun.utils.TimeUtil;
 
+/**
+ * Lớp Pet đại diện cho thú cưng của người chơi, kế thừa từ lớp Player, hỗ trợ chủ nhân trong chiến đấu và di chuyển.
+ */
 public class Pet extends Player {
 
+    /**
+     * Khoảng cách tối đa để tấn công quái.
+     */
     private static final short ARANGE_CAN_ATTACK = 300;
+
+    /**
+     * Khoảng cách tối đa để sử dụng kỹ năng 1.
+     */
     private static final short ARANGE_ATT_SKILL1 = 100;
 
+    /**
+     * Mảng chứa ID ngoại hình của thú cưng theo giới tính và loại.
+     */
     private static final short[][] PET_ID = {{285, 286, 287}, {288, 289, 290}, {282, 283, 284}, {304, 305, 303}};
 
+    /**
+     * Trạng thái đi theo chủ nhân.
+     */
     public static final byte FOLLOW = 0;
+
+    /**
+     * Trạng thái bảo vệ chủ nhân.
+     */
     public static final byte PROTECT = 1;
+
+    /**
+     * Trạng thái tấn công quái.
+     */
     public static final byte ATTACK = 2;
+
+    /**
+     * Trạng thái về nhà.
+     */
     public static final byte GOHOME = 3;
+
+    /**
+     * Trạng thái hợp thể với chủ nhân.
+     */
     public static final byte FUSION = 4;
 
+    /**
+     * Người chơi chủ nhân của thú cưng.
+     */
     public Player master;
+
+    /**
+     * Trạng thái hiện tại của thú cưng (FOLLOW, PROTECT, ATTACK, GOHOME, FUSION).
+     */
     public byte status = 0;
 
+    /**
+     * Loại thú cưng.
+     */
     public byte typePet;
+
+    /**
+     * Kiểm tra trạng thái biến hình.
+     */
     public boolean isTransform;
 
+    /**
+     * Thời điểm thú cưng chết lần cuối.
+     */
     public long lastTimeDie;
 
+    /**
+     * Kiểm tra thú cưng đang di chuyển về nhà.
+     */
     private boolean goingHome;
 
+    /**
+     * Quái đang được nhắm đến để tấn công.
+     */
     private Mob mobAttack;
+
+    /**
+     * Người chơi đang được nhắm đến để tấn công.
+     */
     private Player playerAttack;
 
+    /**
+     * Thời gian chờ sau khi hủy hợp thể.
+     */
     private static final int TIME_WAIT_AFTER_UNFUSION = 5000;
+
+    /**
+     * Thời điểm hủy hợp thể lần cuối.
+     */
     private long lastTimeUnfusion;
 
+    /**
+     * Lấy trạng thái hiện tại của thú cưng.
+     * @return Trạng thái hiện tại.
+     */
     public byte getStatus() {
         return this.status;
     }
 
+    /**
+     * Khởi tạo thú cưng với chủ nhân.
+     * @param master Người chơi chủ nhân.
+     */
     public Pet(Player master) {
         this.master = master;
         this.isPet = true;
     }
 
+    /**
+     * Thay đổi trạng thái của thú cưng.
+     * @param status Trạng thái mới (FOLLOW, PROTECT, ATTACK, GOHOME, FUSION).
+     */
     public void changeStatus(byte status) {
         if (goingHome || master.fusion.typeFusion != 0 || (this.isDie() && status == FUSION)) {
             Service.getInstance().sendThongBao(master, "Không thể thực hiện");
@@ -67,6 +145,9 @@ public class Pet extends Player {
         this.status = status;
     }
 
+    /**
+     * Chuyển thú cưng đến bản đồ của chủ nhân.
+     */
     public void joinMapMaster() {
         if (status != GOHOME && status != FUSION && !isDie()) {
             this.location.x = master.location.x + Util.nextInt(-10, 10);
@@ -76,6 +157,9 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Chuyển thú cưng về nhà (bản đồ quê nhà).
+     */
     public void goHome() {
         if (this.status == GOHOME) {
             return;
@@ -86,7 +170,6 @@ public class Pet extends Player {
                 Pet.this.status = Pet.ATTACK;
                 Thread.sleep(2000);
             } catch (Exception e) {
-                  
             }
             ChangeMapService.gI().goToMap(this, MapService.gI().getMapCanJoin(this, master.gender + 21, -1));
             this.zone.load_Me_To_Another(this);
@@ -95,6 +178,11 @@ public class Pet extends Player {
         }).start();
     }
 
+    /**
+     * Lấy văn bản mô tả trạng thái của thú cưng.
+     * @param status Trạng thái của thú cưng.
+     * @return Chuỗi văn bản mô tả.
+     */
     private String getTextStatus(byte status) {
         switch (status) {
             case FOLLOW:
@@ -109,75 +197,11 @@ public class Pet extends Player {
                 return "";
         }
     }
-    
-      public void fusion2(boolean porata) {
-        if (this.isDie()) {
-            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
-            return;
-        }
-        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
-            if (porata) {
-                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA2;
-            }
-            this.status = FUSION;
-            ChangeMapService.gI().exitMap(this);
-            fusionEffect(master.fusion.typeFusion);
-            Service.getInstance().Send_Caitrang(master);
-            master.nPoint.calPoint();
-            master.nPoint.setFullHpMp();
-            Service.getInstance().point(master);
-        } else {
-            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
-                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
-        }
-    }
-      public void fusion3(boolean porata) {
-        if (this.isDie()) {
-            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
-            return;
-        }
-        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
-            if (porata) {
-                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA3;
-            }
-            this.status = FUSION;
-            ChangeMapService.gI().exitMap(this);
-            fusionEffect(master.fusion.typeFusion);
-            Service.getInstance().Send_Caitrang(master);
-            master.nPoint.calPoint();
-            master.nPoint.setFullHpMp();
-            Service.getInstance().point(master);
-        } else {
-            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
-                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
-        }
-    }
- public void fusion4(boolean porata4) {
-        if (this.isDie()) {
-            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
-            return;
-        }
-        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
-            if (porata4) {
-                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA4;
-            } else {
-                master.fusion.lastTimeFusion = System.currentTimeMillis();
-                master.fusion.typeFusion = ConstPlayer.LUONG_LONG_NHAT_THE;
-                ItemTimeService.gI().sendItemTime(master, master.gender == ConstPlayer.NAMEC ? 3901 : 3790, Fusion.TIME_FUSION / 1000);
-            }
-            this.status = FUSION;
-            ChangeMapService.gI().exitMap(this);
-            fusionEffect(master.fusion.typeFusion);
-            Service.getInstance().Send_Caitrang(master);
-            master.nPoint.calPoint();
-            master.nPoint.setFullHpMp();
-            Service.getInstance().point(master);
-        } else {
-            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
-                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
-        }
-    }
-     
+
+    /**
+     * Thực hiện hợp thể với chủ nhân (Porata).
+     * @param porata Kiểm tra có sử dụng Porata hay không.
+     */
     public void fusion(boolean porata) {
         if (this.isDie()) {
             Service.getInstance().sendThongBao(master, "Không thể thực hiện");
@@ -204,6 +228,91 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Thực hiện hợp thể với chủ nhân (Porata 2).
+     * @param porata Kiểm tra có sử dụng Porata 2 hay không.
+     */
+    public void fusion2(boolean porata) {
+        if (this.isDie()) {
+            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
+            return;
+        }
+        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
+            if (porata) {
+                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA2;
+            }
+            this.status = FUSION;
+            ChangeMapService.gI().exitMap(this);
+            fusionEffect(master.fusion.typeFusion);
+            Service.getInstance().Send_Caitrang(master);
+            master.nPoint.calPoint();
+            master.nPoint.setFullHpMp();
+            Service.getInstance().point(master);
+        } else {
+            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
+                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
+        }
+    }
+
+    /**
+     * Thực hiện hợp thể với chủ nhân (Porata 3).
+     * @param porata Kiểm tra có sử dụng Porata 3 hay không.
+     */
+    public void fusion3(boolean porata) {
+        if (this.isDie()) {
+            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
+            return;
+        }
+        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
+            if (porata) {
+                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA3;
+            }
+            this.status = FUSION;
+            ChangeMapService.gI().exitMap(this);
+            fusionEffect(master.fusion.typeFusion);
+            Service.getInstance().Send_Caitrang(master);
+            master.nPoint.calPoint();
+            master.nPoint.setFullHpMp();
+            Service.getInstance().point(master);
+        } else {
+            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
+                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
+        }
+    }
+
+    /**
+     * Thực hiện hợp thể với chủ nhân (Porata 4 hoặc Lưỡng Long Nhất Thể).
+     * @param porata4 Kiểm tra có sử dụng Porata 4 hay không.
+     */
+    public void fusion4(boolean porata4) {
+        if (this.isDie()) {
+            Service.getInstance().sendThongBao(master, "Không thể thực hiện");
+            return;
+        }
+        if (Util.canDoWithTime(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION)) {
+            if (porata4) {
+                master.fusion.typeFusion = ConstPlayer.HOP_THE_PORATA4;
+            } else {
+                master.fusion.lastTimeFusion = System.currentTimeMillis();
+                master.fusion.typeFusion = ConstPlayer.LUONG_LONG_NHAT_THE;
+                ItemTimeService.gI().sendItemTime(master, master.gender == ConstPlayer.NAMEC ? 3901 : 3790, Fusion.TIME_FUSION / 1000);
+            }
+            this.status = FUSION;
+            ChangeMapService.gI().exitMap(this);
+            fusionEffect(master.fusion.typeFusion);
+            Service.getInstance().Send_Caitrang(master);
+            master.nPoint.calPoint();
+            master.nPoint.setFullHpMp();
+            Service.getInstance().point(master);
+        } else {
+            Service.getInstance().sendThongBao(this.master, "Vui lòng đợi "
+                    + TimeUtil.getTimeLeft(lastTimeUnfusion, TIME_WAIT_AFTER_UNFUSION / 1000) + " nữa");
+        }
+    }
+
+    /**
+     * Hủy hợp thể với chủ nhân.
+     */
     public void unFusion() {
         master.fusion.typeFusion = 0;
         this.status = PROTECT;
@@ -215,6 +324,10 @@ public class Pet extends Player {
         this.lastTimeUnfusion = System.currentTimeMillis();
     }
 
+    /**
+     * Gửi hiệu ứng hợp thể đến tất cả người chơi trong bản đồ.
+     * @param type Loại hợp thể.
+     */
     private void fusionEffect(int type) {
         Message msg;
         try {
@@ -224,15 +337,27 @@ public class Pet extends Player {
             Service.getInstance().sendMessAllPlayerInMap(master, msg);
             msg.cleanup();
         } catch (Exception e) {
-              
-
         }
     }
 
-    public long lastTimeMoveIdle;
+    /**
+     * Thời điểm lần cuối di chuyển khi rảnh rỗi.
+     */
+    private long lastTimeMoveIdle;
+
+    /**
+     * Thời gian chờ trước khi di chuyển ngẫu nhiên.
+     */
     private int timeMoveIdle;
+
+    /**
+     * Kiểm tra trạng thái rảnh rỗi của thú cưng.
+     */
     public boolean idle;
 
+    /**
+     * Di chuyển ngẫu nhiên khi ở trạng thái rảnh rỗi.
+     */
     private void moveIdle() {
         if (status == GOHOME || status == FUSION) {
             return;
@@ -246,15 +371,25 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Thời điểm lần cuối di chuyển khi ở nhà.
+     */
     private long lastTimeMoveAtHome;
+
+    /**
+     * Hướng di chuyển khi ở nhà.
+     */
     private byte directAtHome = -1;
 
+    /**
+     * Cập nhật trạng thái của thú cưng.
+     */
     @Override
     public void update() {
         try {
             super.update();
-            increasePoint(); //cộng chỉ số
-            updatePower(); //check mở skill...
+            increasePoint(); // Cộng chỉ số
+            updatePower(); // Kiểm tra mở kỹ năng
             if (isDie()) {
                 if (System.currentTimeMillis() - lastTimeDie > 50000) {
                     Service.getInstance().hsChar(this, nPoint.hpMax, nPoint.mpMax);
@@ -288,34 +423,32 @@ public class Pet extends Player {
                     if (mobAttack != null) {
                         int disToMob = Util.getDistance(this, mobAttack);
                         if (disToMob <= ARANGE_ATT_SKILL1) {
-                            //đấm
+                            // Đấm
                             this.playerSkill.skillSelect = getSkill(1);
                             if (SkillService.gI().canUseSkillWithCooldown(this)) {
                                 if (SkillService.gI().canUseSkillWithMana(this)) {
                                     PlayerService.gI().playerMove(this, mobAttack.location.x + Util.nextInt(-60, 60), mobAttack.location.y);
-                                    SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                                    SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                                 } else {
                                     askPea();
                                 }
                             }
                         } else {
-                            //chưởng
+                            // Chưởng
                             this.playerSkill.skillSelect = getSkill(2);
                             if (this.playerSkill.skillSelect.skillId != -1) {
                                 if (SkillService.gI().canUseSkillWithCooldown(this)) {
                                     if (SkillService.gI().canUseSkillWithMana(this)) {
-                                        SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                                        SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                                     } else {
                                         askPea();
                                     }
                                 }
                             }
                         }
-
                     } else {
                         idle = true;
                     }
-
                     break;
                 case ATTACK:
                     if (useSkill3() || useSkill4() || useSkill5()) {
@@ -329,7 +462,7 @@ public class Pet extends Player {
                             if (SkillService.gI().canUseSkillWithCooldown(this)) {
                                 if (SkillService.gI().canUseSkillWithMana(this)) {
                                     PlayerService.gI().playerMove(this, mobAttack.location.x + Util.nextInt(-20, 20), mobAttack.location.y);
-                                    SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                                    SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                                 } else {
                                     askPea();
                                 }
@@ -338,26 +471,24 @@ public class Pet extends Player {
                             this.playerSkill.skillSelect = getSkill(2);
                             if (this.playerSkill.skillSelect.skillId != -1) {
                                 if (SkillService.gI().canUseSkillWithMana(this)) {
-                                    SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                                    SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                                 }
                             } else {
                                 this.playerSkill.skillSelect = getSkill(1);
                                 if (SkillService.gI().canUseSkillWithCooldown(this)) {
                                     if (SkillService.gI().canUseSkillWithMana(this)) {
                                         PlayerService.gI().playerMove(this, mobAttack.location.x + Util.nextInt(-20, 20), mobAttack.location.y);
-                                        SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                                        SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                                     } else {
                                         askPea();
                                     }
                                 }
                             }
                         }
-
                     } else {
                         idle = true;
                     }
                     break;
-
                 case GOHOME:
                     if (this.zone != null && (this.zone.map.mapId == 21 || this.zone.map.mapId == 22 || this.zone.map.mapId == 23)) {
                         if (System.currentTimeMillis() - lastTimeMoveAtHome <= 5000) {
@@ -365,7 +496,6 @@ public class Pet extends Player {
                         } else {
                             if (this.zone.map.mapId == 21) {
                                 if (directAtHome == -1) {
-
                                     PlayerService.gI().playerMove(this, 250, 336);
                                     directAtHome = 1;
                                 } else {
@@ -380,7 +510,7 @@ public class Pet extends Player {
                                     PlayerService.gI().playerMove(this, 452, 336);
                                     directAtHome = -1;
                                 }
-                            } else if (this.zone.map.mapId == 22) {
+                            } else if (this.zone.map.mapId == 23) {
                                 if (directAtHome == -1) {
                                     PlayerService.gI().playerMove(this, 250, 336);
                                     directAtHome = 1;
@@ -396,12 +526,17 @@ public class Pet extends Player {
                     break;
             }
         } catch (Exception e) {
-  
         }
     }
 
+    /**
+     * Thời điểm lần cuối yêu cầu đậu thần.
+     */
     private long lastTimeAskPea;
 
+    /**
+     * Yêu cầu chủ nhân cung cấp đậu thần khi hết mana.
+     */
     public void askPea() {
         if (Util.canDoWithTime(lastTimeAskPea, 10000)) {
             Service.getInstance().chatJustForMe(master, this, "Sư phụ ơi cho con đậu thần đi, con đói sắp chết rồi !!");
@@ -409,8 +544,15 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Số lần sử dụng Tái Tạo Năng Lượng.
+     */
     private int countTTNL;
 
+    /**
+     * Sử dụng kỹ năng thứ 3 (Thái Dương Hạ San, Tái Tạo Năng Lượng, Kaioken).
+     * @return true nếu sử dụng thành công, false nếu không.
+     */
     private boolean useSkill3() {
         try {
             playerSkill.skillSelect = getSkill(3);
@@ -420,7 +562,7 @@ public class Pet extends Player {
             switch (this.playerSkill.skillSelect.template.id) {
                 case Skill.THAI_DUONG_HA_SAN:
                     if (SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)) {
-                        SkillService.gI().useSkill(this, null, null,null);
+                        SkillService.gI().useSkill(this, null, null, null);
                         Service.getInstance().chatJustForMe(master, this, "Bất ngờ chưa ông già");
                         return true;
                     }
@@ -432,7 +574,7 @@ public class Pet extends Player {
                     }
                     if (SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)
                             && (this.nPoint.getCurrPercentHP() <= 20 || this.nPoint.getCurrPercentMP() <= 20)) {
-                        SkillService.gI().useSkill(this, null, null,null);
+                        SkillService.gI().useSkill(this, null, null, null);
                         this.countTTNL = 0;
                         return true;
                     }
@@ -451,7 +593,7 @@ public class Pet extends Player {
                                 PlayerService.gI().playerMove(this, mobAttack.location.x + Util.nextInt(-20, 20), mobAttack.location.y);
                             }
                         }
-                        SkillService.gI().useSkill(this, playerAttack, mobAttack,null);
+                        SkillService.gI().useSkill(this, playerAttack, mobAttack, null);
                         getSkill(1).lastTimeUseThisSkill = System.currentTimeMillis();
                         return true;
                     }
@@ -460,11 +602,14 @@ public class Pet extends Player {
                     return false;
             }
         } catch (Exception e) {
-              
             return false;
         }
     }
 
+    /**
+     * Sử dụng kỹ năng thứ 4 (Biến Khỉ, Khiên Năng Lượng, Đẻ Trứng).
+     * @return true nếu sử dụng thành công, false nếu không.
+     */
     private boolean useSkill4() {
         try {
             this.playerSkill.skillSelect = getSkill(4);
@@ -474,19 +619,19 @@ public class Pet extends Player {
             switch (this.playerSkill.skillSelect.template.id) {
                 case Skill.BIEN_KHI:
                     if (!this.effectSkill.isMonkey && SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)) {
-                        SkillService.gI().useSkill(this, null, null,null);
+                        SkillService.gI().useSkill(this, null, null, null);
                         return true;
                     }
                     return false;
                 case Skill.KHIEN_NANG_LUONG:
                     if (!this.effectSkill.isShielding && SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)) {
-                        SkillService.gI().useSkill(this, null, null,null);
+                        SkillService.gI().useSkill(this, null, null, null);
                         return true;
                     }
                     return false;
                 case Skill.DE_TRUNG:
                     if (this.mobMe == null && SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)) {
-                        SkillService.gI().useSkill(this, null, null,null);
+                        SkillService.gI().useSkill(this, null, null, null);
                         return true;
                     }
                     return false;
@@ -494,12 +639,14 @@ public class Pet extends Player {
                     return false;
             }
         } catch (Exception e) {
-              
             return false;
         }
     }
 
-//========================BETA SKILL5=====================
+    /**
+     * Sử dụng kỹ năng thứ 5 (Thôi Miên, Dịch Chuyển Tức Thời, Socola).
+     * @return true nếu sử dụng thành công, false nếu không.
+     */
     private boolean useSkill5() {
         try {
             this.playerSkill.skillSelect = getSkill(5);
@@ -532,10 +679,10 @@ public class Pet extends Player {
             return false;
         }
     }
-
-    //====================================================
     private long lastTimeIncreasePoint;
-
+    /**
+     * Tăng chỉ số cho thú cưng (HP, MP, sát thương).
+     */
     private void increasePoint() {
         if (this.nPoint != null && Util.canDoWithTime(lastTimeIncreasePoint, 1)) {
             if (Util.isTrue(80, 100)) {
@@ -556,6 +703,9 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Thú cưng di chuyển theo chủ nhân.
+     */
     public void followMaster() {
         if (this.isDie() || effectSkill.isHaveEffectSkill()) {
             return;
@@ -572,6 +722,10 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Thú cưng di chuyển theo chủ nhân với khoảng cách chỉ định.
+     * @param dis Khoảng cách tối đa so với chủ nhân.
+     */
     private void followMaster(int dis) {
         int mX = master.location.x;
         int mY = master.location.y;
@@ -587,6 +741,10 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Lấy ID avatar của thú cưng dựa trên loại và trạng thái.
+     * @return ID avatar.
+     */
     public short getAvatar() {
         if (this.typePet == 1) {
             return 297; // Ma Bư
@@ -594,75 +752,77 @@ public class Pet extends Player {
             return 1243; // Black Gohan Rose
         } else if (this.typePet == 3) {
             return 1318; // Supper Broly
-        } else if (this.typePet == 3) {
-            return 946;
-            }else if (this.typePet == 4) {
-            return 264 ; // Xên Con
-            } else if (this.typePet == 5) {
-            return 790 ; // Đôremon
-            } else if (this.typePet == 6) {
-            return 802 ; // XuKa
-            } else if (this.typePet == 7) {
-            return 850 ; // Xêko
-            } else if (this.typePet == 8) {
-            return 847 ; //Chaien
-            } else if (this.typePet == 9) {
-            return 844 ; // Nobita 
-            } else if (this.typePet == 10) {
-            return 1270 ; // Captain America
-            } else if (this.typePet == 11) {
-            return 1276 ; // Thần Thor
-            } else if (this.typePet == 12) {
-            return 1273 ; //Spider Man
-            } else if (this.typePet == 13) {
-            return 1279 ; // Thanos
-            } else if (this.typePet == 14) {
-            return 1282 ; // Dr.Strange
-            } else if (this.typePet == 15) {
-            return 1288 ; // Gohan SSJ5
-            } else if (this.typePet == 16) {
-            return 2030 ; // Kamioren
-            } else if (this.typePet == 17) {
-            return 1312 ; // Super Zamasu White
-            } else if (this.typePet == 18) {
-            return 1315 ; // Hearts Gold
-            } else if (this.typePet == 19) {
-            return 2024 ; // Cumber
-            } else if (this.typePet == 20) {
-            return 2027 ; //Super Cumber
-            } else if (this.typePet == 21) {
-            return 1213 ; // Zeno
-            } else if (this.typePet == 22) {
-            return 1216 ; // Thần Zeno 1
-            } else if (this.typePet == 23) {
-            return 1219 ; //Thần Zeno 2
-            } else if (this.typePet == 24) {
-            return 1222 ; // Germa 1
-            } else if (this.typePet == 25) {
-            return 1225 ; // Germa 2
-            } else if (this.typePet == 26) {
-            return 1228 ; //Thần Zeno 3
-            } else if (this.typePet == 27) {
-            return 1231 ; // Goku Vô Cực
-            } else if (this.typePet == 28) {
-            return 1234 ; //Jiren
-            } else if (this.typePet == 29) {
-            return 1258 ; //Gojo
-            } else if (this.typePet == 30) {
+        } else if (this.typePet == 4) {
+            return 264; // Xên Con
+        } else if (this.typePet == 5) {
+            return 790; // Đôremon
+        } else if (this.typePet == 6) {
+            return 802; // XuKa
+        } else if (this.typePet == 7) {
+            return 850; // Xêko
+        } else if (this.typePet == 8) {
+            return 847; // Chaien
+        } else if (this.typePet == 9) {
+            return 844; // Nobita
+        } else if (this.typePet == 10) {
+            return 1270; // Captain America
+        } else if (this.typePet == 11) {
+            return 1276; // Thần Thor
+        } else if (this.typePet == 12) {
+            return 1273; // Spider Man
+        } else if (this.typePet == 13) {
+            return 1279; // Thanos
+        } else if (this.typePet == 14) {
+            return 1282; // Dr.Strange
+        } else if (this.typePet == 15) {
+            return 1288; // Gohan SSJ5
+        } else if (this.typePet == 16) {
+            return 2030; // Kamioren
+        } else if (this.typePet == 17) {
+            return 1312; // Super Zamasu White
+        } else if (this.typePet == 18) {
+            return 1315; // Hearts Gold
+        } else if (this.typePet == 19) {
+            return 2024; // Cumber
+        } else if (this.typePet == 20) {
+            return 2027; // Super Cumber
+        } else if (this.typePet == 21) {
+            return 1213; // Zeno
+        } else if (this.typePet == 22) {
+            return 1216; // Thần Zeno 1
+        } else if (this.typePet == 23) {
+            return 1219; // Thần Zeno 2
+        } else if (this.typePet == 24) {
+            return 1222; // Germa 1
+        } else if (this.typePet == 25) {
+            return 1225; // Germa 2
+        } else if (this.typePet == 26) {
+            return 1228; // Thần Zeno 3
+        } else if (this.typePet == 27) {
+            return 1231; // Goku Vô Cực
+        } else if (this.typePet == 28) {
+            return 1234; // Jiren
+        } else if (this.typePet == 29) {
+            return 1258; // Gojo
+        } else if (this.typePet == 30) {
             return 903; // Zamasu
-            } else if (this.typePet == 31) {
-            return 508 ; // Bill
-            } else if (this.typePet == 32) {
-            return 838 ; //  Whis
-            } else if (this.typePet == 33) {
-            return 1324 ;
-                } else if (this.typePet == 34) {
-            return 1271 ;// Baby Vegeta
-        }else {
+        } else if (this.typePet == 31) {
+            return 508; // Bill
+        } else if (this.typePet == 32) {
+            return 838; // Whis
+        } else if (this.typePet == 33) {
+            return 1324;
+        } else if (this.typePet == 34) {
+            return 1271; // Baby Vegeta
+        } else {
             return PET_ID[3][this.gender];
         }
     }
 
+    /**
+     * Lấy ID đầu của thú cưng.
+     * @return ID đầu.
+     */
     @Override
     public short getHead() {
         if (effectSkill.isMonkey) {
@@ -673,70 +833,70 @@ public class Pet extends Player {
             return 297;
         } else if (this.typePet == 2) {
             return 1243;
-        }else if (this.typePet == 3) {
+        } else if (this.typePet == 3) {
             return 1318;
-        }else if (this.typePet == 4) {
-            return 264 ;
-            } else if (this.typePet == 5) {
-            return 790 ;
-            } else if (this.typePet == 6) {
-            return 802 ;
-            } else if (this.typePet == 7) {
-            return 850 ;
-            } else if (this.typePet == 8) {
-            return 847 ;
-            } else if (this.typePet == 9) {
-            return 844 ;
-            } else if (this.typePet == 10) {
-            return 1270 ;
-            } else if (this.typePet == 11) {
-            return 1276 ;
-            } else if (this.typePet == 12) {
-            return 1273 ;
-            } else if (this.typePet == 13) {
-            return 1279 ;
-            } else if (this.typePet == 14) {
-            return 1282 ;
-            } else if (this.typePet == 15) {
-            return 1288 ;
-            } else if (this.typePet == 16) {
-            return 2030 ;
-            } else if (this.typePet == 17) {
-            return 1312 ;
-            } else if (this.typePet == 18) {
-            return 1315 ;
-            } else if (this.typePet == 19) {
-            return 2024 ;
-            } else if (this.typePet == 20) {
-            return 2027 ;
-            } else if (this.typePet == 21) {
-            return 1213 ;
-            } else if (this.typePet == 22) {
-            return 1216 ;
-            } else if (this.typePet == 23) {
-            return 1219 ;
-            } else if (this.typePet == 24) {
-            return 1222 ;
-            } else if (this.typePet == 25) {
-            return 1222 ;
-            } else if (this.typePet == 26) {
-            return 1228 ;
-            } else if (this.typePet == 27) {
-            return 1231 ;
-            } else if (this.typePet == 28) {
-            return 1234 ;
-            } else if (this.typePet == 29) {
-            return 1258 ;
-            } else if (this.typePet == 30) {
+        } else if (this.typePet == 4) {
+            return 264;
+        } else if (this.typePet == 5) {
+            return 790;
+        } else if (this.typePet == 6) {
+            return 802;
+        } else if (this.typePet == 7) {
+            return 850;
+        } else if (this.typePet == 8) {
+            return 847;
+        } else if (this.typePet == 9) {
+            return 844;
+        } else if (this.typePet == 10) {
+            return 1270;
+        } else if (this.typePet == 11) {
+            return 1276;
+        } else if (this.typePet == 12) {
+            return 1273;
+        } else if (this.typePet == 13) {
+            return 1279;
+        } else if (this.typePet == 14) {
+            return 1282;
+        } else if (this.typePet == 15) {
+            return 1288;
+        } else if (this.typePet == 16) {
+            return 2030;
+        } else if (this.typePet == 17) {
+            return 1312;
+        } else if (this.typePet == 18) {
+            return 1315;
+        } else if (this.typePet == 19) {
+            return 2024;
+        } else if (this.typePet == 20) {
+            return 2027;
+        } else if (this.typePet == 21) {
+            return 1213;
+        } else if (this.typePet == 22) {
+            return 1216;
+        } else if (this.typePet == 23) {
+            return 1219;
+        } else if (this.typePet == 24) {
+            return 1222;
+        } else if (this.typePet == 25) {
+            return 1225;
+        } else if (this.typePet == 26) {
+            return 1228;
+        } else if (this.typePet == 27) {
+            return 1231;
+        } else if (this.typePet == 28) {
+            return 1234;
+        } else if (this.typePet == 29) {
+            return 1258;
+        } else if (this.typePet == 30) {
             return 903;
-            } else if (this.typePet == 31) {
-            return 508 ;
-            } else if (this.typePet == 32) {
-            return 838 ;
-            } else if (this.typePet == 33) {
-            return 1324 ;
-            } else if (this.typePet == 34) {
-            return 1271 ;
+        } else if (this.typePet == 31) {
+            return 508;
+        } else if (this.typePet == 32) {
+            return 838;
+        } else if (this.typePet == 33) {
+            return 1324;
+        } else if (this.typePet == 34) {
+            return 1271;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int part = inventory.itemsBody.get(5).template.head;
             if (part != -1) {
@@ -750,6 +910,10 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Lấy ID thân của thú cưng.
+     * @return ID thân.
+     */
     @Override
     public short getBody() {
         if (effectSkill.isMonkey) {
@@ -760,70 +924,70 @@ public class Pet extends Player {
             return 298;
         } else if (this.typePet == 2 && !this.isTransform) {
             return 1244;
-        }else if (this.typePet == 3 && !this.isTransform) {
+        } else if (this.typePet == 3 && !this.isTransform) {
             return 1319;
         } else if (this.typePet == 4 && !this.isTransform) {
-            return 265 ;
-            } else if (this.typePet == 5 && !this.isTransform) {
-            return 791 ;
-            } else if (this.typePet == 6&& !this.isTransform) {
-            return 803 ;
-            } else if (this.typePet == 7&& !this.isTransform) {
-            return 851  ;
-            } else if (this.typePet == 8&& !this.isTransform) {
-            return 848 ;
-            } else if (this.typePet == 9&& !this.isTransform) {
-            return 845 ;
-            } else if (this.typePet == 10&& !this.isTransform) {
-            return 1271 ;
-            } else if (this.typePet == 11&& !this.isTransform) {
-            return 1277 ;
-            } else if (this.typePet == 12&& !this.isTransform) {
-            return 1274 ;
-            } else if (this.typePet == 13&& !this.isTransform) {
-            return 1280 ;
-            } else if (this.typePet == 14&& !this.isTransform) {
-            return 1283 ;
-            } else if (this.typePet == 15&& !this.isTransform) {
-            return 1289 ;
-            } else if (this.typePet == 16&& !this.isTransform) {
-            return 2031 ;
-            } else if (this.typePet == 17&& !this.isTransform) {
-            return 1313 ;
-            } else if (this.typePet == 18&& !this.isTransform) {
-            return 1316 ;
-            } else if (this.typePet == 19&& !this.isTransform) {
-            return 2025 ;
-            } else if (this.typePet == 20&& !this.isTransform) {
-            return 2028 ;
-            } else if (this.typePet == 21&& !this.isTransform) {
-            return 1214 ;
-            } else if (this.typePet == 22&& !this.isTransform) {
-            return 1217 ;
-            } else if (this.typePet == 23&& !this.isTransform) {
-            return 1220 ;
-            } else if (this.typePet == 24&& !this.isTransform) {
-            return 1223 ;
-            } else if (this.typePet == 25&& !this.isTransform) {
-            return 1223 ;
-            } else if (this.typePet == 26&& !this.isTransform) {
-            return 1229 ;
-            } else if (this.typePet == 27&& !this.isTransform) {
-            return 1232 ;
-            } else if (this.typePet == 28&& !this.isTransform) {
-            return 1235 ;
-            } else if (this.typePet == 29&& !this.isTransform) {
-            return 1259 ;
-            } else if (this.typePet == 30&& !this.isTransform) {
-            return 904 ;
-            } else if (this.typePet == 31&& !this.isTransform) {
-            return 509  ;
-            } else if (this.typePet == 32&& !this.isTransform) {
-            return 839  ;
-            } else if (this.typePet == 33&& !this.isTransform) {
-            return 1325  ;
-            } else if (this.typePet == 34&& !this.isTransform) {
-            return 1272  ;
+            return 265;
+        } else if (this.typePet == 5 && !this.isTransform) {
+            return 791;
+        } else if (this.typePet == 6 && !this.isTransform) {
+            return 803;
+        } else if (this.typePet == 7 && !this.isTransform) {
+            return 851;
+        } else if (this.typePet == 8 && !this.isTransform) {
+            return 848;
+        } else if (this.typePet == 9 && !this.isTransform) {
+            return 845;
+        } else if (this.typePet == 10 && !this.isTransform) {
+            return 1271;
+        } else if (this.typePet == 11 && !this.isTransform) {
+            return 1277;
+        } else if (this.typePet == 12 && !this.isTransform) {
+            return 1274;
+        } else if (this.typePet == 13 && !this.isTransform) {
+            return 1280;
+        } else if (this.typePet == 14 && !this.isTransform) {
+            return 1283;
+        } else if (this.typePet == 15 && !this.isTransform) {
+            return 1289;
+        } else if (this.typePet == 16 && !this.isTransform) {
+            return 2031;
+        } else if (this.typePet == 17 && !this.isTransform) {
+            return 1313;
+        } else if (this.typePet == 18 && !this.isTransform) {
+            return 1316;
+        } else if (this.typePet == 19 && !this.isTransform) {
+            return 2025;
+        } else if (this.typePet == 20 && !this.isTransform) {
+            return 2028;
+        } else if (this.typePet == 21 && !this.isTransform) {
+            return 1214;
+        } else if (this.typePet == 22 && !this.isTransform) {
+            return 1217;
+        } else if (this.typePet == 23 && !this.isTransform) {
+            return 1220;
+        } else if (this.typePet == 24 && !this.isTransform) {
+            return 1223;
+        } else if (this.typePet == 25 && !this.isTransform) {
+            return 1223;
+        } else if (this.typePet == 26 && !this.isTransform) {
+            return 1229;
+        } else if (this.typePet == 27 && !this.isTransform) {
+            return 1232;
+        } else if (this.typePet == 28 && !this.isTransform) {
+            return 1235;
+        } else if (this.typePet == 29 && !this.isTransform) {
+            return 1259;
+        } else if (this.typePet == 30 && !this.isTransform) {
+            return 904;
+        } else if (this.typePet == 31 && !this.isTransform) {
+            return 509;
+        } else if (this.typePet == 32 && !this.isTransform) {
+            return 839;
+        } else if (this.typePet == 33 && !this.isTransform) {
+            return 1325;
+        } else if (this.typePet == 34 && !this.isTransform) {
+            return 1272;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int body = inventory.itemsBody.get(5).template.body;
             if (body != -1) {
@@ -840,6 +1004,10 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Lấy ID chân của thú cưng.
+     * @return ID chân.
+     */
     @Override
     public short getLeg() {
         if (effectSkill.isMonkey) {
@@ -850,70 +1018,70 @@ public class Pet extends Player {
             return 299;
         } else if (this.typePet == 2 && !this.isTransform) {
             return 1245;
-        }else if (this.typePet == 3 && !this.isTransform) {
+        } else if (this.typePet == 3 && !this.isTransform) {
             return 1320;
         } else if (this.typePet == 4 && !this.isTransform) {
             return 266;
-            } else if (this.typePet == 5 && !this.isTransform) {
+        } else if (this.typePet == 5 && !this.isTransform) {
             return 792;
-            } else if (this.typePet == 6&& !this.isTransform) {
+        } else if (this.typePet == 6 && !this.isTransform) {
             return 804;
-            } else if (this.typePet == 7&& !this.isTransform) {
+        } else if (this.typePet == 7 && !this.isTransform) {
             return 852;
-            } else if (this.typePet == 8&& !this.isTransform) {
+        } else if (this.typePet == 8 && !this.isTransform) {
             return 849;
-            } else if (this.typePet == 9&& !this.isTransform) {
+        } else if (this.typePet == 9 && !this.isTransform) {
             return 846;
-            } else if (this.typePet == 10&& !this.isTransform) {
+        } else if (this.typePet == 10 && !this.isTransform) {
             return 1272;
-            } else if (this.typePet == 11&& !this.isTransform) {
+        } else if (this.typePet == 11 && !this.isTransform) {
             return 1278;
-            } else if (this.typePet == 12&& !this.isTransform) {
+        } else if (this.typePet == 12 && !this.isTransform) {
             return 1275;
-            } else if (this.typePet == 13&& !this.isTransform) {
+        } else if (this.typePet == 13 && !this.isTransform) {
             return 1281;
-            } else if (this.typePet == 14&& !this.isTransform) {
+        } else if (this.typePet == 14 && !this.isTransform) {
             return 1284;
-            } else if (this.typePet == 15&& !this.isTransform) {
+        } else if (this.typePet == 15 && !this.isTransform) {
             return 1290;
-            } else if (this.typePet == 16&& !this.isTransform) {
+        } else if (this.typePet == 16 && !this.isTransform) {
             return 2032;
-            } else if (this.typePet == 17&& !this.isTransform) {
+        } else if (this.typePet == 17 && !this.isTransform) {
             return 1314;
-            } else if (this.typePet == 18&& !this.isTransform) {
+        } else if (this.typePet == 18 && !this.isTransform) {
             return 1317;
-            } else if (this.typePet == 19&& !this.isTransform) {
+        } else if (this.typePet == 19 && !this.isTransform) {
             return 2026;
-            } else if (this.typePet == 20&& !this.isTransform) {
+        } else if (this.typePet == 20 && !this.isTransform) {
             return 2029;
-            } else if (this.typePet == 21&& !this.isTransform) {
+        } else if (this.typePet == 21 && !this.isTransform) {
             return 1215;
-            } else if (this.typePet == 22&& !this.isTransform) {
+        } else if (this.typePet == 22 && !this.isTransform) {
             return 1218;
-            } else if (this.typePet == 23&& !this.isTransform) {
+        } else if (this.typePet == 23 && !this.isTransform) {
             return 1221;
-            } else if (this.typePet == 24&& !this.isTransform) {
+        } else if (this.typePet == 24 && !this.isTransform) {
             return 1224;
-            } else if (this.typePet == 25&& !this.isTransform) {
+        } else if (this.typePet == 25 && !this.isTransform) {
             return 1224;
-            } else if (this.typePet == 26&& !this.isTransform) {
+        } else if (this.typePet == 26 && !this.isTransform) {
             return 1230;
-            } else if (this.typePet == 27&& !this.isTransform) {
+        } else if (this.typePet == 27 && !this.isTransform) {
             return 1233;
-            } else if (this.typePet == 28&& !this.isTransform) {
+        } else if (this.typePet == 28 && !this.isTransform) {
             return 1236;
-            } else if (this.typePet == 29&& !this.isTransform) {
+        } else if (this.typePet == 29 && !this.isTransform) {
             return 1260;
-            } else if (this.typePet == 30&& !this.isTransform) {
+        } else if (this.typePet == 30 && !this.isTransform) {
             return 905;
-            } else if (this.typePet == 31&& !this.isTransform) {
+        } else if (this.typePet == 31 && !this.isTransform) {
             return 510;
-            } else if (this.typePet == 32&& !this.isTransform) {
-            return 840 ;
-            } else if (this.typePet == 33&& !this.isTransform) {
+        } else if (this.typePet == 32 && !this.isTransform) {
+            return 840;
+        } else if (this.typePet == 33 && !this.isTransform) {
             return 1326;
-            } else if (this.typePet == 34&& !this.isTransform) {
-            return 1273;                    
+        } else if (this.typePet == 34 && !this.isTransform) {
+            return 1273;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int leg = inventory.itemsBody.get(5).template.leg;
             if (leg != -1) {
@@ -923,7 +1091,6 @@ public class Pet extends Player {
         if (inventory.itemsBody.get(1).isNotNullItem()) {
             return inventory.itemsBody.get(1).template.part;
         }
-
         if (this.nPoint.power < 1500000) {
             return PET_ID[this.gender][2];
         } else {
@@ -931,6 +1098,10 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Tìm quái gần nhất để tấn công.
+     * @return Quái được nhắm đến.
+     */
     private Mob findMobAttack() {
         int dis = ARANGE_CAN_ATTACK;
         Mob mobAtt = null;
@@ -947,7 +1118,9 @@ public class Pet extends Player {
         return mobAtt;
     }
 
-    //Sức mạnh mở skill đệ
+    /**
+     * Kiểm tra và mở kỹ năng dựa trên sức mạnh.
+     */
     private void updatePower() {
         if (this.playerSkill != null) {
             switch (this.playerSkill.getSizeSkill()) {
@@ -966,7 +1139,6 @@ public class Pet extends Player {
                         openSkill4();
                     }
                     break;
-                //case 4:
                 case 4:
                     if (this.nPoint.power >= 120000000000L) {
                         openSkill5();
@@ -975,6 +1147,10 @@ public class Pet extends Player {
             }
         }
     }
+
+    /**
+     * Mở kỹ năng 1 (Dragon, Demon, Galick).
+     */
     public void openSkill1() {
         Skill skill = null;
         int dragon = 30;
@@ -993,6 +1169,9 @@ public class Pet extends Player {
         this.playerSkill.skills.set(0, skill);
     }
 
+    /**
+     * Mở kỹ năng 2 (Kamejoko, Masenko, Antomic).
+     */
     public void openSkill2() {
         Skill skill = null;
         int tiLeKame = 30;
@@ -1011,6 +1190,9 @@ public class Pet extends Player {
         this.playerSkill.skills.set(1, skill);
     }
 
+    /**
+     * Mở kỹ năng 3 (Thái Dương Hạ San, Tái Tạo Năng Lượng, Trị Thương).
+     */
     public void openSkill3() {
         Skill skill = null;
         int tiLeTDHS = 30;
@@ -1028,6 +1210,9 @@ public class Pet extends Player {
         this.playerSkill.skills.set(2, skill);
     }
 
+    /**
+     * Mở kỹ năng 4 (Biến Khỉ, Đẻ Trứng, Khiên Năng Lượng).
+     */
     public void openSkill4() {
         Skill skill = null;
         int tiLeBienKhi = 30;
@@ -1045,11 +1230,14 @@ public class Pet extends Player {
         this.playerSkill.skills.set(3, skill);
     }
 
+    /**
+     * Mở kỹ năng 5 (Super Kame, Ma Phong Ba, Liên Hoàn Chưởng).
+     */
     private void openSkill5() {
         Skill skill = null;
-        int tiLeThoiMien = 10; //khi
-        int tiLeSoCoLa = 70; //detrung
-        int tiLeDCTT = 20; //khienNl
+        int tiLeThoiMien = 10;
+        int tiLeSoCoLa = 70;
+        int tiLeDCTT = 20;
 
         int rd = Util.nextInt(1, 100);
         if (rd <= tiLeThoiMien) {
@@ -1060,17 +1248,20 @@ public class Pet extends Player {
             skill = SkillUtil.createSkill(Skill.LIEN_HOAN_CHUONG, 1);
         }
         this.playerSkill.skills.set(4, skill);
-//    }
-//    private Skill getSkill(int i) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-//    }
-//    ========================================================
 
+    /**
+     * Lấy kỹ năng theo chỉ số.
+     * @param indexSkill Chỉ số kỹ năng.
+     * @return Kỹ năng tương ứng.
+     */
     private Skill getSkill(int indexSkill) {
         return this.playerSkill.skills.get(indexSkill - 1);
     }
 
+    /**
+     * Biến hình thú cưng (chỉ áp dụng cho typePet 1 và 2).
+     */
     public void transform() {
         if (this.typePet == 1) {
             this.isTransform = !this.isTransform;
@@ -1084,6 +1275,9 @@ public class Pet extends Player {
         }
     }
 
+    /**
+     * Giải phóng tài nguyên của thú cưng.
+     */
     @Override
     public void dispose() {
         this.mobAttack = null;
