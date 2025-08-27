@@ -67,26 +67,71 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Lớp tĩnh tạo và quản lý các NPC trong game
+ * @author Lucifer
+ */
 public class NpcFactory {
 
+       /** 
+     * Chi phí HĐ (có thể là mua bán, nâng cấp...)
+     * Giá trị mặc định: 50,000,000
+     */
     private static final int COST_HD = 50000000;
 
+    /** 
+     * Cờ xác định có nhận vàng hay không 
+     */
     private static boolean nhanVang = false;
+
+    /** 
+     * Cờ xác định có nhận đệ tử hay không 
+     */
     private static boolean nhanDeTu = false;
 
-    //playerid - object
+    /**
+     * Map lưu trữ thông tin giữa playerId và object tương ứng
+     * Key: playerId (Long) 
+     * Value: Object (thông tin/đối tượng liên quan)
+     */
     public static final java.util.Map<Long, Object> PLAYERID_OBJECT = new HashMap<Long, Object>();
 
+    /**
+     * Constructor private để ngăn việc khởi tạo NpcFactory bên ngoài.
+     */
     private NpcFactory() {
 
     }
 
+    /**
+     * Lấy giá trị random trong khoảng [min, max].
+     * 
+     * @param min giá trị nhỏ nhất
+     * @param max giá trị lớn nhất
+     * @param random đối tượng Random dùng để sinh số
+     * @return số nguyên ngẫu nhiên trong khoảng [min, max]
+     */
     public static int getRandomValue(int min, int max, Random random) {
         return random.nextInt(max - min + 1) + min;
     }
 
+    /**
+     * Tạo NPC Trứng Linh Thú tại map có id tương ứng.
+     * Chức năng: đổi 99 Hồn Linh Thú + 1 tỷ vàng để lấy Trứng Linh Thú.
+     * 
+     * @param mapId id bản đồ
+     * @param status trạng thái NPC
+     * @param cx tọa độ X
+     * @param cy tọa độ Y
+     * @param tempId id mẫu NPC
+     * @param avartar avatar NPC
+     * @return đối tượng Npc
+     */
     private static Npc trungLinhThu(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
+            /**
+             * Mở menu cơ bản khi tương tác với NPC Trứng Linh Thú.
+             */
             @Override
             public void openBaseMenu(Player player) {
                 if (canOpenNpc(player)) {
@@ -96,6 +141,9 @@ public class NpcFactory {
                 }
             }
 
+            /**
+             * Xử lý logic khi người chơi chọn menu từ NPC Trứng Linh Thú.
+             */
             @Override
             public void confirmMenu(Player player, int select) {
                 if (canOpenNpc(player)) {
@@ -127,12 +175,11 @@ public class NpcFactory {
                                     }
                                     break;
                                 }
-
                                 case 1:
-
+                                    // Từ chối
                                     break;
                                 case 2:
-
+                                    // Chưa dùng
                                     break;
                             }
                         } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_START_COMBINE) {
@@ -140,7 +187,7 @@ public class NpcFactory {
                                 case CombineServiceNew.Nang_Chien_Linh:
                                 case CombineServiceNew.MO_CHI_SO_Chien_Linh:
                                     if (select == 0) {
-
+                                        // Xử lý nâng chiến linh
                                     }
                                     break;
                             }
@@ -151,8 +198,22 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Ký Gửi (mua bán vật phẩm ký gửi).
+     * 
+     * @param mapId id bản đồ
+     * @param status trạng thái NPC
+     * @param cx tọa độ X
+     * @param cy tọa độ Y
+     * @param tempId id mẫu NPC
+     * @param avartar avatar NPC
+     * @return đối tượng Npc
+     */
     private static Npc kyGui(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
+            /**
+             * Mở menu cơ bản khi tương tác với NPC Ký Gửi.
+             */
             @Override
             public void openBaseMenu(Player player) {
                 if (canOpenNpc(player)) {
@@ -160,16 +221,15 @@ public class NpcFactory {
                 }
             }
 
+            /**
+             * Xử lý logic khi người chơi chọn menu từ NPC Ký Gửi.
+             */
             @Override
             public void confirmMenu(Player pl, int select) {
                 if (pl.nPoint.power < 50000000000L) {
                     Service.gI().sendThongBao(pl, "Yêu cầu sức mạnh lớn hơn 50 tỷ");
                     return;
                 }
-//                                            if (mapId == 0) {
-//                                if (player.nPoint.power < 400000000000L || player.nPoint.power >= 2000000000000L) {
-//                                    this.npcChat(player, "yeu cau 40 ti sm!");
-//                                    return;
                 if (canOpenNpc(pl)) {
                     switch (select) {
                         case 0:
@@ -178,35 +238,68 @@ public class NpcFactory {
                         case 1:
                             ShopKyGuiService.gI().openShopKyGui(pl);
                             break;
-
                     }
                 }
             }
         };
     }
 
+
     ///////////////////////////////////////////NPC Quy Lão Kame///////////////////////////////////////////
+    /**
+     * Tạo NPC Quy Lão Kame tại vị trí chỉ định.
+     * <p>Chức năng chính:
+     * <ul>
+     *   <li>Giao Rùa Con (itemId 874) để nhận quà ngẫu nhiên.</li>
+     *   <li>Nói chuyện, xem/nhận quà trong hòm thư (mailbox).</li>
+     *   <li>Về khu vực bang, giải tán bang hội.</li>
+     *   <li>Mở/Tham gia bản đồ Kho Báu Dưới Biển (DBKB).</li>
+     * </ul>
+     *
+     * @param mapId   id bản đồ NPC xuất hiện
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X đặt NPC
+     * @param cy      tọa độ Y đặt NPC
+     * @param tempId  id mẫu NPC
+     * @param avartar avatar NPC
+     * @return đối tượng Npc đã cấu hình hành vi
+     */
     private static Npc quyLaoKame(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
+
+            /**
+             * Mở menu cơ bản khi tương tác lần đầu.
+             * <p>Nếu người chơi có {@code Rùa Con} (itemId = 874) ≥ 1 sẽ hiển thị lựa chọn "Giao Rùa con".
+             */
             @Override
             public void openBaseMenu(Player player) {
                 Item ruacon = InventoryServiceNew.gI().findItemBag(player, 874);
                 if (canOpenNpc(player)) {
                     if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                         if (ruacon != null && ruacon.quantity >= 1) {
-                            this.createOtherMenu(player, 12, "Chào con, ta rất vui khi gặp con\n Con muốn làm gì nào ?",
+                            this.createOtherMenu(player, 12,
+                                    "Chào con, ta rất vui khi gặp con\n Con muốn làm gì nào ?",
                                     "Giao\nRùa con", "Nói chuyện");
                         } else {
-                            this.createOtherMenu(player, 13, "Chào con, ta rất vui khi gặp con\n Con muốn làm gì nào ?",
+                            this.createOtherMenu(player, 13,
+                                    "Chào con, ta rất vui khi gặp con\n Con muốn làm gì nào ?",
                                     "Nói chuyện");
                         }
                     }
                 }
             }
 
+            /**
+             * Xử lý lựa chọn menu của người chơi.
+             *
+             * @param player đối tượng người chơi đang tương tác
+             * @param select chỉ số lựa chọn trong menu hiện tại (0, 1, 2, ...)
+             */
             @Override
             public void confirmMenu(Player player, int select) {
                 if (canOpenNpc(player)) {
+
+                    /** Menu 12: Có Rùa Con -> (0) Giao Rùa Con nhận quà, (1) Nói chuyện mở menu bang/DBKB */
                     if (player.iDMark.getIndexMenu() == 12) {
                         switch (select) {
                             case 0:
@@ -219,13 +312,16 @@ public class NpcFactory {
                                         "Chào con, ta rất vui khi gặp con\n Con muốn làm gì nào ?",
                                         "Về khu\nvực bang", "Giải tán\nBang hội", "Kho Báu\ndưới biển");
                                 break;
-
                         }
-                    } else if (player.iDMark.getIndexMenu() == 12361) {
+                    }
+
+                    /** Menu 12361: Nhận toàn bộ quà từ hòm thư (mailbox) nếu túi đủ chỗ */
+                    else if (player.iDMark.getIndexMenu() == 12361) {
                         switch (select) {
                             case 0:
                                 if (player.inventory.itemsMailBox.size() <= 0) {
-                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Hông có quà đâu mà nhận", "Nhận quà", "Đóng");
+                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                            "Hông có quà đâu mà nhận", "Nhận quà", "Đóng");
                                     return;
                                 } else {
                                     int emptyBagCount = InventoryServiceNew.gI().getCountEmptyBag(player);
@@ -235,100 +331,118 @@ public class NpcFactory {
                                         if (GodGK.updateMailBox(player)) {
                                             for (Item it : temp) {
                                                 InventoryServiceNew.gI().addItemBag(player, it);
-                                                Service.getInstance().sendThongBao(player, "Bạn vừa nhận được x" + it.quantity + " " + it.template.name);
+                                                Service.getInstance().sendThongBao(player,
+                                                        "Bạn vừa nhận được x" + it.quantity + " " + it.template.name);
                                             }
                                             InventoryServiceNew.gI().sendItemBags(player);
                                         }
                                     } else {
-                                        this.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Bạn không đủ ô trống trong hành trang", "", "Đóng");
+                                        this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                                "Bạn không đủ ô trống trong hành trang", "", "Đóng");
                                         return;
                                     }
                                 }
                                 break;
                         }
-                    } else if (player.iDMark.getIndexMenu() == 5) {
+                    }
+
+                    /**
+                     * Menu 5: Đổi 1 Rùa Con để nhận phần thưởng ngẫu nhiên.
+                     * <p>randomItem ∈ [0..6] với phần thưởng:
+                     * <ul>
+                     *   <li>0..2: Kiếm Z (itemId 865) với các chỉ số khác nhau (opt 93: 7/14/30).</li>
+                     *   <li>3..5: Cân đẩu vân ngũ sắc (itemId 733) (3 & 4-5 khác opt 93).</li>
+                     *   <li>else: Ngọc rồng 3 sao (itemId 16).</li>
+                     * </ul>
+                     * Sau khi tặng quà sẽ trừ 1 Rùa Con và gửi lại túi đồ.
+                     */
+                    else if (player.iDMark.getIndexMenu() == 5) {
                         switch (select) {
                             case 0:
                                 try {
-                                Item RuaCon = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 874);
-                                if (RuaCon != null) {
-                                    if (RuaCon.quantity >= 1 && InventoryServiceNew.gI().getCountEmptyBag(player) > 0) {
-                                        int randomItem = Util.nextInt(6); // Random giữa 0 và 1
-                                        if (randomItem == 0) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) (865));
-                                            VatPham.itemOptions.add(new Item.ItemOption(50, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(77, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(103, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(14, 5));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 7));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
-                                        } else if (randomItem == 1) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) (865));
-                                            VatPham.itemOptions.add(new Item.ItemOption(50, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(77, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(103, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(14, 5));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 14));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
-                                        } else if (randomItem == 2) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) (865));
-                                            VatPham.itemOptions.add(new Item.ItemOption(50, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(77, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(103, 12));
-                                            VatPham.itemOptions.add(new Item.ItemOption(14, 5));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 30));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
-                                        } else if (randomItem == 3) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) 733);
-                                            VatPham.itemOptions.add(new Item.ItemOption(84, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(30, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 7));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
-                                        } else if (randomItem == 4) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) 733);
-                                            VatPham.itemOptions.add(new Item.ItemOption(84, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(30, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 14));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
-                                        } else if (randomItem == 5) {
-                                            Item VatPham = ItemService.gI().createNewItem((short) 733);
-                                            VatPham.itemOptions.add(new Item.ItemOption(84, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(30, 0));
-                                            VatPham.itemOptions.add(new Item.ItemOption(93, 14));
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
-                                        } else {
-                                            Item VatPham = ItemService.gI().createNewItem((short) 16);
-                                            InventoryServiceNew.gI().addItemBag(player, VatPham);
-                                            createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Ngọc rồng 3 sao", "Ok");
+                                    Item RuaCon = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 874);
+                                    if (RuaCon != null) {
+                                        if (RuaCon.quantity >= 1 && InventoryServiceNew.gI().getCountEmptyBag(player) > 0) {
+                                            int randomItem = Util.nextInt(6); // 0..6 (theo Util.nextInt của dự án)
+                                            if (randomItem == 0) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) (865)); // Kiếm Z
+                                                VatPham.itemOptions.add(new Item.ItemOption(50, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(77, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(103, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(14, 5));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 7));
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
+                                            } else if (randomItem == 1) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) (865));
+                                                VatPham.itemOptions.add(new Item.ItemOption(50, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(77, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(103, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(14, 5));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 14));
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
+                                            } else if (randomItem == 2) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) (865));
+                                                VatPham.itemOptions.add(new Item.ItemOption(50, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(77, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(103, 12));
+                                                VatPham.itemOptions.add(new Item.ItemOption(14, 5));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 30));
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Kiếm Z", "Ok");
+                                            } else if (randomItem == 3) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) 733); // Cân đẩu vân
+                                                VatPham.itemOptions.add(new Item.ItemOption(84, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(30, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 7));
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
+                                            } else if (randomItem == 4) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) 733);
+                                                VatPham.itemOptions.add(new Item.ItemOption(84, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(30, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 14));
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
+                                            } else if (randomItem == 5) {
+                                                Item VatPham = ItemService.gI().createNewItem((short) 733);
+                                                VatPham.itemOptions.add(new Item.ItemOption(84, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(30, 0));
+                                                VatPham.itemOptions.add(new Item.ItemOption(93, 14)); // cùng kết quả với case 4
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Cân đẩu vân ngũ sắc", "Ok");
+                                            } else {
+                                                Item VatPham = ItemService.gI().createNewItem((short) 16); // Ngọc rồng 3 sao
+                                                InventoryServiceNew.gI().addItemBag(player, VatPham);
+                                                createOtherMenu(player, ConstNpc.IGNORE_MENU, "Ta tặng cậu Ngọc rồng 3 sao", "Ok");
+                                            }
+                                            // Trừ 1 Rùa Con và cập nhật túi
+                                            InventoryServiceNew.gI().subQuantityItemsBag(player, RuaCon, 1);
+                                            InventoryServiceNew.gI().sendItemBags(player);
                                         }
-                                        InventoryServiceNew.gI().subQuantityItemsBag(player, RuaCon, 1);
-                                        InventoryServiceNew.gI().sendItemBags(player);
                                     }
+                                } catch (Exception e) {
+                                    System.err.print("\nError at 211\n");
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                System.err.print("\nError at 211\n");
-                                e.printStackTrace();
-                            }
-                            break;
+                                break;
                             default:
                                 break;
                         }
-                    } else if (player.iDMark.getIndexMenu() == 6) {
+                    }
+
+                    /** Menu 6: Nói chuyện -> mở tính năng bang/DBKB (giống menu 7 phía dưới) */
+                    else if (player.iDMark.getIndexMenu() == 6) {
                         switch (select) {
-                            case 0:
+                            case 0: // Về khu vực bang
                                 if (player.getSession().player.nPoint.power >= 80000000000L) {
                                     ChangeMapService.gI().changeMapBySpaceShip(player, 153, -1, 432);
                                 } else {
                                     this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
                                 }
                                 break;
-                            case 1:
+                            case 1: // Giải tán bang (yêu cầu: còn 1 người và bạn là bang chủ)
                                 Clan clan = player.clan;
                                 if (clan != null) {
                                     ClanMember cm = clan.getClanMember((int) player.id);
@@ -341,24 +455,25 @@ public class NpcFactory {
                                             Service.gI().sendThongBao(player, "Phải là bảng chủ");
                                             break;
                                         }
-                                        NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_DISSOLUTION_CLAN, -1, "Con có chắc chắn muốn giải tán bang hội không? Ta cho con 2 lựa chọn...",
+                                        NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_DISSOLUTION_CLAN, -1,
+                                                "Con có chắc chắn muốn giải tán bang hội không? Ta cho con 2 lựa chọn...",
                                                 "Đồng ý", "Từ chối!");
                                     }
                                     break;
                                 }
                                 Service.gI().sendThongBao(player, "bạn đã có bang hội đâu!!!");
                                 break;
-                            case 2:
+                            case 2: // Kho Báu dưới biển
                                 if (player.clan != null) {
                                     if (player.clan.BanDoKhoBau != null) {
                                         this.createOtherMenu(player, ConstNpc.MENU_OPENED_DBKB,
                                                 "Bang hội của con đang đi tìm kho báu dưới biển cấp độ "
-                                                + player.clan.BanDoKhoBau.level + "\nCon có muốn đi theo không?",
+                                                        + player.clan.BanDoKhoBau.level + "\nCon có muốn đi theo không?",
                                                 "Đồng ý", "Từ chối");
                                     } else {
                                         this.createOtherMenu(player, ConstNpc.MENU_OPEN_DBKB,
                                                 "Đây là bản đồ kho báu x4 tnsm\nCác con cứ yên tâm lên đường\n"
-                                                + "Ở đây có ta lo\nNhớ chọn cấp độ vừa sức mình nhé",
+                                                        + "Ở đây có ta lo\nNhớ chọn cấp độ vừa sức mình nhé",
                                                 "Chọn\ncấp độ", "Từ chối");
                                     }
                                 } else {
@@ -366,7 +481,10 @@ public class NpcFactory {
                                 }
                                 break;
                         }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPENED_DBKB) {
+                    }
+
+                    /** Menu OPENED_DBKB: Đi theo bang vào DBKB nếu đủ sức mạnh (hoặc admin) */
+                    else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPENED_DBKB) {
                         switch (select) {
                             case 0:
                                 if (player.isAdmin() || player.nPoint.power >= BanDoKhoBau.POWER_CAN_GO_TO_DBKB) {
@@ -377,7 +495,10 @@ public class NpcFactory {
                                 }
                                 break;
                         }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPEN_DBKB) {
+                    }
+
+                    /** Menu OPEN_DBKB: Mở chọn cấp độ DBKB nếu đủ sức mạnh (hoặc admin) */
+                    else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPEN_DBKB) {
                         switch (select) {
                             case 0:
                                 if (player.isAdmin() || player.nPoint.power >= BanDoKhoBau.POWER_CAN_GO_TO_DBKB) {
@@ -388,14 +509,28 @@ public class NpcFactory {
                                 }
                                 break;
                         }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_ACCEPT_GO_TO_BDKB) {
+                    }
+
+                    /** Menu ACCEPT_GO_TO_BDKB: Xác nhận mở DBKB cấp độ đã chọn */
+                    else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_ACCEPT_GO_TO_BDKB) {
                         switch (select) {
                             case 0:
-                                BanDoKhoBauService.gI().openBanDoKhoBau(player, Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
+                                BanDoKhoBauService.gI().openBanDoKhoBau(player,
+                                        Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
                                 break;
                         }
                     }
                 }
+
+                /* ====== CÁC NHÁNH MENU NẰM NGOÀI KHỐI canOpenNpc(player) (GIỮ NGUYÊN LOGIC) ====== */
+
+                /**
+                 * Menu 13: Trường hợp không có Rùa Con -> Nói chuyện:
+                 * <ul>
+                 *   <li>(0) Mở menu bang/DBKB (menu 7).</li>
+                 *   <li>(1) Hiển thị danh sách quà trong mailbox và cho phép nhận (menu 12361).</li>
+                 * </ul>
+                 */
                 if (player.iDMark.getIndexMenu() == 13) {
                     switch (select) {
                         case 0:
@@ -419,16 +554,21 @@ public class NpcFactory {
                             }
                             break;
                     }
-                } else if (player.iDMark.getIndexMenu() == 7) {
+                }
+
+                /**
+                 * Menu 7: Nói chuyện -> các tác vụ bang/DBKB (tương tự Menu 6).
+                 */
+                else if (player.iDMark.getIndexMenu() == 7) {
                     switch (select) {
-                        case 0:
+                        case 0: // Về khu vực bang
                             if (player.getSession().player.nPoint.power >= 80000000000L) {
                                 ChangeMapService.gI().changeMapBySpaceShip(player, 153, -1, 432);
                             } else {
                                 this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
                             }
                             break;
-                        case 1:
+                        case 1: // Giải tán bang
                             Clan clan = player.clan;
                             if (clan != null) {
                                 ClanMember cm = clan.getClanMember((int) player.id);
@@ -441,24 +581,25 @@ public class NpcFactory {
                                         Service.gI().sendThongBao(player, "Phải là bảng chủ");
                                         break;
                                     }
-                                    NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_DISSOLUTION_CLAN, -1, "Con có chắc chắn muốn giải tán bang hội không? Ta cho con 2 lựa chọn...",
+                                    NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_DISSOLUTION_CLAN, -1,
+                                            "Con có chắc chắn muốn giải tán bang hội không? Ta cho con 2 lựa chọn...",
                                             "Đồng ý", "Từ chối!");
                                 }
                                 break;
                             }
                             Service.gI().sendThongBao(player, "bạn đã có bang hội đâu!!!");
                             break;
-                        case 2:
+                        case 2: // Kho Báu dưới biển
                             if (player.clan != null) {
                                 if (player.clan.BanDoKhoBau != null) {
                                     this.createOtherMenu(player, ConstNpc.MENU_OPENED_DBKB,
                                             "Bang hội của con đang đi tìm kho báu dưới biển cấp độ "
-                                            + player.clan.BanDoKhoBau.level + "\nCon có muốn đi theo không?",
+                                                    + player.clan.BanDoKhoBau.level + "\nCon có muốn đi theo không?",
                                             "Đồng ý", "Từ chối");
                                 } else {
                                     this.createOtherMenu(player, ConstNpc.MENU_OPEN_DBKB,
                                             "Đây là bản đồ kho báu x4 tnsm\nCác con cứ yên tâm lên đường\n"
-                                            + "Ở đây có ta lo\nNhớ chọn cấp độ vừa sức mình nhé",
+                                                    + "Ở đây có ta lo\nNhớ chọn cấp độ vừa sức mình nhé",
                                             "Chọn\ncấp độ", "Từ chối");
                                 }
                             } else {
@@ -466,7 +607,12 @@ public class NpcFactory {
                             }
                             break;
                     }
-                } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPENED_DBKB) {
+                }
+
+                /** Lặp lại các menu DBKB ở ngoài khối trên để đảm bảo xử lý đúng flow của source gốc */
+
+                /** Menu OPENED_DBKB: đi theo DBKB */
+                else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPENED_DBKB) {
                     switch (select) {
                         case 0:
                             if (player.isAdmin() || player.nPoint.power >= BanDoKhoBau.POWER_CAN_GO_TO_DBKB) {
@@ -477,7 +623,10 @@ public class NpcFactory {
                             }
                             break;
                     }
-                } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPEN_DBKB) {
+                }
+
+                /** Menu OPEN_DBKB: mở chọn cấp độ DBKB */
+                else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_OPEN_DBKB) {
                     switch (select) {
                         case 0:
                             if (player.isAdmin() || player.nPoint.power >= BanDoKhoBau.POWER_CAN_GO_TO_DBKB) {
@@ -488,18 +637,37 @@ public class NpcFactory {
                             }
                             break;
                     }
-                } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_ACCEPT_GO_TO_BDKB) {
+                }
+
+                /** Menu ACCEPT_GO_TO_BDKB: xác nhận mở bản đồ với cấp độ đã chọn */
+                else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_ACCEPT_GO_TO_BDKB) {
                     switch (select) {
                         case 0:
-                            BanDoKhoBauService.gI().openBanDoKhoBau(player, Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
+                            BanDoKhoBauService.gI().openBanDoKhoBau(player,
+                                    Byte.parseByte(String.valueOf(PLAYERID_OBJECT.get(player.id))));
                             break;
-
                     }
                 }
             }
         };
     }
 
+
+        /**
+     * Tạo NPC Trưởng Lão Guru
+     *
+     * - NPC này xuất hiện tại map hành tinh Namek.
+     * - Chỉ dùng cho mục đích kiểm tra nhiệm vụ (TaskService).
+     * - Nếu người chơi chưa hoàn thành nhiệm vụ liên quan thì chỉ mở menu mặc định.
+     *
+     * @param mapId   ID bản đồ nơi NPC xuất hiện
+     * @param status  Trạng thái NPC
+     * @param cx      Tọa độ X
+     * @param cy      Tọa độ Y
+     * @param tempId  ID mẫu NPC
+     * @param avartar Avatar NPC
+     * @return NPC Trưởng Lão Guru
+     */
     public static Npc truongLaoGuru(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -514,12 +682,27 @@ public class NpcFactory {
             @Override
             public void confirmMenu(Player player, int select) {
                 if (canOpenNpc(player)) {
-
+                    // Chưa có xử lý menu riêng
                 }
             }
         };
     }
 
+    /**
+     * Tạo NPC Vua Vegeta
+     *
+     * - NPC này xuất hiện tại hành tinh Vegeta.
+     * - Chỉ dùng cho mục đích kiểm tra nhiệm vụ (TaskService).
+     * - Nếu người chơi chưa hoàn thành nhiệm vụ liên quan thì chỉ mở menu mặc định.
+     *
+     * @param mapId   ID bản đồ nơi NPC xuất hiện
+     * @param status  Trạng thái NPC
+     * @param cx      Tọa độ X
+     * @param cy      Tọa độ Y
+     * @param tempId  ID mẫu NPC
+     * @param avartar Avatar NPC
+     * @return NPC Vua Vegeta
+     */
     public static Npc vuaVegeta(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -534,18 +717,42 @@ public class NpcFactory {
             @Override
             public void confirmMenu(Player player, int select) {
                 if (canOpenNpc(player)) {
-
+                    // Chưa có xử lý menu riêng
                 }
             }
         };
     }
 
+    /**
+     * Tạo NPC chung cho:
+     * - Ông Gohan (Trái Đất)
+     * - Trưởng Lão Guru (Namek)
+     * - Vua Vegeta (Hành tinh Vegeta)
+     *
+     * Chức năng chính của NPC này:
+     * <ul>
+     *   <li>Đổi mật khẩu</li>
+     *   <li>Nhận ngọc xanh miễn phí</li>
+     *   <li>Nhận đệ tử</li>
+     *   <li>Nhập giftcode</li>
+     *   <li>Quy đổi coin sang thỏi vàng</li>
+     * </ul>
+     *
+     * @param mapId   ID bản đồ nơi NPC xuất hiện
+     * @param status  Trạng thái NPC
+     * @param cx      Tọa độ X
+     * @param cy      Tọa độ Y
+     * @param tempId  ID mẫu NPC
+     * @param avartar Avatar NPC
+     * @return NPC (ông Gohan / Trưởng Lão Guru / Vua Vegeta)
+     */
     public static Npc ongGohan_ongMoori_ongParagus(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
             public void openBaseMenu(Player player) {
                 if (canOpenNpc(player)) {
                     if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
+                        // Tạo menu chính
                         this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                 "Thành công đến từ sự cố gắng và chăm chỉ\nTruy Cập nrodreamland.io.vn Để xem giftcode và nạp thẻ"
                                         .replaceAll("%1", player.gender == ConstPlayer.TRAI_DAT ? "Quy lão Kamê"
@@ -560,10 +767,10 @@ public class NpcFactory {
                 if (canOpenNpc(player)) {
                     if (player.iDMark.isBaseMenu()) {
                         switch (select) {
-                            case 0:
+                            case 0: // Đổi mật khẩu
                                 Input.gI().createFormChangePassword(player);
                                 break;
-                            case 1:
+                            case 1: // Nhận ngọc xanh (tối đa 200tr, tránh buff quá nhiều)
                                 if (player.inventory.gem == 200000000) {
                                     this.npcChat(player, "Bú ít thôi con");
                                     break;
@@ -572,7 +779,7 @@ public class NpcFactory {
                                 Service.gI().sendMoney(player);
                                 Service.gI().sendThongBao(player, "Bạn vừa nhận được 2M ngọc xanh");
                                 break;
-                            case 2:
+                            case 2: // Nhận đệ tử (nếu chưa có)
                                 if (player.pet == null) {
                                     PetService.gI().createNormalPet(player);
                                     Service.getInstance().sendThongBao(player, "Bạn vừa nhận được đệ tử");
@@ -580,161 +787,212 @@ public class NpcFactory {
                                     this.npcChat(player, "Cháu đã có đệ tử rồi");
                                 }
                                 break;
-                            case 3:
+                            case 3: // Nhập giftcode
                                 Input.gI().createFormGiftCode(player);
                                 break;
-                                 case 4:
-                                    this.createOtherMenu(player, ConstNpc.QUY_DOI, "|7|Số tiền của bạn còn : " + player.getSession().vnd + "\n"
-                                            + "Muốn quy đổi không", "Quy Đổi\n10.000\n 20 Thỏi Vàng", "Quy Đổi\n20.000\n 40 Thỏi Vàng", "Quy Đổi\n30.000\n 60 Thỏi Vàng", "Quy Đổi\n50.000\n 100 Thỏi Vàng", "Quy Đổi\n100.000 \n200 Thỏi Vàng", "Đóng");
-                                    break;
+                            case 4: // Quy đổi coin sang thỏi vàng
+                                this.createOtherMenu(player, ConstNpc.QUY_DOI,
+                                        "|7|Số tiền của bạn còn : " + player.getSession().vnd + "\n"
+                                                + "Muốn quy đổi không",
+                                        "Quy Đổi\n10.000\n 20 Thỏi Vàng",
+                                        "Quy Đổi\n20.000\n 40 Thỏi Vàng",
+                                        "Quy Đổi\n30.000\n 60 Thỏi Vàng",
+                                        "Quy Đổi\n50.000\n 100 Thỏi Vàng",
+                                        "Quy Đổi\n100.000 \n200 Thỏi Vàng",
+                                        "Đóng");
+                                break;
                         }
-                        } else if (player.iDMark.getIndexMenu() == ConstNpc.QUY_DOI) {
-                            PreparedStatement ps = null;
-                            try (Connection con = GirlkunDB.getConnection();) {
-                                switch (select) {
-                                    case 0:
-                                        Item thoivang = ItemService.gI().createNewItem((short) (457));
-                                        thoivang.quantity += 19;
-                                        if (player.getSession().vnd < 10000) {
-                                            Service.gI().sendThongBao(player, "Bạn không có đủ 10k coin");
-                                            return;
-                                        }
-                                        player.getSession().vnd -= 10000;
-                                        InventoryServiceNew.gI().addItemBag(player, thoivang);
-                                        Service.gI().sendThongBao(player, "Bạn Nhận Được 20 " + thoivang.template.name + " Nhớ out game vô lại");
-                                        break;
-                                    case 1:
-                                        Item thoivangg = ItemService.gI().createNewItem((short) (457));
-                                        thoivangg.quantity += 39;
-                                        if (player.getSession().vnd < 20000) {
-                                            Service.gI().sendThongBao(player, "Bạn không có đủ 20k coin");
-                                            return;
-                                        }
-                                        player.getSession().vnd -= 20000;
-                                        InventoryServiceNew.gI().addItemBag(player, thoivangg);
-                                        Service.gI().sendThongBao(player, "Bạn Nhận Được 40 " + thoivangg.template.name + " Nhớ out game vô lại");
-                                        break;
-                                    case 2:
-                                        Item thoivanggg = ItemService.gI().createNewItem((short) (457));
-                                        thoivanggg.quantity += 59;
-                                        if (player.getSession().vnd < 30000) {
-                                            Service.gI().sendThongBao(player, "Bạn không có đủ 30k coin");
-                                            return;
-                                        }
-                                        player.getSession().vnd -= 30000;
-                                        InventoryServiceNew.gI().addItemBag(player, thoivanggg);
-                                        Service.gI().sendThongBao(player, "Bạn Nhận Được 60 " + thoivanggg.template.name + " Nhớ out game vô lại");
-                                        break;
-                                    case 3:
-                                        Item thoivangggg = ItemService.gI().createNewItem((short) (457));
-                                        thoivangggg.quantity += 99;
-                                        if (player.getSession().vnd < 50000) {
-                                            Service.gI().sendThongBao(player, "Bạn không có đủ 50k coin");
-                                            return;
-                                        }
-                                        player.getSession().vnd -= 50000;
-                                        InventoryServiceNew.gI().addItemBag(player, thoivangggg);
-                                        Service.gI().sendThongBao(player, "Bạn Nhận Được 1000 " + thoivangggg.template.name + " Nhớ out game vô lại");
-                                        break;
-                                    case 4:
-                                        Item thoivanggggg = ItemService.gI().createNewItem((short) (457));
-                                        thoivanggggg.quantity += 199;
-                                        if (player.getSession().vnd < 100000) {
-                                            Service.gI().sendThongBao(player, "Bạn không có đủ 100k coin");
-                                            return;
-                                        }
-                                        player.getSession().vnd -= 100000;
-                                        InventoryServiceNew.gI().addItemBag(player, thoivanggggg);
-                                        Service.gI().sendThongBao(player, "Bạn Nhận Được 200 " + thoivanggggg.template.name + " Nhớ out game vô lại");
-                                        break;
-                                }
-
-                                ps = con.prepareStatement("update account set coin = ? where id = ?");
-                                ps.setInt(1, player.getSession().vnd);
-                                ps.setInt(2, player.getSession().userId);
-                                ps.executeUpdate();
-                                ps.close();
-
-                            } catch (Exception e) {
-                                Logger.logException(NpcFactory.class, e, "Lỗi update coin " + player.name);
-                            } finally {
-                                try {
-                                    if (ps != null) {
-                                        ps.close();
+                    } else if (player.iDMark.getIndexMenu() == ConstNpc.QUY_DOI) {
+                        PreparedStatement ps = null;
+                        try (Connection con = GirlkunDB.getConnection();) {
+                            switch (select) {
+                                case 0: // 10k coin -> 20 thỏi vàng
+                                    Item thoivang = ItemService.gI().createNewItem((short) (457));
+                                    thoivang.quantity += 19;
+                                    if (player.getSession().vnd < 10000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 10k coin");
+                                        return;
                                     }
-                                } catch (SQLException ex) {
-                                    System.out.println("Lỗi khi update coin");
-                                }
-                                }
-                                }
-                }
-
-            }
-
-        };
-    }
-
-    public static Npc bulmaQK(int mapId, int status, int cx, int cy, int tempId, int avartar) {
-        return new Npc(mapId, status, cx, cy, tempId, avartar) {
-            @Override
-            public void openBaseMenu(Player player) {
-                if (canOpenNpc(player)) {
-                    if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                        this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                                "Cậu cần trang bị gì cứ đến chỗ tôi nhé", "Cửa\nhàng");
-                    }
-                }
-            }
-
-            @Override
-            public void confirmMenu(Player player, int select) {
-                if (canOpenNpc(player)) {
-                    if (player.iDMark.isBaseMenu()) {
-                        switch (select) {
-                            case 0://Shop
-                                if (player.gender == ConstPlayer.TRAI_DAT) {
-                                    ShopServiceNew.gI().opendShop(player, "BUNMA", true);
-                                } else {
-                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Xin lỗi cưng, chị chỉ bán đồ cho người Trái Đất", "Đóng");
-                                }
-                                break;
-                        }
-                    }
-                }
-            }
-        };
-    }
-
-    public static Npc dende(int mapId, int status, int cx, int cy, int tempId, int avartar) {
-        return new Npc(mapId, status, cx, cy, tempId, avartar) {
-            @Override
-            public void openBaseMenu(Player player) {
-                if (canOpenNpc(player)) {
-                    if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                        if (player.idNRNM != -1) {
-                            if (player.zone.map.mapId == 7) {
-                                this.createOtherMenu(player, 1, "Ồ, ngọc rồng namếc, bạn thật là may mắn\nnếu tìm đủ 7 viên sẽ được Rồng Thiêng Namếc ban cho điều ước", "Hướng\ndẫn\nGọi Rồng", "Gọi rồng", "Từ chối");
+                                    player.getSession().vnd -= 10000;
+                                    InventoryServiceNew.gI().addItemBag(player, thoivang);
+                                    Service.gI().sendThongBao(player, "Bạn Nhận Được 20 " + thoivang.template.name + " Nhớ out game vô lại");
+                                    break;
+                                case 1: // 20k coin -> 40 thỏi vàng
+                                    Item thoivangg = ItemService.gI().createNewItem((short) (457));
+                                    thoivangg.quantity += 39;
+                                    if (player.getSession().vnd < 20000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 20k coin");
+                                        return;
+                                    }
+                                    player.getSession().vnd -= 20000;
+                                    InventoryServiceNew.gI().addItemBag(player, thoivangg);
+                                    Service.gI().sendThongBao(player, "Bạn Nhận Được 40 " + thoivangg.template.name + " Nhớ out game vô lại");
+                                    break;
+                                case 2: // 30k coin -> 60 thỏi vàng
+                                    Item thoivanggg = ItemService.gI().createNewItem((short) (457));
+                                    thoivanggg.quantity += 59;
+                                    if (player.getSession().vnd < 30000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 30k coin");
+                                        return;
+                                    }
+                                    player.getSession().vnd -= 30000;
+                                    InventoryServiceNew.gI().addItemBag(player, thoivanggg);
+                                    Service.gI().sendThongBao(player, "Bạn Nhận Được 60 " + thoivanggg.template.name + " Nhớ out game vô lại");
+                                    break;
+                                case 3: // 50k coin -> 100 thỏi vàng
+                                    Item thoivangggg = ItemService.gI().createNewItem((short) (457));
+                                    thoivangggg.quantity += 99;
+                                    if (player.getSession().vnd < 50000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 50k coin");
+                                        return;
+                                    }
+                                    player.getSession().vnd -= 50000;
+                                    InventoryServiceNew.gI().addItemBag(player, thoivangggg);
+                                    Service.gI().sendThongBao(player, "Bạn Nhận Được 100 " + thoivangggg.template.name + " Nhớ out game vô lại");
+                                    break;
+                                case 4: // 100k coin -> 200 thỏi vàng
+                                    Item thoivanggggg = ItemService.gI().createNewItem((short) (457));
+                                    thoivanggggg.quantity += 199;
+                                    if (player.getSession().vnd < 100000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 100k coin");
+                                        return;
+                                    }
+                                    player.getSession().vnd -= 100000;
+                                    InventoryServiceNew.gI().addItemBag(player, thoivanggggg);
+                                    Service.gI().sendThongBao(player, "Bạn Nhận Được 200 " + thoivanggggg.template.name + " Nhớ out game vô lại");
+                                    break;
                             }
-                        } else {
-                            this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                                    "Anh cần trang bị gì cứ đến chỗ em nhé", "Cửa\nhàng");
+
+                            // Cập nhật lại số coin trong database
+                            ps = con.prepareStatement("update account set coin = ? where id = ?");
+                            ps.setInt(1, player.getSession().vnd);
+                            ps.setInt(2, player.getSession().userId);
+                            ps.executeUpdate();
+                            ps.close();
+
+                        } catch (Exception e) {
+                            Logger.logException(NpcFactory.class, e, "Lỗi update coin " + player.name);
+                        } finally {
+                            try {
+                                if (ps != null) {
+                                    ps.close();
+                                }
+                            } catch (SQLException ex) {
+                                System.out.println("Lỗi khi update coin");
+                            }
                         }
                     }
                 }
             }
+        };
+    }
 
-            @Override
-            public void confirmMenu(Player player, int select) {
-                if (canOpenNpc(player)) {
-                    if (player.iDMark.isBaseMenu()) {
-                        switch (select) {
-                            case 0://Shop
-                                if (player.gender == ConstPlayer.NAMEC) {
-                                    ShopServiceNew.gI().opendShop(player, "DENDE", true);
-                                } else {
-                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Xin lỗi anh, em chỉ bán đồ cho dân tộc Namếc", "Đóng");
-                                }
-                                break;
+
+   /**
+ * Tạo NPC Bulma tại Quân Khu.
+ * <p>
+ * NPC này đóng vai trò bán trang bị cho người chơi, 
+ * nhưng chỉ bán cho người Trái Đất (TRAIDAT). 
+ * Người chơi có thể mở cửa hàng thông qua menu.
+ * </p>
+ *
+ * @param mapId    ID bản đồ nơi NPC được sinh ra
+ * @param status   Trạng thái NPC (có thể dùng để điều khiển hiển thị/ẩn)
+ * @param cx       Tọa độ X của NPC trên bản đồ
+ * @param cy       Tọa độ Y của NPC trên bản đồ
+ * @param tempId   Template ID (mã định danh loại NPC)
+ * @param avartar  ID avatar (ảnh đại diện NPC)
+ * @return Npc     Trả về đối tượng NPC Bulma với hành vi được định nghĩa
+ */
+public static Npc bulmaQK(int mapId, int status, int cx, int cy, int tempId, int avartar) {
+    return new Npc(mapId, status, cx, cy, tempId, avartar) {
+        @Override
+        public void openBaseMenu(Player player) {
+            if (canOpenNpc(player)) {
+                if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
+                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                            "Cậu cần trang bị gì cứ đến chỗ tôi nhé", "Cửa\nhàng");
+                }
+            }
+        }
+
+        @Override
+        public void confirmMenu(Player player, int select) {
+            if (canOpenNpc(player)) {
+                if (player.iDMark.isBaseMenu()) {
+                    switch (select) {
+                        case 0: // Shop
+                            if (player.gender == ConstPlayer.TRAI_DAT) {
+                                ShopServiceNew.gI().opendShop(player, "BUNMA", true);
+                            } else {
+                                this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                        "Xin lỗi cưng, chị chỉ bán đồ cho người Trái Đất", "Đóng");
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+    };
+}
+
+
+    /**
+ * Tạo NPC Dende.
+ * <p>
+ * NPC này có 2 chức năng chính:
+ * <ul>
+ *   <li>Nếu người chơi đang giữ Ngọc Rồng Namec và ở bản đồ Namec (mapId = 7),
+ *       Dende sẽ cung cấp menu để hướng dẫn và cho phép gọi Rồng Thiêng Namec.</li>
+ *   <li>Nếu không có Ngọc Rồng Namec, Dende đóng vai trò NPC bán trang bị
+ *       (shop chỉ dành cho dân tộc Namec).</li>
+ * </ul>
+ * Ngoài ra, phần code đã comment cho thấy Dende còn có thể kiểm tra bang hội,
+ * số lượng Ngọc Rồng Namec và điều kiện để triệu hồi Rồng Namec,
+ * tuy nhiên logic này hiện tại bị ẩn.
+ * </p>
+ *
+ * @param mapId    ID bản đồ nơi NPC xuất hiện
+ * @param status   Trạng thái NPC (dùng để quản lý hiển thị/ẩn NPC)
+ * @param cx       Tọa độ X trên bản đồ
+ * @param cy       Tọa độ Y trên bản đồ
+ * @param tempId   Template ID của NPC (mã định danh loại NPC)
+ * @param avartar  ID avatar (hình ảnh đại diện của NPC)
+ * @return Npc     Trả về đối tượng NPC Dende với hành vi đã định nghĩa
+ */
+public static Npc dende(int mapId, int status, int cx, int cy, int tempId, int avartar) {
+    return new Npc(mapId, status, cx, cy, tempId, avartar) {
+        @Override
+        public void openBaseMenu(Player player) {
+            if (canOpenNpc(player)) {
+                if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
+                    if (player.idNRNM != -1) {
+                        if (player.zone.map.mapId == 7) {
+                            this.createOtherMenu(player, 1,
+                                    "Ồ, ngọc rồng namếc, bạn thật là may mắn\nnếu tìm đủ 7 viên sẽ được Rồng Thiêng Namếc ban cho điều ước",
+                                    "Hướng\ndẫn\nGọi Rồng", "Gọi rồng", "Từ chối");
+                        }
+                    } else {
+                        this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                                "Anh cần trang bị gì cứ đến chỗ em nhé", "Cửa\nhàng");
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void confirmMenu(Player player, int select) {
+            if (canOpenNpc(player)) {
+                if (player.iDMark.isBaseMenu()) {
+                    switch (select) {
+                        case 0://Shop
+                            if (player.gender == ConstPlayer.NAMEC) {
+                                ShopServiceNew.gI().opendShop(player, "DENDE", true);
+                            } else {
+                                this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                        "Xin lỗi anh, em chỉ bán đồ cho dân tộc Namếc", "Đóng");
+                            }
+                            break;
 //                        }
 //                    } else if (player.iDMark.getIndexMenu() == 1) {
 //
@@ -771,15 +1029,21 @@ public class NpcFactory {
 //                                SummonDragon.gI().summonNamec(player);
 //                            } else {
 //                                Service.gI().sendThongBao(player, "Anh phải có viên ngọc rồng Namếc 1 sao");
-                            }
-                    }
+                        }
                 }
             }
+        }
 //            }
 //        };
-        };
-    }
+    };
+}
 
+
+        /**
+     * NPC Appule:
+     * - Mở shop bán trang bị cho dân tộc Xayda.
+     * - Nếu người chơi không phải Xayda -> từ chối và chửi "hành tinh hạ đẳng".
+     */
     public static Npc appule(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -801,7 +1065,8 @@ public class NpcFactory {
                                 if (player.gender == ConstPlayer.XAYDA) {
                                     ShopServiceNew.gI().opendShop(player, "APPULE", true);
                                 } else {
-                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Về hành tinh hạ đẳng của ngươi mà mua đồ cùi nhé. Tại đây ta chỉ bán đồ cho người Xayda thôi", "Đóng");
+                                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                            "Về hành tinh hạ đẳng của ngươi mà mua đồ cùi nhé. Tại đây ta chỉ bán đồ cho người Xayda thôi", "Đóng");
                                 }
                                 break;
                         }
@@ -811,6 +1076,14 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Dr. Brief:
+     * - Xuất hiện ở map 84 (Siêu Thị Capsule).
+     * - Có thể đưa người chơi đến hành tinh khác bằng tàu vũ trụ:
+     *   + Trái Đất / Namếc / Xayda tuỳ theo chủng tộc.
+     *   + Hoặc dịch chuyển giữa Trái Đất - Namếc - Xayda - Siêu thị.
+     * - Nếu người chơi đang ở task chính id=7 -> hiện hội thoại hướng dẫn cứu bé gái.
+     */
     public static Npc drDrief(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -819,11 +1092,13 @@ public class NpcFactory {
                     if (this.mapId == 84) {
                         this.createOtherMenu(pl, ConstNpc.BASE_MENU,
                                 "Tàu Vũ Trụ của ta có thể đưa cậu đến hành tinh khác chỉ trong 3 giây. Cậu muốn đi đâu?",
-                                pl.gender == ConstPlayer.TRAI_DAT ? "Đến\nTrái Đất" : pl.gender == ConstPlayer.NAMEC ? "Đến\nNamếc" : "Đến\nXayda");
+                                pl.gender == ConstPlayer.TRAI_DAT ? "Đến\nTrái Đất"
+                                        : pl.gender == ConstPlayer.NAMEC ? "Đến\nNamếc"
+                                        : "Đến\nXayda");
                     } else if (!TaskService.gI().checkDoneTaskTalkNpc(pl, this)) {
                         if (pl.playerTask.taskMain.id == 7) {
-                            NpcService.gI().createTutorial(pl, this.avartar, "Hãy lên đường cứu đứa bé nhà tôi\n"
-                                    + "Chắc bây giờ nó đang sợ hãi lắm rồi");
+                            NpcService.gI().createTutorial(pl, this.avartar,
+                                    "Hãy lên đường cứu đứa bé nhà tôi\nChắc bây giờ nó đang sợ hãi lắm rồi");
                         } else {
                             this.createOtherMenu(pl, ConstNpc.BASE_MENU,
                                     "Tàu Vũ Trụ của ta có thể đưa cậu đến hành tinh khác chỉ trong 3 giây. Cậu muốn đi đâu?",
@@ -856,6 +1131,12 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Cargo:
+     * - NPC Namec có chức năng tương tự Dr. Brief (dịch chuyển hành tinh).
+     * - Có thể đưa người chơi đến Trái Đất, Xayda, hoặc Siêu thị.
+     * - Nếu task chính id=7 -> hiện hội thoại "cứu đứa bé".
+     */
     public static Npc cargo(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -863,8 +1144,8 @@ public class NpcFactory {
                 if (canOpenNpc(pl)) {
                     if (!TaskService.gI().checkDoneTaskTalkNpc(pl, this)) {
                         if (pl.playerTask.taskMain.id == 7) {
-                            NpcService.gI().createTutorial(pl, this.avartar, "Hãy lên đường cứu đứa bé nhà tôi\n"
-                                    + "Chắc bây giờ nó đang sợ hãi lắm rồi");
+                            NpcService.gI().createTutorial(pl, this.avartar,
+                                    "Hãy lên đường cứu đứa bé nhà tôi\nChắc bây giờ nó đang sợ hãi lắm rồi");
                         } else {
                             this.createOtherMenu(pl, ConstNpc.BASE_MENU,
                                     "Tàu Vũ Trụ của ta có thể đưa cậu đến hành tinh khác chỉ trong 3 giây. Cậu muốn đi đâu?",
@@ -895,52 +1176,76 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Khởi tạo NPC Cui
+     *
+     * @param mapId    ID bản đồ nơi NPC xuất hiện
+     * @param status   Trạng thái của NPC
+     * @param cx       Tọa độ X
+     * @param cy       Tọa độ Y
+     * @param tempId   ID tạm thời (template)
+     * @param avartar  Avatar NPC
+     * @return         NPC Cui
+     */
     public static Npc cui(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
-
+            /** Chi phí tìm boss = 50 triệu vàng */
             private final int COST_FIND_BOSS = 50000000;
 
+            /**
+             * Mở menu cơ bản khi người chơi click vào NPC
+             * @param player Người chơi đang tương tác với NPC
+             */            
             @Override
             public void openBaseMenu(Player player) {
                 if (canOpenNpc(player)) {
+                    // Kiểm tra nếu chưa hoàn thành nhiệm vụ đối thoại
                     if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
+                        // Nếu đang ở task 7 -> thoại cốt truyện
                         if (player.playerTask.taskMain.id == 7) {
                             NpcService.gI().createTutorial(player, this.avartar, "Hãy lên đường cứu đứa bé nhà tôi\n"
                                     + "Chắc bây giờ nó đang sợ hãi lắm rồi");
                         } else {
+                            // Tại bản đồ 19 (chỗ Cui thường đứng)
                             if (this.mapId == 19) {
 
                                 int taskId = TaskService.gI().getIdTask(player);
                                 switch (taskId) {
-                                    case ConstTask.TASK_19_0:
+                                    case ConstTask.TASK_19_0: // Tìm Kuku
                                         this.createOtherMenu(player, ConstNpc.MENU_FIND_KUKU,
                                                 "Đội quân của Fide đang ở Thung lũng Nappa, ta sẽ đưa ngươi đến đó",
                                                 "Đến chỗ\nKuku\n(" + Util.numberToMoney(COST_FIND_BOSS) + " vàng)", "Đến Cold", "Đến\nNappa", "Từ chối");
                                         break;
-                                    case ConstTask.TASK_19_1:
+                                    case ConstTask.TASK_19_1: // Tìm Mập đầu đinh
                                         this.createOtherMenu(player, ConstNpc.MENU_FIND_MAP_DAU_DINH,
                                                 "Đội quân của Fide đang ở Thung lũng Nappa, ta sẽ đưa ngươi đến đó",
                                                 "Đến chỗ\nMập đầu đinh\n(" + Util.numberToMoney(COST_FIND_BOSS) + " vàng)", "Đến Cold", "Đến\nNappa", "Từ chối");
                                         break;
-                                    case ConstTask.TASK_19_2:
+                                    case ConstTask.TASK_19_2: // Tìm Rambo
                                         this.createOtherMenu(player, ConstNpc.MENU_FIND_RAMBO,
                                                 "Đội quân của Fide đang ở Thung lũng Nappa, ta sẽ đưa ngươi đến đó",
                                                 "Đến chỗ\nRambo\n(" + Util.numberToMoney(COST_FIND_BOSS) + " vàng)", "Đến Cold", "Đến\nNappa", "Từ chối");
                                         break;
-                                    default:
+                                    default: // Mặc định
                                         this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                                 "Đội quân của Fide đang ở Thung lũng Nappa, ta sẽ đưa ngươi đến đó",
                                                 "Đến Cold", "Đến\nNappa", "Từ chối");
 
                                         break;
                                 }
-                            } else if (this.mapId == 68) {
+                            }
+                            // NPC tại map 68 → cho người chơi về Thành Phố Vegeta 
+                            else if (this.mapId == 68) {
                                 this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                         "Ngươi muốn về Thành Phố Vegeta", "Đồng ý", "Từ chối");
-                            } else if (player.getSession().player.nPoint.power >= 1500000000L) {
+                            } 
+                            // Nếu sức mạnh >= 1.5 tỷ → có thể đi thêm siêu thị
+                            else if (player.getSession().player.nPoint.power >= 1500000000L) {
                                 this.createOtherMenu(player, 2, "Tàu Vũ Trụ của ta có thể đưa cầu thủ đến hành tinh khác chỉ trong 3 giây. Cầu muốn đi đâu?",
                                         "Đến\nTrái Đất", "Đến\nNamếc", "Siêu thị");
-                            } else {
+                            } 
+                            // Nếu sức mạnh chưa đủ → chỉ cho chọn Trái Đất & Namếc
+                            else {
                                 this.createOtherMenu(player, 3,
                                         "Tàu Vũ Trụ của ta có thể đưa cầu thủ đến hành tinh khác chỉ trong 3 giây. Cầu muốn đi đâu?",
                                         "Đến\nTrái Đất", "Đến\nNamếc");
@@ -949,182 +1254,136 @@ public class NpcFactory {
                     }
                 }
             }
+            /**
+            * Xử lý hành động khi người chơi chọn menu trong NPC
+            * @param player Người chơi
+            * @param select Lựa chọn trong menu
+            */
+           @Override
+           public void confirmMenu(Player player, int select) {
+               if (canOpenNpc(player)) {
+                   // NPC Cui tại map 26 (tàu vũ trụ)
+                   if (this.mapId == 26) {
+                       if (player.iDMark.getIndexMenu() == 2) {
+                           switch (select) {
+                               case 0: ChangeMapService.gI().changeMapBySpaceShip(player, 24, -1, -1);break; // Đến Trái Đất
+                               case 1: ChangeMapService.gI().changeMapBySpaceShip(player, 25, -1, -1);break; // Đến Namếc
+                               case 2: ChangeMapService.gI().changeMapBySpaceShip(player, 84, -1, -1);break; // Đến Siêu thị
+                           }
+                       } else if (player.iDMark.getIndexMenu() == 3) {
+                           switch (select) {
+                               case 0: ChangeMapService.gI().changeMapBySpaceShip(player, 24, -1, -1);break;
+                               case 1: ChangeMapService.gI().changeMapBySpaceShip(player, 25, -1, -1);break;
+                           }
+                       }
+                   }
+               }
 
-            @Override
-            public void confirmMenu(Player player, int select) {
-                if (canOpenNpc(player)) {
-                    if (this.mapId == 26) {
-                        if (player.iDMark.getIndexMenu() == 2) {
-                            switch (select) {
-                                case 0:
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 24, -1, -1);
-                                    break;
-                                case 1:
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 25, -1, -1);
-                                    break;
-                                case 2:
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 84, -1, -1);
-                                    break;
-                            }
-                        } else if (player.iDMark.getIndexMenu() == 3) {
-                            switch (select) {
-                                case 0:
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 24, -1, -1);
-                                    break;
-                                case 1:
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 25, -1, -1);
-                                    break;
-                            }
-                        }
-                    }
-                }
-                if (this.mapId == 19) {
-                    if (player.iDMark.isBaseMenu()) {
-                        switch (select) {
-                            case 0:
-                                if (player.getSession().player.playerTask.taskMain.id >= 24) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
-                                } else {
-                                    this.npcChat(player, "Hãy hoàn thành những nhiệm vụ trước đó");
-                                }
-                                break;
-                            case 1:
-                                if (player.getSession().player.nPoint.power >= 2000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
-                                    break;
-                                }
-                        }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_KUKU) {
-                        switch (select) {
-                            case 0:
-                                Boss boss = BossManager.gI().getBossById(BossID.KUKU);
-                                if (boss != null && !boss.isDie()) {
-                                    if (player.inventory.gold >= COST_FIND_BOSS && boss.zone != null && boss.zone.map != null) {
-                                        Zone z = MapService.gI().getMapCanJoin(player, boss.zone.map.mapId, boss.zone.zoneId);
-                                        if (z != null && z.getNumOfPlayers() < z.maxPlayer) {
-                                            player.inventory.gold -= COST_FIND_BOSS;
-                                            ChangeMapService.gI().changeMap(player, boss.zone, boss.location.x, boss.location.y);
-                                            Service.gI().sendMoney(player);
-                                        } else {
-                                            Service.gI().sendThongBao(player, "Khu vực đang full.");
-                                        }
-                                    } else {
-                                        Service.gI().sendThongBao(player, "Không đủ vàng, còn thiếu "
-                                                + Util.numberToMoney(COST_FIND_BOSS - player.inventory.gold) + " vàng");
-                                    }
-                                    break;
-                                }
-                                Service.gI().sendThongBao(player, "Chết rồi ba...");
-                                break;
-                            case 1:
-                                if (player.getSession().player.nPoint.power >= 80000000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
-                                }
-                                break;
-                            case 2:
-                                if (player.getSession().player.nPoint.power >= 2000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
-                                    break;
-                                }
-                        }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_MAP_DAU_DINH) {
-                        switch (select) {
-                            case 0:
-                                Boss boss = BossManager.gI().getBossById(BossID.MAP_DAU_DINH);
-                                if (boss != null && !boss.isDie()) {
-                                    if (player.inventory.gold >= COST_FIND_BOSS) {
-                                        if (player != null && boss != null && boss.zone != null) {
-                                            Zone z = MapService.gI().getMapCanJoin(player, boss.zone.map.mapId, boss.zone.zoneId);
-                                            if (z != null && z.getNumOfPlayers() < z.maxPlayer) {
-                                                player.inventory.gold -= COST_FIND_BOSS;
-                                                ChangeMapService.gI().changeMap(player, boss.zone, boss.location.x, boss.location.y);
-                                                Service.gI().sendMoney(player);
-                                            } else {
-                                                Service.gI().sendThongBao(player, "Khu vực đang full.");
-                                            }
-                                        } else {
-                                            Service.gI().sendThongBao(player, "Không đủ vàng, còn thiếu "
-                                                    + Util.numberToMoney(COST_FIND_BOSS - player.inventory.gold) + " vàng");
-                                        }
-                                        break;
-                                    }
-                                }
-                                Service.gI().sendThongBao(player, "Chết rồi ba...");
-                                break;
+               // NPC Cui tại map 19 (liên quan nhiệm vụ)
+               if (this.mapId == 19) {
+                   if (player.iDMark.isBaseMenu()) {
+                       switch (select) {
+                           case 0: { // Đến Cold
+                               if (player.getSession().player.playerTask.taskMain.id >= 24) {
+                                   ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
+                               } else {
+                                   this.npcChat(player, "Hãy hoàn thành những nhiệm vụ trước đó");
+                               }
+                               break;
+                           }
+                           case 1: { // Đến Nappa
+                               if (player.getSession().player.nPoint.power >= 2000000L) {
+                                   ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
+                               } else {
+                                   this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
+                               }
+                           }
+                       }
+                   }
+                   // --- Các menu tìm boss Kuku, Mập đầu đinh, Rambo ---
+                   else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_KUKU) {
+                       handleFindBoss(player, select, BossID.KUKU);
+                   } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_MAP_DAU_DINH) {
+                       handleFindBoss(player, select, BossID.MAP_DAU_DINH);
+                   } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_RAMBO) {
+                       handleFindBoss(player, select, BossID.RAMBO);
+                   }
+               }
 
-                            case 1:
-                                if (player.getSession().player.nPoint.power >= 80000000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
-                                }
-                                break;
-                            case 2:
-                                if (player.getSession().player.nPoint.power >= 2000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
-                                    break;
-                                }
-                        }
-                    } else if (player.iDMark.getIndexMenu() == ConstNpc.MENU_FIND_RAMBO) {
-                        switch (select) {
-                            case 0:
-                                Boss boss = BossManager.gI().getBossById(BossID.RAMBO);
-                                if (boss != null && !boss.isDie()) {
-                                    if (player != null && boss.zone != null && player.inventory.gold >= COST_FIND_BOSS) {
-                                        Zone z = MapService.gI().getMapCanJoin(player, boss.zone.map.mapId, boss.zone.zoneId);
-                                        if (z != null && z.getNumOfPlayers() < z.maxPlayer) {
-                                            player.inventory.gold -= COST_FIND_BOSS;
-                                            ChangeMapService.gI().changeMap(player, boss.zone, boss.location.x, boss.location.y);
-                                            Service.gI().sendMoney(player);
-                                        } else {
-                                            Service.gI().sendThongBao(player, "Khu vực đang full.");
-                                        }
-                                    } else {
-                                        Service.gI().sendThongBao(player, "Không đủ vàng, còn thiếu "
-                                                + Util.numberToMoney(COST_FIND_BOSS - player.inventory.gold) + " vàng");
-                                    }
-                                    break;
-                                }
-                                Service.gI().sendThongBao(player, "Chết rồi ba...");
-                                break;
-                            case 1:
-                                if (player.getSession().player.nPoint.power >= 80000000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
-                                }
-                                break;
-                            case 2:
-                                if (player.getSession().player.nPoint.power >= 2000000L) {
-                                    ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
-                                } else {
-                                    this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
-                                    break;
-                                }
-                        }
-                    }
-                }
-                if (this.mapId == 68) {
-                    if (player.iDMark.isBaseMenu()) {
-                        switch (select) {
-                            case 0:
-                                ChangeMapService.gI().changeMapBySpaceShip(player, 19, -1, 1100);
-                                break;
-                        }
-                    }
-                }
-            }
-        };
+               // NPC Cui tại map 68 → về lại map 19
+               if (this.mapId == 68) {
+                   if (player.iDMark.isBaseMenu()) {
+                       if (select == 0) {
+                           ChangeMapService.gI().changeMapBySpaceShip(player, 19, -1, 1100);
+                       }
+                   }
+               }
+           }
+
+           /**
+            * Xử lý khi người chơi chọn "Tìm Boss"
+            * @param player Người chơi
+            * @param select Lựa chọn menu
+            * @param bossId Boss cần tìm
+            */
+           private void handleFindBoss(Player player, int select, int bossId) {
+               if (select == 0) {
+                   Boss boss = BossManager.gI().getBossById(bossId);
+                   if (boss != null && !boss.isDie()) {
+                       if (player.inventory.gold >= COST_FIND_BOSS && boss.zone != null && boss.zone.map != null) {
+                           Zone z = MapService.gI().getMapCanJoin(player, boss.zone.map.mapId, boss.zone.zoneId);
+                           if (z != null && z.getNumOfPlayers() < z.maxPlayer) {
+                               player.inventory.gold -= COST_FIND_BOSS;
+                               ChangeMapService.gI().changeMap(player, boss.zone, boss.location.x, boss.location.y);
+                               Service.gI().sendMoney(player);
+                           } else {
+                               Service.gI().sendThongBao(player, "Khu vực đang full.");
+                           }
+                       } else {
+                           Service.gI().sendThongBao(player,
+                                   "Không đủ vàng, còn thiếu " + Util.numberToMoney(COST_FIND_BOSS - player.inventory.gold) + " vàng");
+                       }
+                   } else {
+                       Service.gI().sendThongBao(player, "Chết rồi ba...");
+                   }
+               }
+               // select = 1 hoặc 2 → đi Cold hoặc Nappa, check power như trên
+               if (select == 1) {
+                   if (player.getSession().player.nPoint.power >= 80000000000L) {
+                       ChangeMapService.gI().changeMapBySpaceShip(player, 109, -1, 295);
+                   } else {
+                       this.npcChat(player, "Bạn chưa đủ 80 tỷ sức mạnh để vào");
+                   }
+               } else if (select == 2) {
+                   if (player.getSession().player.nPoint.power >= 2000000L) {
+                       ChangeMapService.gI().changeMapBySpaceShip(player, 68, -1, -90);
+                   } else {
+                       this.npcChat(player, "Bạn chưa đủ 2 triệu sức mạnh để đi đến đây.");
+                   }
+               }
+           }
+       };
     }
 
+    /**
+     * Tạo NPC Santa trong game.
+     * <p>
+     * Santa có thể:
+     * <ul>
+     *   <li>Mở cửa hàng cho người chơi.</li>
+     *   <li>Đổi thỏi vàng (id=457) lấy Capsule hồng ngọc (id=984)
+     *       theo các gói: 10→10, 100→105, 1000→1100.</li>
+     * </ul>
+     * Xuất hiện ở map 5, 13, 20.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Santa
+     */
     public static Npc santa(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1207,6 +1466,25 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC ADMIN trong game.
+     * <p>
+     * ADMIN hỗ trợ người chơi các chức năng:
+     * <ul>
+     *   <li>Đổi VNĐ sang Thỏi Vàng (itemId=457).</li>
+     *   <li>Đổi VNĐ sang Xu (itemId=1335).</li>
+     *   <li>Xem và nhận quà mốc nạp.</li>
+     * </ul>
+     * Chỉ xuất hiện ở map 21, 22, 23.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC ADMIN
+     */
     public static Npc ADMIN(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1382,6 +1660,25 @@ public class NpcFactory {
             }
         };
     }
+    
+    /**
+     * Tạo NPC Trọng Tài trong game.
+     * <p>
+     * Trọng Tài có chức năng:
+     * <ul>
+     *   <li>Giải đấu bang hội (hiện tại đang bảo trì).</li>
+     *   <li>Mở cửa hàng "SHOP_DCM".</li>
+     * </ul>
+     * Chỉ hoạt động tại map 13.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Trọng Tài
+     */
     public static Npc trongtai(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1412,6 +1709,25 @@ public class NpcFactory {
             }
         };
     }
+
+
+    /**
+     * Tạo NPC Bunma trong game.
+     * <p>
+     * Bunma hỗ trợ người chơi:
+     * <ul>
+     *   <li>Mở cửa hàng "SHOP_ĐẠI_VIỆT" bán đồ VIP.</li>
+     * </ul>
+     * Chỉ hoạt động tại map 5.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Bunma
+     */    
     public static Npc bunma(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1440,6 +1756,26 @@ public class NpcFactory {
         };
     }
 
+    
+    /**
+     * Tạo NPC ThỎ Đại Ka trong game.
+     * <p>
+     * NPC sự kiện Tết với các chức năng:
+     * <ul>
+     *   <li>Đổi 20 Lì Xì (itemId=717) → 10 Thỏi Vàng (itemId=457).</li>
+     *   <li>Đổi 50 Lì Xì → 1 Cải Trang Tết (itemId=2064, kèm option ngẫu nhiên).</li>
+     *   <li>Dùng 2 Thiệp Chúc (itemId=399) → 1 Hộp Quà Tết (itemId=397).</li>
+     * </ul>
+     * Xuất hiện tại map 5.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Thổ Địa Ka
+     */
     public static Npc thodaika(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             private Random random;
@@ -1716,6 +2052,26 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Thorren trong game.
+     * <p>
+     * NPC đổi đồ Hủy Diệt từ đồ Thần Linh cùng loại:
+     * <ul>
+     *   <li>Trái Đất</li>
+     *   <li>Namek</li>
+     *   <li>Xayda</li>
+     * </ul>
+     * Yêu cầu: 1 món đồ Thần Linh cùng loại + 500 triệu vàng + 10 đá ngũ sắc.
+     * <br>Xuất hiện tại map 5.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Thorren
+     */    
     public static Npc thoren(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1760,6 +2116,21 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Uron trong game.
+     * <p>
+     * NPC này chỉ mở shop "URON" khi người chơi tương tác.
+     * Không có menu lựa chọn phụ.
+     * <br>Xuất hiện ở map tùy theo tham số truyền vào.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Uron
+     */
     public static Npc uron(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1777,51 +2148,91 @@ public class NpcFactory {
             }
         };
     }
-//
-//    public static Npc gohannn(int mapId, int status, int cx, int cy, int tempId, int avartar) {
-//        return new Npc(mapId, status, cx, cy, tempId, avartar) {
-//
-//            @Override
-//            public void openBaseMenu(Player player) {
-//                if (canOpenNpc(player)) {
-//                    if (this.mapId == 0 || this.mapId == 7 || this.mapId == 14) {
-//                        this.createOtherMenu(player, 0, "Tiến vào map hỗ trợ tân thủ\nNơi up set kích hoạt và nhiều phần quà hấp dẫn\nChỉ dành cho người chơi từ 2k đến 60 tỷ sức mạnh!", "Đến\nRừng Aurura", "Từ chối");
-//
-//                    } else {
-//                        this.createOtherMenu(player, 0, "Ngươi muốn quay về?", "Quay về", "Từ chối");
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void confirmMenu(Player player, int select) {
-//                if (canOpenNpc(player)) {
-//
-//                    switch (select) {
-//                        case 0:
-//                            if (this.mapId == 0 || this.mapId == 7 || this.mapId == 14) {
-//                                if (!player.getSession().actived) {
-//                                    Service.gI().sendThongBaoFromAdmin(player,
-//                                            "|5|Vui lòng kích hoạt thành viên để sử dụng tính năng này!");
-//                                    break;
-//                                } else {
-//                                    ChangeMapService.gI().changeMapBySpaceShip(player, 250, -1, 295);
-//                                    break;
-//                                }
-//                            } else {
-//                                ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 295);
-//                            }
-//                        case 1:
-//
-//                            break;
-//                    }
-//
-//                }
-//            }
-//        };
-//    }
 
+    /**
+     * Tạo NPC Gohan (hướng dẫn tân thủ).
+     * <p>
+     * Chức năng:
+     * <ul>
+     *   <li>Tại map 0, 7, 14: cho phép người chơi (đã kích hoạt tài khoản)
+     *       dịch chuyển đến map Rừng Aurura (mapId=250).</li>
+     *   <li>Tại map khác: cho phép quay về map mặc định theo giới tính (mapId = gender + 21).</li>
+     * </ul>
+     * Điều kiện: chỉ người chơi có sức mạnh từ 2k đến 60 tỷ mới nên vào map hỗ trợ.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Gohan
+     */
+    public static Npc gohannn(int mapId, int status, int cx, int cy, int tempId, int avartar) {
+        return new Npc(mapId, status, cx, cy, tempId, avartar) {
+
+            @Override
+            public void openBaseMenu(Player player) {
+                if (canOpenNpc(player)) {
+                    if (this.mapId == 0 || this.mapId == 7 || this.mapId == 14) {
+                        this.createOtherMenu(player, 0, "Tiến vào map hỗ trợ tân thủ\nNơi up set kích hoạt và nhiều phần quà hấp dẫn\nChỉ dành cho người chơi từ 2k đến 60 tỷ sức mạnh!", "Đến\nRừng Aurura", "Từ chối");
+
+                    } else {
+                        this.createOtherMenu(player, 0, "Ngươi muốn quay về?", "Quay về", "Từ chối");
+                    }
+                }
+
+            }
+
+            @Override
+            public void confirmMenu(Player player, int select) {
+                if (canOpenNpc(player)) {
+
+                    switch (select) {
+                        case 0:
+                            if (this.mapId == 0 || this.mapId == 7 || this.mapId == 14) {
+                                if (!player.getSession().actived) {
+                                    Service.gI().sendThongBaoFromAdmin(player,
+                                            "|5|Vui lòng kích hoạt thành viên để sử dụng tính năng này!");
+                                    break;
+                                } else {
+                                    ChangeMapService.gI().changeMapBySpaceShip(player, 250, -1, 295);
+                                    break;
+                                }
+                            } else {
+                                ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, -1, 295);
+                            }
+                        case 1:
+
+                            break;
+                    }
+
+                }
+            }
+        };
+    }
+
+    /**
+     * Tạo NPC Ba Hạt Mít.
+     *
+     * Chức năng theo từng map:
+     * - Map 182: chưa có nhiệm vụ (thông báo sẽ update sau).
+     * - Map 5: cho phép mở tab ép sao, pha lê hóa, nâng cấp set kích hoạt.
+     * - Map 121: cho phép về đảo Rùa.
+     * - Map 42, 43, 44, 84: mở shop bùa, nâng cấp vật phẩm, bông tai, nhập ngọc rồng.
+     *
+     * Điều hướng:
+     * - Mỗi lựa chọn trong menu sẽ mở tab Combine hoặc Shop tương ứng.
+     * - Một số menu đặc biệt như nâng cấp set kích hoạt, bông tai, v.v. được xử lý qua CombineServiceNew.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Ba Hạt Mít
+     */
     public static Npc baHatMit(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -1982,7 +2393,23 @@ public class NpcFactory {
             }
         };
     }
-
+    
+   
+    /**
+     * Tạo NPC Rương Đồ.
+     *
+     * Chức năng:
+     * - Mở rương chứa đồ (ItemBox) của người chơi.
+     * - Không có menu chọn thêm.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Rương Đồ
+     */
     public static Npc ruongDo(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -2002,6 +2429,22 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Dương Tank (Ngũ Hành Sơn).
+     *
+     * Chức năng tùy map:
+     * - Map 0: Cho phép vào Ngũ Hành Sơn x10.
+     * - Map 123: Cho phép quay về Làng Ảru.
+     * - Map 122: Hiển thị điểm Ngũ Hành Sơn hiện có và menu đổi phần thưởng (cải trang x4 chưởng, top...).
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Dương Tank
+     */
     public static Npc duongtank(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -2020,9 +2463,9 @@ public class NpcFactory {
                     if (mapId == 123) {
                         this.createOtherMenu(player, 0, "Bạn Muốn Quay Trở Lại Làng Ảru?", "Về", "Từ chối");
 
-//                    }
-//                    if (mapId == 122) {
-//                        this.createOtherMenu(player, 0, "Xia xia thua phùa\b|7|Thí chủ đang có: " + player.NguHanhSonPoint + " điểm ngũ hành sơn\b|1|Thí chủ muốn đổi cải trang x4 chưởng ko?", "Âu kê", "Top Ngu Hanh Son", "No");
+                    }
+                    if (mapId == 122) {
+                        this.createOtherMenu(player, 0, "Xia xia thua phùa\b|7|Thí chủ đang có: " + player.NguHanhSonPoint + " điểm ngũ hành sơn\b|1|Thí chủ muốn đổi cải trang x4 chưởng ko?", "Âu kê", "Top Ngu Hanh Son", "No");
                     }
                 }
             }
@@ -2053,6 +2496,24 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Hoả Ngục.
+     *
+     * Chức năng thay đổi theo map:
+     * - Map 0: Cho phép người chơi vào Hành Tinh Hoả (yêu cầu sức mạnh từ 40 tỉ đến dưới 2000 tỉ).
+     * - Map 122: Cho phép quay về Làng Aru.
+     * - Map 124: Nhiệm vụ Hồng Đào:
+     *   + Mở cửa hàng Hồng Đào (shop "TAYDUKY").
+     *   + Quay về Làng Aru.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Hoả Ngục
+     */
     public static Npc hoanguc(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -2103,6 +2564,33 @@ public class NpcFactory {
         };
     }
 
+    
+    /**
+     * Tạo NPC Đậu Thần (Magic Tree).
+     *
+     * Chức năng chính:
+     * - Mở menu cây đậu thần của người chơi.
+     * - Cho phép:
+     *   + Thu hoạch đậu (harvestPea).
+     *   + Hồi sinh nhanh đậu (fastRespawnPea).
+     *   + Nâng cấp cây đậu (upgradeMagicTree / fastUpgradeMagicTree).
+     *   + Hạ cấp cây đậu (unupgradeMagicTree).
+     *
+     * Các menu được xử lý qua iDMark:
+     * - MAGIC_TREE_NON_UPGRADE_LEFT_PEA: Thu hoạch, nâng cấp/ hồi sinh nhanh.
+     * - MAGIC_TREE_NON_UPGRADE_FULL_PEA: Thu hoạch, nâng cấp.
+     * - MAGIC_TREE_CONFIRM_UPGRADE: Xác nhận nâng cấp.
+     * - MAGIC_TREE_UPGRADE: Nâng cấp nhanh hoặc hạ cấp.
+     * - MAGIC_TREE_CONFIRM_UNUPGRADE: Xác nhận hạ cấp.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Đậu Thần
+     */
     public static Npc dauThan(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2159,6 +2647,26 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Calích.
+     *
+     * Chức năng:
+     * - Xuất hiện ở nhiều bản đồ, tự dịch chuyển sau một khoảng thời gian.
+     * - Gặp ở map 102: cho người chơi nghe kể chuyện hoặc quay về Quá Khứ.
+     * - Gặp ở map khác: cho nghe kể chuyện hoặc đi đến Tương Lai (nếu đã qua nhiệm vụ 21).
+     *
+     * Điều kiện:
+     * - Người chơi phải đạt ít nhất nhiệm vụ TASK_20_0.
+     * - Nếu Calích đã rời khỏi bản đồ hiện tại, không thể tương tác.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Calích
+     */
     public static Npc calick(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             private final byte COUNT_CHANGE = 50;
@@ -2232,6 +2740,25 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC Jaco.
+     *
+     * Chức năng:
+     * - Ở map 24, 25, 26: dẫn người chơi đến hành tinh Potaufeu
+     *   (yêu cầu nhiệm vụ chính >= 22).
+     * - Ở map 139: cho phép người chơi quay về trạm vũ trụ.
+     *
+     * Điều kiện:
+     * - Nếu chưa đạt nhiệm vụ yêu cầu thì NPC báo "Hãy hoàn thành xong nhiệm vụ Fide".
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC Jaco
+     */
     public static Npc jaco(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2277,6 +2804,30 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC PoTaGe (mapId = 140).
+     *
+     * Chức năng:
+     * - Mở menu "Đa vũ trụ song song".
+     * - Cho phép người chơi gọi Boss Nhân Bản với giá 10.000 hồng ngọc.
+     *
+     * Điều kiện:
+     * - Yêu cầu sức mạnh >= 50 tỉ.
+     * - Người chơi phải kích hoạt tài khoản.
+     * - Nếu còn Boss nhân bản trước đó thì không thể gọi thêm.
+     *
+     * Cơ chế:
+     * - NPC tạo Boss Nhân Bản dựa trên thông tin nhân vật (dame, hp, skill...).
+     * - Sau khi gọi, trừ 10.000 ruby và gửi thông báo tiền mới cho người chơi.
+     *
+     * @param mapId   id bản đồ
+     * @param status  trạng thái NPC
+     * @param cx      tọa độ X
+     * @param cy      tọa độ Y
+     * @param tempId  id tạm
+     * @param avartar id hình đại diện
+     * @return NPC PoTaGe
+     */
     private static Npc poTaGe(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2295,7 +2846,7 @@ public class NpcFactory {
             @Override
             public void confirmMenu(Player player, int select) {
                 if (player.nPoint.power < 50000000000L) {
-                    //  if (player.getSession().player.playerTask.taskMain.id >= 22) {                                    
+//                      if (player.getSession().player.playerTask.taskMain.id >= 22) {                                    
 //                if (!player.getSession().actived) {
                     Service.gI().sendThongBao(player, "Yêu cầu sức mạnh là 50 tỉ !");
                 } else if (canOpenNpc(player)) {
@@ -2358,6 +2909,14 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Lý Tiểu Nương 54 (mapId = 5).
+     *
+     * - Đổi 100 thỏi vàng => random Pet/Danh hiệu.
+     * - Đổi 200 thỏi vàng => random Thú cưỡi VIP.
+     * - Kiểm tra số lượng thỏi vàng và ô trống trong hành trang trước khi đổi.
+     * - Nếu hợp lệ sẽ trừ thỏi vàng, tạo item mới và bỏ vào hành trang.
+     */    
     public static Npc npclytieunuong54(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2390,7 +2949,7 @@ public class NpcFactory {
                                     try {
                                         vy1 = InventoryServiceNew.gI().findItemBag(player, 457);
                                     } catch (Exception e) {
-//                                        throw new RuntimeException(e);
+                                        throw new RuntimeException(e);
                                     }
                                     if (vy1 == null || vy1.quantity < 100) {
                                         this.npcChat(player, "Bạn cần có x100 thỏi vàng");
@@ -2421,7 +2980,7 @@ public class NpcFactory {
                                     try {
                                         hoa = InventoryServiceNew.gI().findItemBag(player, 457);
                                     } catch (Exception e) {
-//                                        throw new RuntimeException(e);
+                                        throw new RuntimeException(e);
                                     }
                                     if (hoa == null || hoa.quantity < 200) {
                                         this.npcChat(player, "Bạn cần có 200 TV");
@@ -2451,6 +3010,23 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Thượng Đế
+     *
+     * - Map 45: Cho người chơi chọn đến Kaio hoặc mở vòng quay may mắn.
+     * - Map 0 : 
+     *      + Đến Đại Hội Võ Thuật (DHVT).
+     *      + Đổi cải trang sự kiện bằng 500 điểm PvP.
+     *      + Xem top PvP.
+     * - Map 129: Cho quay về Map 0.
+     * - Map 141: Cho quay về Map 48.
+     *
+     * Chức năng chi tiết:
+     *  - DHVT: dịch chuyển đến map 129 và random cờ.
+     *  - Đổi cải trang: trừ 500 điểm PvP => nhận item 1104 với các option chỉ số.
+     *  - Top PvP: mở bảng xếp hạng PvP.
+     *  - Vòng quay may mắn: chọn quay bằng vàng, mở rương phụ, hoặc xóa toàn bộ rương.
+     */
     public static Npc thuongDe(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -2461,10 +3037,10 @@ public class NpcFactory {
                         this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                 "Con muốn làm gì nào", "Đến Kaio", "Quay số\nmay mắn");
                     }
-//                    if (this.mapId == 0) {
-//                        this.createOtherMenu(player, 0,
-//                                "Con muốn gì nào?\nCon đang còn : " + player.pointPvp + " điểm PvP Point", "Đến DHVT", "Đổi Cải trang sự kiên", "Top PVP");
-//                    }
+                    if (this.mapId == 0) {
+                        this.createOtherMenu(player, 0,
+                                "Con muốn gì nào?\nCon đang còn : " + player.pointPvp + " điểm PvP Point", "Đến DHVT", "Đổi Cải trang sự kiên", "Top PVP");
+                    }
                     if (this.mapId == 129 || this.mapId == 141) {
                         this.createOtherMenu(player, 0,
                                 "Con muốn gì nào?", "Quay về");
@@ -2475,47 +3051,47 @@ public class NpcFactory {
             @Override
             public void confirmMenu(Player player, int select) {
                 if (canOpenNpc(player)) {
-//                    if (this.mapId == 0) {
-//                        if (player.iDMark.getIndexMenu() == 0) { // 
-//                            switch (select) {
-//                                case 0:
-//                                    ChangeMapService.gI().changeMapBySpaceShip(player, 129, -1, 354);
-//                                    Service.getInstance().changeFlag(player, Util.nextInt(8));
-//                                    break; // qua dhvt
-//                                case 1:  // 
-//                                    this.createOtherMenu(player, 1,
-//                                            "Bạn có muốn đổi 500 điểm PVP lấy \n|6|Cải trang Mèo Kid Lân với tất cả chỉ số là 80%\n ", "Ok", "Tu choi");
-//                                    // bat menu doi item
-//                                    break;
-//
-//                                case 2:  // 
-//                                    Util.showListTop(player, (byte) 3);
-//                                    // mo top pvp
-//                                    break;
-//
-//                            }
-//                        }
-//                        if (player.iDMark.getIndexMenu() == 1) { // action doi item
-//                            switch (select) {
-//                                case 0: // trade
-//                                    if (player.pointPvp >= 500) {
-//                                        player.pointPvp -= 500;
-//                                        Item item = ItemService.gI().createNewItem((short) (1104));
-//                                        item.itemOptions.add(new Item.ItemOption(49, 80));
-//                                        item.itemOptions.add(new Item.ItemOption(77, 80));
-//                                        item.itemOptions.add(new Item.ItemOption(103, 50));
-//                                        item.itemOptions.add(new Item.ItemOption(207, 0));
-//                                        item.itemOptions.add(new Item.ItemOption(33, 0));
-////                                      
-//                                        InventoryServiceNew.gI().addItemBag(player, item);
-//                                        Service.getInstance().sendThongBao(player, "Chúc Mừng Bạn Đổi Cải Trang Thành Công !");
-//                                    } else {
-//                                        Service.getInstance().sendThongBao(player, "Không đủ điểm bạn còn " + (500 - player.pointPvp) + " Điểm nữa");
-//                                    }
-//                                    break;
-//                            }
-//                        }
-//                    }
+                    if (this.mapId == 0) {
+                        if (player.iDMark.getIndexMenu() == 0) { // 
+                            switch (select) {
+                                case 0:
+                                    ChangeMapService.gI().changeMapBySpaceShip(player, 129, -1, 354);
+                                    Service.getInstance().changeFlag(player, Util.nextInt(8));
+                                    break; // qua dhvt
+                                case 1:  // 
+                                    this.createOtherMenu(player, 1,
+                                            "Bạn có muốn đổi 500 điểm PVP lấy \n|6|Cải trang Mèo Kid Lân với tất cả chỉ số là 80%\n ", "Ok", "Tu choi");
+                                    // bat menu doi item
+                                    break;
+
+                                case 2:  // 
+                                    Util.showListTop(player, (byte) 3);
+                                    // mo top pvp
+                                    break;
+
+                            }
+                        }
+                        if (player.iDMark.getIndexMenu() == 1) { // action doi item
+                            switch (select) {
+                                case 0: // trade
+                                    if (player.pointPvp >= 500) {
+                                        player.pointPvp -= 500;
+                                        Item item = ItemService.gI().createNewItem((short) (1104));
+                                        item.itemOptions.add(new Item.ItemOption(49, 80));
+                                        item.itemOptions.add(new Item.ItemOption(77, 80));
+                                        item.itemOptions.add(new Item.ItemOption(103, 50));
+                                        item.itemOptions.add(new Item.ItemOption(207, 0));
+                                        item.itemOptions.add(new Item.ItemOption(33, 0));
+//                                      
+                                        InventoryServiceNew.gI().addItemBag(player, item);
+                                        Service.getInstance().sendThongBao(player, "Chúc Mừng Bạn Đổi Cải Trang Thành Công !");
+                                    } else {
+                                        Service.getInstance().sendThongBao(player, "Không đủ điểm bạn còn " + (500 - player.pointPvp) + " Điểm nữa");
+                                    }
+                                    break;
+                            }
+                        }
+                    }
                     if (this.mapId == 129) {
                         switch (select) {
                             case 0: // quay ve
@@ -2570,6 +3146,20 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Thần Vũ Trụ
+     * - Chức năng chính: cho phép người chơi di chuyển giữa các map đặc biệt.
+     * - Xuất hiện tại: Map 48 hoặc Map 0.
+     *
+     * Menu hiển thị:
+     *  - Tại menu chính (BASE_MENU):
+     *      + "Di chuyển" → mở menu phụ MENU_DI_CHUYEN
+     *
+     *  - Tại menu phụ (MENU_DI_CHUYEN):
+     *      + "Về thần điện" → đổi map sang 45 (tọa độ 354)
+     *      + "Thánh địa Kaio" → đổi map sang 50 (tọa độ 318,336)
+     *      + "Con đường rắn độc" → đổi map sang 141 (tọa độ 318,336)
+     */
     public static Npc thanVuTru(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2601,9 +3191,9 @@ public class NpcFactory {
                                 case 1:
                                     ChangeMapService.gI().changeMap(player, 50, -1, 318, 336);
                                     break;
-//                                case 2:
-//                                    ChangeMapService.gI().changeMap(player, 141, -1, 318, 336);//con đường rắn độc
-//                                    break;
+                                case 2:
+                                    ChangeMapService.gI().changeMap(player, 141, -1, 318, 336);//con đường rắn độc
+                                    break;
                             }
                         }
                     }
@@ -2613,6 +3203,21 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Kibit
+     * - Vị trí: xuất hiện ở Map 50 (Thánh địa Kaio) và Map 114.
+     *
+     * Chức năng:
+     *  - Tại Map 50:
+     *      + Menu chính hiển thị: "Đến Kaio", "Từ chối".
+     *      + Nếu chọn "Đến Kaio" → đưa người chơi tới Map 48 (tọa độ 354,240).
+     *
+     *  - Tại Map 114:
+     *      + Menu chỉ có: "Từ chối".
+     *
+     * Lưu ý:
+     *  - NPC chỉ thực hiện chức năng nếu `canOpenNpc(player)` hợp lệ.
+     */
     public static Npc kibit(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2646,6 +3251,43 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Osin
+     * - Xuất hiện ở nhiều map (50, 52, 114-120, 154, 155).
+     *
+     * Chức năng theo map:
+     *  - Map 50 (Thánh địa Kaio):
+     *      + Menu: "Đến Kaio", "Đến hành tinh Bill", "Từ chối".
+     *      + Người chơi chọn sẽ được dịch chuyển đến map 48 hoặc map 154.
+     *
+     *  - Map 154 (Hành tinh Bill):
+     *      + Menu: "Về thánh địa", "Đến hành tinh ngục tù", "Từ chối".
+     *      + Để sang map 155 cần ≥ 80 tỉ sức mạnh, nếu không sẽ báo lỗi.
+     *
+     *  - Map 155 (Ngục tù):
+     *      + Menu: "Quay về", "Từ chối".
+     *      + Quay về → map 154.
+     *
+     *  - Map 52 (Khu Ma Bư):
+     *      + Hiển thị menu theo thời gian mở/đóng Đại chiến Ma Bư.
+     *      + Nếu đang mở: hiển thị "Hướng dẫn", "Tham gia", "Từ chối".
+     *      + Nếu chưa mở: chỉ có "Hướng dẫn", "Từ chối".
+     *      + Tham gia → đưa người chơi tới map 114 (chiến Ma Bư).
+     *
+     *  - Map 114–119 (tầng Ma Bư, trừ 116):
+     *      + Nếu người chơi đạt điểm tối đa (pointMabu): có menu "Lên tầng!", "Quay về", "Từ chối".
+     *      + Nếu chưa đạt: chỉ có "Quay về", "Từ chối".
+     *      + "Lên tầng!" → sang tầng tiếp theo.
+     *      + "Quay về" → về map theo giới tính (gender + 21).
+     *
+     *  - Map 120 (đỉnh Ma Bư):
+     *      + Menu: "Quay về", "Từ chối".
+     *      + Quay về → map theo giới tính (gender + 21).
+     *
+     * Lưu ý:
+     *  - Một số chức năng kiểm tra sức mạnh (≥ 80 tỉ) trước khi cho qua map.
+     *  - Menu có thể khác nhau tùy theo thời điểm mở/đóng sự kiện.
+     */
     public static Npc osin(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2786,6 +3428,29 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Độc Nhãn (Doanh Trại)
+     *
+     * Chức năng chính:
+     *  - Chỉ tiếp người chơi thuộc bang hội (clan). Nếu không có clan → từ chối.
+     *  - Nếu clan đã tham gia Doanh Trại hôm nay (doanhTrai_haveGone = true) → 
+     *    NPC thông báo đã thả ngọc rồng, hẹn quay lại ngày mai.
+     *  - Nếu chưa, NPC sẽ kiểm tra:
+     *      + Nếu toàn bộ quái (Mob) và boss trong map đều đã chết:
+     *          - Đánh dấu clan đã hoàn thành doanh trại (doanhTrai_haveGone = true).
+     *          - Ghi lại thời gian hoàn thành.
+     *          - Gửi thông báo đếm ngược 5 phút cho tất cả thành viên clan.
+     *          - Thả ngọc rồng trong các map để người chơi đi nhặt.
+     *      + Nếu còn quái/boss sống → báo phải tiêu diệt hết.
+     *
+     * Menu và lựa chọn:
+     *  - MENU_JOIN_DOANH_TRAI:
+     *      + Chọn 0 → tham gia Doanh Trại (joinDoanhTrai).
+     *      + Chọn 2 → xem hướng dẫn Doanh Trại.
+     *
+     *  - IGNORE_MENU:
+     *      + Chọn 1 → mở hướng dẫn Doanh Trại.
+     */
     public static Npc docNhan(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2854,6 +3519,32 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Lính Canh (Doanh Trại Độc Nhãn)
+     *
+     * Chức năng chính:
+     *  - Quản lý việc cho bang hội tham gia Doanh Trại.
+     *
+     * Điều kiện tham gia:
+     *  1. Người chơi phải có bang (clan). Nếu không → từ chối.
+     *  2. Bang phải có ít nhất N_PLAYER_CLAN (mặc định 5) thành viên mới mở được.
+     *  3. Nếu bang đang tham gia Doanh Trại → NPC hiển thị thời gian còn lại và hỏi có muốn vào không.
+     *  4. Người chơi cần có ít nhất N_PLAYER_MAP (mặc định 1) đồng đội cùng bang đứng gần khu vực chỉ định.
+     *  5. Thành viên mới gia nhập clan phải đủ 1 ngày mới được vào.
+     *  6. Người chơi chỉ được đi Doanh Trại 1 lần/ngày (kiểm tra LastDoanhTrai).
+     *  7. Clan mới tạo phải chờ ít nhất 2 ngày mới được tham gia.
+     *  8. Clan chỉ được mở Doanh Trại 1 lần/ngày (kiểm tra lastTimeOpenDoanhTrai).
+     *
+     * Menu hiển thị:
+     *  - Nếu đủ điều kiện → MENU_JOIN_DOANH_TRAI:
+     *      + Tham gia → vào Doanh Trại.
+     *      + Không → thoát.
+     *      + Hướng dẫn thêm → mở hướng dẫn Doanh Trại.
+     *
+     *  - Nếu không đủ điều kiện → IGNORE_MENU:
+     *      + Hiển thị lý do (thiếu thành viên, mới gia nhập, cooldown, v.v.).
+     *      + Có thể chọn "Hướng dẫn thêm" để đọc hướng dẫn Doanh Trại.
+     */
     public static Npc linhCanh(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -2951,6 +3642,37 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Popo - Sự kiện Khí Gas Hủy Diệt (Destron Gas)
+     *
+     * Chức năng:
+     *  - Giới thiệu sự kiện Khí Gas và cho phép người chơi/bang hội tham gia.
+     *
+     * Điều kiện:
+     *  1. Người chơi phải có bang hội mới được tham gia.
+     *  2. Người chơi cần có sức mạnh >= Gas.POWER_CAN_GO_TO_GAS 
+     *     (trừ khi là admin thì được bỏ qua).
+     *
+     * Menu hiển thị:
+     *  - BASE_MENU: Popo giải thích về Khí Gas và hỏi người chơi có muốn tham gia không.
+     *      + Nếu bang đang tham gia Gas → hiển thị MENU_OPENED_GAS.
+     *      + Nếu chưa tham gia → hiển thị MENU_OPEN_GAS.
+     *
+     *  - MENU_OPENED_GAS:
+     *      + Đồng ý → chuyển người chơi vào map Gas cùng bang.
+     *      + Từ chối → thoát.
+     *
+     *  - MENU_OPEN_GAS:
+     *      + Chọn cấp độ → mở form chọn cấp độ Gas (nếu đủ sức mạnh).
+     *      + Từ chối → thoát.
+     *
+     *  - MENU_ACCPET_GO_TO_GAS:
+     *      + Đồng ý → GasService mở bản đồ Gas theo cấp độ đã chọn.
+     *
+     * Lưu ý:
+     *  - Nếu không có bang → NPC nhắc nhở phải có bang hội mới được đi.
+     *  - Nếu không đủ sức mạnh → NPC báo cần đạt sức mạnh tối thiểu.
+     */
    private static Npc popo(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3022,6 +3744,40 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Mèo Thần Tài - Trò chơi Tài Xỉu
+     *
+     * Chức năng:
+     *  - Tổ chức trò chơi Tài Xỉu (cược bằng Hồng Ngọc).
+     *  - Hiển thị luật chơi, điều kiện tham gia và cho phép người chơi đặt Tài hoặc Xỉu.
+     *
+     * Điều kiện tham gia:
+     *  - Người chơi cần có ít nhất 250.000 Hồng Ngọc trong túi.
+     *  - Cược tối thiểu: 20.000 VNĐ (Hồng Ngọc).
+     *  - Cược tối đa: 1.000.000.000.000 VNĐ.
+     *
+     * Quy tắc trò chơi:
+     *  - Kết quả dựa trên tổng 3 viên xúc xắc:
+     *      + Tổng từ 3 → 10  = XỈU.
+     *      + Tổng ≥ 11       = TÀI.
+     *      + 3 viên cùng số  = TAM HOA (nhà cái thắng hết).
+     *  - Thắng cược nhận thưởng x2, x3 số Hồng Ngọc nhưng bị trừ 20% phí.
+     *  - Nếu thoát game khi chốt kết quả sẽ mất tiền cược và phần thưởng.
+     *
+     * Menu hiển thị:
+     *  - BASE_MENU:
+     *      + "Hướng dẫn chơi" → giải thích luật.
+     *      + "Tham gia"       → mở giao diện đặt cược.
+     *
+     *  - Menu đặt cược:
+     *      + Hiển thị kết quả kỳ trước, tổng cược nhà Tài/Xỉu, số người tham gia.
+     *      + Cho phép đặt "Tài" hoặc "Xỉu" (nếu chưa đặt).
+     *      + Nếu đã đặt, chỉ có thể "Theo Tài" hoặc "Theo Xỉu".
+     *
+     * Trạng thái đặc biệt:
+     *  - Nếu hệ thống bảo trì (baotri = true) → hiển thị thông báo và hạn chế thao tác.
+     *  - Nếu đang trong thời gian cược → cho phép người chơi đặt hoặc theo cửa đã chọn.
+     */
     public static Npc meothantai(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3179,6 +3935,42 @@ public class NpcFactory {
         };
     }
 
+
+    /**
+     * NPC Quả Trứng (Mabư Egg & Bill Egg)
+     *
+     * Chức năng:
+     *  - Quản lý quá trình ấp và nở trứng Mabư hoặc Bill.
+     *  - Cho phép người chơi:
+     *      + Theo dõi trạng thái trứng (thời gian còn lại).
+     *      + Ấp nhanh bằng vàng.
+     *      + Cho nở trứng → sinh ra đệ tử đặc biệt (Mabư/Bill).
+     *      + Hủy bỏ trứng nếu không muốn giữ.
+     *
+     * Điều kiện:
+     *  - Mabư Egg xuất hiện tại bản đồ riêng của từng hành tinh (mapId = 21 + giới tính).
+     *  - Bill Egg xuất hiện tại map 154.
+     *
+     * Tùy chọn trong menu:
+     *  - Khi trứng chưa chín:
+     *      + "Hủy bỏ trứng"
+     *      + "Ấp nhanh (1.000.000.000 vàng)"
+     *      + "Đóng"
+     *
+     *  - Khi trứng đã chín:
+     *      + "Nở" → mở menu chọn loại đệ Mabư/Bill (Trái Đất, Namếc, Xayda).
+     *      + "Hủy bỏ trứng"
+     *      + "Đóng"
+     *
+     * Quy trình:
+     *  - Ấp nhanh: trừ 1.000.000.000 vàng và trứng lập tức chín.
+     *  - Nở: thay thế đệ tử hiện tại của người chơi bằng đệ Mabư hoặc Bill tùy chọn.
+     *  - Hủy bỏ: xóa trứng khỏi nhân vật.
+     *
+     * Menu phụ:
+     *  - CONFIRM_OPEN_EGG / CONFIRM_OPEN_BILL: xác nhận cho trứng nở, chọn chủng tộc đệ.
+     *  - CONFIRM_DESTROY_EGG / CONFIRM_DESTROY_BILL: xác nhận hủy bỏ trứng.
+     */
     public static Npc quaTrung(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -3329,6 +4121,33 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Quốc Vương
+     *
+     * Chức năng:
+     *  - Giúp người chơi hoặc đệ tử mở giới hạn sức mạnh (limit power).
+     *
+     * Menu chính:
+     *  - "Bản thân" → Mở giới hạn cho nhân vật chính.
+     *  - "Đệ tử" → Mở giới hạn cho đệ tử (nếu có).
+     *  - "Từ chối" → Thoát menu.
+     *
+     * Điều kiện:
+     *  - Nếu nhân vật hoặc đệ tử chưa đạt giới hạn tối đa → cho phép mở thêm.
+     *  - Nếu đã đạt giới hạn tối đa → thông báo không thể mở.
+     *
+     * Cách mở:
+     *  - Mở thường: Tăng giới hạn sức mạnh theo mốc hiện tại (không tốn vàng).
+     *  - Mở nhanh: Tốn chi phí cố định (OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER vàng).
+     *
+     * Quy trình:
+     *  - Khi chọn mở nhanh: trừ vàng trong túi, cập nhật tiền và mở giới hạn ngay.
+     *  - Nếu không đủ vàng: hiển thị số vàng còn thiếu.
+     *
+     * Lưu ý:
+     *  - Chỉ mở giới hạn đệ tử nếu người chơi có đệ tử.
+     *  - Hỗ trợ cả nhân vật chính và đệ tử, mỗi bên có giới hạn riêng.
+     */
     public static Npc quocVuong(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -3421,6 +4240,26 @@ public class NpcFactory {
         };
     }
 
+    /**
+    * NPC Bulma Tương Lai (bulmaTL)
+    *
+    * Chức năng:
+    *  - Mở cửa hàng cho người chơi, tùy thuộc vào map hiện tại.
+    *
+    * Menu:
+    *  - "Cửa hàng" → Truy cập shop.
+    *  - "Đóng" → Thoát menu.
+    *
+    * Điều kiện theo map:
+    *  - Map 102: Bulma bán hàng cho người chơi thông thường.
+    *      → Mở shop "BUNMA_FUTURE".
+    *  - Map 104: Bulma đóng vai trò Linh thú sư.
+    *      → Mở shop "BUNMA_LINHTHU".
+    *
+    * Quy trình:
+    *  - Người chơi nói chuyện với Bulma → hiển thị menu.
+    *  - Nếu chọn "Cửa hàng" → mở shop tương ứng với map.
+    */   
     public static Npc bulmaTL(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3457,6 +4296,36 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Rồng Omega (rongOmega)
+     *
+     * Chức năng:
+     *  - Liên quan đến sự kiện Ngọc Rồng Sao Đen (Black Ball War).
+     *  - Người chơi có thể tham gia sự kiện hoặc nhận thưởng ngọc rồng.
+     *
+     * Menu hiển thị (theo điều kiện thời gian & trạng thái):
+     *  - Trong thời gian mở Black Ball War:
+     *      + "Hướng dẫn thêm" → mở hướng dẫn Black Ball War.
+     *      + "Tham gia" → mở tab đổi map để vào sự kiện.
+     *      + "Từ chối".
+     *
+     *  - Ngoài thời gian mở nhưng người chơi có thưởng chưa nhận:
+     *      + Hiển thị danh sách phần thưởng ngọc rồng sao đen (1–7 sao).
+     *      + "Từ chối".
+     *
+     *  - Ngoài thời gian mở & không có thưởng:
+     *      + "Hướng dẫn".
+     *      + "Từ chối".
+     *
+     * Quy trình:
+     *  - Người chơi nói chuyện → kiểm tra thời gian sự kiện.
+     *  - Nếu đang mở → chọn tham gia.
+     *  - Nếu đã có phần thưởng → chọn nhận thưởng tương ứng.
+     *  - Nếu không có gì → chỉ xem hướng dẫn hoặc thoát.
+     *
+     * Xử lý lỗi:
+     *  - Có try-catch để log lỗi khi mở menu (tránh crash server).
+     */
     public static Npc rongOmega(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3534,6 +4403,45 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Rồng 1–7 Sao (rong1_to_7s)
+     *
+     * Chức năng:
+     *  - Liên quan đến sự kiện Ngọc Rồng Sao Đen và Black Ball War.
+     *  - Người chơi có thể:
+     *      + Được phù hộ (tăng HP nhiều lần).
+     *      + Quay về nhà.
+     *      + Gọi Boss (nếu điều kiện cho phép).
+     *
+     * Menu hiển thị:
+     *  - Nếu người chơi đang giữ Ngọc Rồng Sao Đen:
+     *      + "Phù hộ" → mở menu chọn mức tăng HP (x3, x5, x7).
+     *      + "Từ chối".
+     *
+     *  - Nếu bản đồ có Boss, vật phẩm Ngọc Rồng Sao Đen rơi, 
+     *    hoặc có người chơi khác đang giữ Ngọc Rồng Sao Đen:
+     *      + "Về nhà".
+     *      + "Từ chối".
+     *
+     *  - Nếu không có cản trở nào:
+     *      + "Về nhà".
+     *      + "Từ chối".
+     *      + "Gọi Boss".
+     *
+     * Menu phụ:
+     *  - MENU_OPTION_PHU_HP:
+     *      + Người chơi chọn mức phù hộ HP với chi phí vàng (x3, x5, x7).
+     *      + Nếu đã được phù hộ trước đó → báo lỗi "Bạn đã được phù hộ rồi!".
+     *
+     *  - MENU_OPTION_GO_HOME:
+     *      + "Về nhà" → Dịch chuyển người chơi về nhà tương ứng.
+     *      + "Gọi Boss" → Triệu hồi Boss tại bản đồ hiện tại.
+     *      + "Từ chối" → NPC nói câu thách thức.
+     *
+     * Lưu ý:
+     *  - Các lựa chọn có liên quan đến vàng (chi phí phù hộ).
+     *  - Người chơi chỉ có thể được phù hộ một lần tại cùng thời điểm.
+     */
     public static Npc rong1_to_7s(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3599,6 +4507,37 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Thiên Sứ 64
+     *
+     * Chức năng:
+     *  - Dẫn người chơi đến hành tinh Beerus (bản đồ 146, 147, 148).
+     *  - Yêu cầu điều kiện:
+     *      + Sức mạnh >= 80 tỷ.
+     *      + Chi phí 50 triệu vàng (COST_HD).
+     *
+     * Menu hiển thị theo bản đồ:
+     *  - mapId = 7, 14, 0:
+     *      + "Tới ngay" → Kiểm tra điều kiện (sức mạnh + vàng).
+     *          * Nếu đủ → trừ vàng và dịch chuyển đến map Beerus (146/147/148).
+     *          * Nếu không đủ → NPC báo "Bạn chưa đủ điều kiện để vào".
+     *      + "Từ chối".
+     *
+     *  - mapId = 146, 147, 148:
+     *      + "Trốn về" → Dịch chuyển người chơi trở về map ban đầu (7, 14, 0).
+     *      + "Ở lại".
+     *
+     *  - mapId = 48:
+     *      + "Hướng dẫn" → Mở bảng hướng dẫn đổi SKH VIP.
+     *      + "Đổi SKH VIP" → Mở tab nâng cấp/đổi SKH VIP.
+     *      + Khi chọn menu phụ MENU_NANG_DOI_SKH_VIP:
+     *          * "Đồng ý" → Bắt đầu quá trình Combine nâng cấp SKH VIP.
+     *
+     * Lưu ý:
+     *  - NPC này đóng vai trò “cổng vào Beerus” + “nâng cấp SKH VIP”.
+     *  - Người chơi cần đủ sức mạnh và vàng mới vào được Beerus.
+     *  - Ở bản đồ Beerus, có thể chọn trốn về hoặc ở lại tiếp tục thử thách.
+     */
     public static Npc npcThienSu64(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3717,6 +4656,31 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Thần Hủy Diệt Bill
+     *
+     * Chức năng:
+     *  - Xuất hiện tại mapId = 48.
+     *  - Khi nói chuyện, Bill yêu cầu người chơi:
+     *      + Mặc full set Thần Linh.
+     *      + Mang theo ít nhất 99 phần đồ ăn (một trong các loại sau):
+     *          * Pudding (ID 663)
+     *          * Xúc xích (ID 664)
+     *          * Kem dâu (ID 665)
+     *          * Mì ly (ID 666)
+     *          * Sushi (ID 667)
+     *
+     * Menu hiển thị:
+     *  - "OK" → Kiểm tra điều kiện:
+     *      + Nếu chưa mặc full set Thần Linh → NPC báo: "Bạn Cần Mặc Full Set Thần linh Để Đổi".
+     *      + Nếu mặc đủ nhưng thiếu đồ ăn → NPC báo: "Mặc full sét thần linh, x99 thức ăn đến cho ta !!".
+     *      + Nếu mặc đủ và có ≥ 99 món ăn → Mở cửa hàng "HUY_DIET" (shop chứa đồ Hủy Diệt).
+     *  - "Đóng" → Thoát menu.
+     *
+     * Ý nghĩa:
+     *  - Bill là NPC trao đổi đồ ăn + trang bị để lấy vật phẩm Hủy Diệt.
+     *  - Người chơi có thể nhận được trang bị có chỉ số tăng đến 15% nếu may mắn.
+     */
     public static Npc bill(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3767,6 +4731,39 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Whis
+     *
+     * Chức năng chính:
+     *  - Xuất hiện ở mapId = 154.
+     *  - Menu cơ bản: 
+     *      + "Nói chuyện" → Mở menu chế tạo trang bị thiên sứ:
+     *          * "Cửa hàng" → Mở shop đá "SHOP_DA".
+     *          * "Chế tạo" → Yêu cầu mặc Full Set Hủy Diệt, nếu đạt thì mở tab chế tạo trang bị Thiên Sứ.
+     *      + "Công Thức" → Cho phép đổi 10 thỏi vàng (item ID khác nhau) lấy công thức:
+     *          * Công Thức Trái Đất → item ID 1084.
+     *          * Công Thức Namec → item ID 1085.
+     *          * Công Thức Xayda → item ID 1086.
+     *      + "Từ chối" → Thoát menu.
+     *
+     * Điều kiện đặc biệt:
+     *  - Người chơi cần:
+     *      + Đủ số lượng vật phẩm yêu cầu (10 thỏi vàng – item 457 hoặc 1335).
+     *      + Có ít nhất 1 slot trống trong túi.
+     *      + Mặc đủ Set Hủy Diệt khi chọn chế tạo trang bị thiên sứ.
+     *  - Ngoài ra còn có menu ẩn cho học tuyệt kỹ:
+     *      + Cần 9999 bí kíp (ID 1320), 10.000.000 vàng, 99 ngọc, sức mạnh ≥ 1 tỷ.
+     *      + Giới tính quyết định tuyệt kỹ học được:
+     *          * Trái Đất → Super Kame.
+     *          * Namec → Ma Phong Ba.
+     *          * Xayda → Liên Hoàn Chưởng.
+     *
+     * Ý nghĩa:
+     *  - Whis là NPC nâng cấp cao cấp:
+     *      + Cho công thức chế đồ Thiên Sứ.
+     *      + Mở shop đá hỗ trợ chế tạo.
+     *      + Làm nơi học tuyệt kỹ cuối cùng cho người chơi.
+     */
     public static Npc whis(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3895,6 +4892,27 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Ngư Dân
+     *
+     * Vị trí:
+     *  - Xuất hiện tại mapId = 178.
+     *
+     * Chức năng chính:
+     *  - Menu cơ bản:
+     *      + "Nói chuyện" → Mở menu chính (index = 178):
+     *          * "Cửa Hàng" → Mở shop cần câu (SHOP_CAN).
+     *          * "Về Đảo" → Dịch chuyển người chơi về mapId = 5 (tọa độ 295).
+     *          * "Quà Top" → Mở shop phần thưởng xếp hạng câu cá (TOP_CAN).
+     *          * "Đóng" → Thoát menu.
+     *      + "Từ chối" → Thoát menu.
+     *
+     * Ý nghĩa:
+     *  - Ngư Dân là NPC hỗ trợ tính năng **Câu Cá**:
+     *      + Bán cần câu và vật phẩm liên quan.
+     *      + Cho phép người chơi trở lại đảo sau khi câu cá.
+     *      + Cho phép nhận thưởng theo bảng xếp hạng (Top Câu Cá).
+     */
     public static Npc ngudan(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3934,7 +4952,26 @@ public class NpcFactory {
 
         };
     }
-
+    
+    /**
+     * NPC Thần God
+     *
+     * Vị trí:
+     *  - Xuất hiện tại mapId = 5.
+     *
+     * Chức năng chính:
+     *  - Menu cơ bản:
+     *      + "Nói chuyện" → Mở menu chính (index = 5):
+     *          * "Quà Top" → Mở shop phần thưởng xếp hạng (SHOP_TOP).
+     *          * "Đi Câu Cá" → Dịch chuyển người chơi tới map câu cá (mapId = 178, tọa độ 295).
+     *          * "Đóng" → Thoát menu.
+     *      + "Từ chối" → Thoát menu.
+     *
+     * Ý nghĩa:
+     *  - NPC này đóng vai trò **trung gian**:
+     *      + Cho phép người chơi nhận phần thưởng xếp hạng.
+     *      + Cho phép di chuyển đến khu vực câu cá.
+     */
     public static Npc thangod(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -3972,6 +5009,36 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Bò Mộng
+     *
+     * Vị trí:
+     *  - Xuất hiện tại mapId = 47 hoặc 84.
+     *
+     * Chức năng chính:
+     *  - Giao và quản lý nhiệm vụ hằng ngày (Side Task) cho người chơi.
+     *
+     * Menu cơ bản:
+     *  - "Nhiệm vụ hằng ngày":
+     *      + Nếu người chơi đang có nhiệm vụ:
+     *          * Hiển thị thông tin nhiệm vụ hiện tại (tên, cấp bậc, tiến độ %, số lượng đã hoàn thành, số nhiệm vụ còn lại trong ngày).
+     *          * Cho phép chọn:
+     *              - "Trả nhiệm vụ" → Hoàn thành nhiệm vụ để nhận thưởng.
+     *              - "Hủy nhiệm vụ" → Bỏ nhiệm vụ đang nhận.
+     *      + Nếu người chơi chưa có nhiệm vụ:
+     *          * Hiển thị danh sách độ khó để chọn:
+     *              - "Dễ", "Bình thường", "Khó", "Siêu khó", "Địa ngục".
+     *              - Sau khi chọn → TaskService.gI().changeSideTask(player, độ khó).
+     *  - "Từ chối" → Thoát menu.
+     *
+     * Ý nghĩa:
+     *  - NPC này đóng vai trò trung tâm trong hệ thống **nhiệm vụ phụ (Side Task)**.
+     *  - Người chơi có thể:
+     *      + Nhận nhiệm vụ mới theo cấp bậc.
+     *      + Theo dõi tiến độ nhiệm vụ hiện tại.
+     *      + Trả nhiệm vụ để nhận thưởng.
+     *      + Hủy nhiệm vụ để nhận lại nhiệm vụ mới.
+     */
     public static Npc boMong(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -4056,6 +5123,34 @@ public class NpcFactory {
         };
     }
 
+
+    /**
+     * NPC Karin (Thần mèo Karin)
+     *
+     * Vị trí xuất hiện:
+     *  - mapId = 46 → Thần mèo Karin (Khu vực Tháp Karin).
+     *  - mapId = 104 → Linh thú sư (khu vực đặc biệt).
+     *
+     * Chức năng chính:
+     *  - Mở cửa hàng bán vật phẩm đặc biệt cho người chơi.
+     *
+     * Menu hiển thị:
+     *  - Tại mapId = 46:
+     *      + Hiển thị giới thiệu: "Ta là thần mèo Karin\nNro green comback".
+     *      + Lựa chọn:
+     *          * "Cửa hàng" → Mở shop "KARIN".
+     *          * "Đóng" → Thoát.
+     *  - Tại mapId = 104:
+     *      + Hiển thị: "Kính chào Ngài Linh thú sư!".
+     *      + Lựa chọn:
+     *          * "Cửa hàng" → Mở shop "BUNMA_LINHTHU".
+     *          * "Đóng" → Thoát.
+     *
+     * Ý nghĩa:
+     *  - NPC Karin là NPC hỗ trợ mua sắm:
+     *      + Cung cấp các vật phẩm đặc biệt cho người chơi thông qua ShopService.
+     *      + Đóng vai trò như một **NPC cửa hàng**, vừa mang tính cốt truyện (thần mèo Karin) vừa mang tính tiện ích (shop Linh Thú).
+     */
     public static Npc karin(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4093,6 +5188,36 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Vados
+     *
+     * Vị trí xuất hiện:
+     *  - mapId = 19 → NPC dẫn người chơi đến Khu vực Thiên Tử.
+     *  - mapId = 167 → NPC chính của Khu vực Thiên Tử.
+     *
+     * Chức năng chính:
+     *  - mapId = 19:
+     *      + Hiển thị menu: "Làm Gì Đó Đi ?".
+     *      + Lựa chọn:
+     *          * "Tới Khu Vực Thiên Tử" → Dịch chuyển đến map 167 (yêu cầu sức mạnh ≥ 80 tỉ).
+     *          * "Đóng" → Thoát.
+     *
+     *  - mapId = 167:
+     *      + Hiển thị menu: "Đây là khu vực thiên tử , bạn muốn làm gì ?".
+     *      + Lựa chọn:
+     *          * "Nâng Cấp Chân Mệnh" → Mở tab nâng cấp (CombineService).
+     *          * "Cửa hàng" → Mở shop "SHOP_VTT".
+     *          * "Thông tin chi tiết" → Hiển thị hướng dẫn: quái rơi Ma Thạch.
+     *          * "Về Đảo Kame" → Quay về map 5.
+     *
+     * Hệ thống nâng cấp:
+     *  - Sử dụng `ChanThienTu.DoiChanThienTu(player, index)` để đổi/tăng cấp Chân Mệnh cho người chơi.
+     *  - Menu nâng cấp chia làm nhiều tầng (BASE_MENU +1, BASE_MENU +2).
+     *
+     * Ý nghĩa:
+     *  - NPC Vados đóng vai trò là **người hướng dẫn và quản lý khu vực Thiên Tử**.
+     *  - Vừa làm nhiệm vụ dịch chuyển, vừa mở shop, vừa cho phép nâng cấp trang bị đặc biệt.
+     */
     public static Npc vados(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4176,6 +5301,31 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Goku Super Saiyan 1
+     *
+     * Vị trí xuất hiện:
+     *  - mapId = 80 → NPC ở Trái Đất (hoặc khu vực chính).
+     *  - mapId = 131 → NPC ở Hành tinh Yardart.
+     *
+     * Chức năng chính:
+     *  - mapId = 80:
+     *      + Hiển thị menu: "Xin chào, tôi có thể giúp gì cho cậu?".
+     *      + Lựa chọn:
+     *          * "Tới hành tinh Yardart" → Dịch chuyển đến mapId = 131.
+     *          * "Từ chối" → Thoát.
+     *
+     *  - mapId = 131:
+     *      + Hiển thị menu: "Xin chào, tôi có thể giúp gì cho cậu?".
+     *      + Lựa chọn:
+     *          * "Quay về" → Dịch chuyển về mapId = 80.
+     *          * "Từ chối" → Thoát.
+     *
+     * Ý nghĩa:
+     *  - NPC Goku SSJ1 đóng vai trò như **người vận chuyển** giúp người chơi đi lại
+     *    giữa Trái Đất và Hành tinh Yardart.
+     *  - Chỉ có chức năng dịch chuyển, không có nhiệm vụ hay shop.
+     */
     public static Npc gokuSSJ_1(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4212,6 +5362,32 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Kaido
+     *
+     * Vị trí xuất hiện:
+     *  - mapId = 5   → NPC ở Đảo Kame (khu vực chính).
+     *  - mapId = 173 → NPC ở Đảo Kaido.
+     *
+     * Chức năng chính:
+     *  - mapId = 5:
+     *      + Hiển thị menu: "Ngươi không có cửa thắng được đa đâu".
+     *      + Lựa chọn:
+     *          * "Tới đảo Kaido" → Dịch chuyển người chơi đến mapId = 173.
+     *          * "Từ chối" → Thoát.
+     *
+     *  - mapId = 173:
+     *      + Hiển thị menu: "Sợ rồi sao ha ha ha".
+     *      + Lựa chọn:
+     *          * "Bỏ chạy" → (chưa có xử lý cụ thể, placeholder).
+     *          * "Từ chối" → Thoát.
+     *
+     * Ý nghĩa:
+     *  - NPC Kaido đóng vai trò là **cổng dịch chuyển** giữa Đảo Kame và Đảo Kaido.
+     *  - Tại đảo chính (mapId = 5) → đi tới đảo Kaido.
+     *  - Tại đảo Kaido (mapId = 173) → chỉ hiển thị câu thoại chế giễu, 
+     *    nhưng logic dịch chuyển ngược chưa hoàn chỉnh (dùng mapId = 131 trong confirmMenu có thể là bug).
+     */
     public static Npc KAIDO(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4236,7 +5412,7 @@ public class NpcFactory {
                                 if (select == 0) {
                                     ChangeMapService.gI().changeMapBySpaceShip(player, 173, -1, 870);
                                 }
-                            } else if (this.mapId == 131) {
+                            } else if (this.mapId == 173) {
                                 if (select == 0) {
                                     ChangeMapService.gI().changeMapBySpaceShip(player, 5, -1, 770);
                                 }
@@ -4248,6 +5424,30 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Ma Vương
+     *
+     * Vị trí xuất hiện:
+     *  - mapId = 153 → Khu vực Lãnh địa bang hội.
+     *  - mapId = 156 → Tây Thánh Địa.
+     *
+     * Chức năng chính:
+     *  - Khi đứng ở mapId = 153:
+     *      + Hiển thị menu: "Xin chào, tôi có thể giúp gì cho cậu?".
+     *      + Lựa chọn:
+     *          * "Đến tây thánh địa" → Dịch chuyển người chơi sang mapId = 156.
+     *          * "Từ chối" → Thoát.
+     *
+     *  - Khi đứng ở mapId = 156:
+     *      + Hiển thị menu: "Người muốn trở về?".
+     *      + Lựa chọn:
+     *          * "Quay về" → Dịch chuyển người chơi trở lại mapId = 153.
+     *          * "Từ chối" → Thoát.
+     *
+     * Ý nghĩa:
+     *  - NPC Ma Vương đóng vai trò là **cổng dịch chuyển hai chiều** giữa
+     *    Lãnh địa bang hội (map 153) và Tây Thánh Địa (map 156).
+     */
     public static Npc mavuong(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4288,6 +5488,36 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Goku Super Saiyan 2
+     *
+     * Vị trí: map bất kỳ (được gọi khi khởi tạo).
+     *
+     * Chức năng chính:
+     *  - Hiển thị hướng dẫn cho người chơi:
+     *      + Vào các khung giờ chẵn trong ngày, khi luyện tập với Mộc Nhân 
+     *        (bật Cờ) sẽ có cơ hội rơi ra "Bí kíp" (itemId = 590).
+     *      + Người chơi cần thu thập đủ 9999 Bí kíp rồi quay lại gặp NPC.
+     *
+     *  - Menu hiển thị:
+     *      + "Nhận thưởng" → Kiểm tra số lượng Bí kíp.
+     *      + "OK" → Thoát.
+     *
+     *  - Khi chọn "Nhận thưởng":
+     *      + Nếu có >= 9999 Bí kíp và còn chỗ trống trong túi:
+     *          * NPC sẽ tặng 1 trang phục tộc Yardart (itemId = gender + 592).
+     *          * Trang phục đi kèm các Option:
+     *              - Option 47: +400
+     *              - Option 108: +10
+     *              - Option 33: +0
+     *          * Đồng thời trừ 9999 Bí kíp khỏi túi đồ.
+     *          * Gửi thông báo: "Bạn vừa nhận được trang phục tộc Yardart".
+     *      + Nếu < 9999 Bí kíp → Thông báo: "Vui lòng sưu tầm đủ 9999 bí kíp".
+     *
+     * Ý nghĩa:
+     *  - NPC này đóng vai trò là người **đổi Bí kíp lấy trang phục Yardart đặc biệt**,
+     *    khuyến khích người chơi tham gia luyện tập để thu thập nguyên liệu.
+     */
     public static Npc gokuSSJ_2(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4336,6 +5566,32 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Khỉ Đầu Mói
+     *
+     * Vị trí: map 14.
+     *
+     * Chức năng chính:
+     *  - Cung cấp bí kíp giúp người chơi mạnh hơn.
+     *  - Menu ban đầu gồm:
+     *      + "Nâng cấp Vip" → mở menu nâng cấp cải trang.
+     *      + "Shop" → mở shop KHI.
+     *      + "Từ chối" → đóng menu.
+     *
+     *  - Khi chọn "Nâng cấp Vip":
+     *      + Hiển thị menu:
+     *          * "Nâng cấp lite girl" → mở tab nâng cấp Lite Girl.
+     *          * "Thức tỉnh Luffy" → mở tab thức tỉnh Luffy.
+     *          * "Từ chối" → đóng menu.
+     *
+     *  - Khi vào tab Combine:
+     *      + Nếu đang ở NANG_CAP_KHI → chọn "OK" sẽ tiến hành nâng cấp Lite Girl.
+     *      + Nếu đang ở NANG_CAP_LUFFY → chọn "OK" sẽ tiến hành thức tỉnh Luffy.
+     *
+     * Ý nghĩa:
+     *  - NPC này là nơi để người chơi **nâng cấp cải trang đặc biệt (Lite Girl, Luffy)**
+     *    hoặc truy cập Shop KHI để mua vật phẩm hỗ trợ nâng cấp.
+     */
     public static Npc khidaumoi(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4385,6 +5641,38 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Chó Mèo Ăn
+     *
+     * Vị trí: map 5.
+     *
+     * Chức năng chính:
+     *  - NPC này đóng vai trò nhiệm vụ phụ: tìm lại bé mèo đen đuôi vàng và chăm sóc mèo.
+     *  - Có cơ chế chat tự động theo chu kỳ 10s với các câu ngẫu nhiên:
+     *      + "Ai đó hãy giúp tôi với ... Làm ơn huhu"
+     *      + "Hãy giúp tôi tìm lại bé mèo huhu"
+     *      + "Thí chủ, Xin dừng bước"
+     *      + "Hãy giúp tôi tìm lại bé mèo ..."
+     *
+     * Menu:
+     *  - Khi nói chuyện lần đầu:
+     *      + "Cho mèo ăn" → mở menu chăm sóc mèo.
+     *      + "Shop" → mở shop MEOMEO.
+     *      + "Không quan tâm" → đóng menu.
+     *
+     *  - Khi chọn "Cho mèo ăn":
+     *      + Hiển thị thông tin:
+     *          * Cho mèo ăn → mở tab Combine nâng cấp mèo (random chỉ số 5–30%).
+     *          * Để mèo đói → đóng menu, không làm gì.
+     *
+     *  - Khi ở tab Combine:
+     *      + Nếu chọn "Cho Mèo ăn" trong NANG_CAP_MEO → gọi startCombine (nâng cấp chỉ số mèo).
+     *
+     * Ý nghĩa:
+     *  - NPC này là tính năng phụ bản hỗ trợ thú nuôi,
+     *    cho phép người chơi nuôi mèo để tăng chỉ số ngẫu nhiên.
+     *  - Đồng thời cung cấp một shop (MEOMEO) để mua vật phẩm liên quan.
+     */
     public static Npc chomeoan(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             public void chatWithNpc(Player player) {
@@ -4451,6 +5739,47 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC GhiDanh
+     *
+     * Vị trí:
+     *  - map 52: Khu vực ghi danh Đại Hội Võ Thuật lần thứ 23.
+     *  - map 129: Khu vực thi đấu và nhận thưởng.
+     *
+     * Chức năng chính:
+     *  - Quảng bá sự kiện "Đại hội võ thuật lần thứ 23" diễn ra liên tục ngày đêm.
+     *  - Cho phép người chơi đăng ký thi đấu, tiêu tốn 200 Hồng ngọc.
+     *  - Quản lý cơ chế Rương gỗ (Wood Chest):
+     *      + Nếu levelWoodChest = 0 → chỉ hiển thị menu thi đấu và quay về.
+     *      + Nếu levelWoodChest > 0 → hiển thị thêm tùy chọn nhận thưởng rương.
+     *
+     * Menu:
+     *  - map 52:
+     *      + "Đại Hội Võ Thuật Lần thứ 23" → dịch chuyển người chơi tới map 129.
+     *      + "Từ chối" → đóng menu.
+     *
+     *  - map 129:
+     *      + Nếu levelWoodChest = 0:
+     *          * "Thi đấu (200 Hồng ngọc)" → bắt đầu trận, trừ 200 Hồng ngọc, cộng goldChallenge.
+     *          * "Về Đại Hội Võ Thuật" → quay lại map 52.
+     *
+     *      + Nếu levelWoodChest > 0:
+     *          * "Thi đấu (200 Hồng ngọc)" → như trên.
+     *          * "Nhận thưởng Rương cấp X" → nhận rương gỗ (ID 570) kèm option:
+     *              - Option(72, levelWoodChest)
+     *              - Option(30, 0)
+     *            Sau khi nhận, reset levelWoodChest = 0 và set receivedWoodChest = true.
+     *          * "Về Đại Hội Võ Thuật" → quay lại map 52.
+     *
+     * Điều kiện:
+     *  - Người chơi phải có ít nhất 200 Hồng ngọc để thi đấu.
+     *  - Phải mở rương báu vật trước khi đăng ký thi đấu.
+     *  - Chỉ được nhận rương gỗ 1 lần/ngày.
+     *
+     * Ý nghĩa:
+     *  - Đây là NPC quản lý toàn bộ sự kiện PvP "Đại Hội Võ Thuật",
+     *    vừa cho phép tham gia thi đấu, vừa phát thưởng rương sau trận.
+     */
     public static Npc GhiDanh(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             String[] menuselect = new String[]{};
@@ -4559,6 +5888,40 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Unknow
+     *
+     * Vị trí:
+     *  - map 5  : Xuất hiện tại đảo Kame, cho phép người chơi vào Võ đài Unknow.
+     *  - map 112: Trong Võ đài Unknow, quản lý điểm PvP và đổi thưởng.
+     *
+     * Chức năng:
+     *  - map 5:
+     *      + Hiển thị menu "Đến Võ đài Unknow".
+     *      + Điều kiện: Người chơi phải có ít nhất 10 tỷ sức mạnh (power >= 10,000,000,000).
+     *      + Nếu đủ điều kiện → dịch chuyển người chơi sang map 112 và gán cờ (flag) ngẫu nhiên.
+     *
+     *  - map 112:
+     *      + Hiển thị số điểm PvP hiện tại của người chơi.
+     *      + Menu chính:
+     *          * "Về đảo Kame"       → dịch chuyển về map 5.
+     *          * "Đổi Cải trang sự kiện" → mở menu đổi thưởng bằng PvP Point.
+     *          * "Top PVP"           → hiển thị bảng xếp hạng PvP.
+     *
+     *      + Menu đổi cải trang:
+     *          * Yêu cầu: 500 điểm PvP.
+     *          * Phần thưởng: Cải trang Goku SSJ3 (ID 1227) với các chỉ số ngẫu nhiên:
+     *              - Option(49, 15–20)
+     *              - Option(77, 15–20)
+     *              - Option(103, 15–20)
+     *              - Option(207, 0)
+     *              - Option(33, 0)
+     *          * Nếu không đủ điểm → thông báo số điểm còn thiếu.
+     *
+     * Ý nghĩa:
+     *  - NPC này là trung gian quản lý PvP: cho phép vào đấu trường, xem top PvP,
+     *    tích lũy điểm và đổi phần thưởng sự kiện (cải trang hiếm).
+     */
     public static Npc unkonw(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
 
@@ -4639,6 +6002,31 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Monaito
+     *
+     * Vị trí:
+     *  - map 0 (làng Kame).
+     *
+     * Chức năng:
+     *  - Khi mở menu:
+     *      + Hiển thị thông báo về sự kiện Trung thu:
+     *        "Mang item bất kì up tại Ngũ Hành Sơn để đổi vật phẩm cực VIP.
+     *         Nếu tâm trạng vui có thể mua vật phẩm free".
+     *      + Menu lựa chọn: "OK" hoặc "Đóng".
+     *
+     *  - Khi xác nhận menu:
+     *      + Điều kiện:
+     *          * Người chơi chưa kích hoạt tài khoản (actived == false).
+     *          * Sức mạnh (power) >= 20.000.000.000.
+     *      + Nếu thỏa điều kiện → mở Shop sự kiện "TAYDUKI" (shop free).
+     *      + Nếu chưa đủ 20 tỷ sức mạnh → NPC sẽ chat: "Ngươi Chưa Đủ 20 tỉ sm !!".
+     *
+     * Ý nghĩa:
+     *  - NPC Monaito là NPC sự kiện Trung thu.
+     *  - Cho phép người chơi có sức mạnh cao truy cập shop "TAYDUKI" để mua vật phẩm đặc biệt,
+     *    có thể miễn phí tùy điều kiện.
+     */
     public static Npc monaito(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4677,6 +6065,25 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * NPC Granala
+     *
+     * Vị trí:
+     *  - map 0, 7, 14 (các khu vực mở đầu hoặc sự kiện).
+     *
+     * Chức năng:
+     *  - Khi mở menu:
+     *      + Hiển thị thông báo: "Ngươi Đang Đua Top Sao?, Ta Có Vài Món Quà Cho Ngươi Này".
+     *      + Menu lựa chọn: "Xem Ngay" hoặc "Từ chối".
+     *
+     *  - Khi xác nhận menu:
+     *      + Nếu người chơi chọn "Xem Ngay" → mở Shop sự kiện "BUA_1H".
+     *      + Menu này chỉ có tác dụng trên map 0, 7, 14.
+     *
+     * Ý nghĩa:
+     *  - NPC Granala cung cấp cơ hội cho người chơi tham gia sự kiện đua top và mua các vật phẩm
+     *    đặc biệt từ shop "BUA_1H".
+     */
     public static Npc granala(int mapId, int status, int cx, int cy, int tempId, int avartar) {
         return new Npc(mapId, status, cx, cy, tempId, avartar) {
             @Override
@@ -4706,6 +6113,22 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo một NPC dựa trên tempId được cung cấp.
+     * 
+     * Phương thức này sẽ:
+     *  - Lấy avatar mặc định từ Manager.NPC_TEMPLATES theo tempId.
+     *  - Dựa vào tempId để trả về một instance của lớp Npc tương ứng,
+     *    đã override các phương thức openBaseMenu() và confirmMenu().
+     *  - Nếu tempId không khớp với bất kỳ NPC nào đã định nghĩa, sẽ trả về NPC mặc định.
+     * 
+     * @param mapId    ID bản đồ nơi NPC xuất hiện.
+     * @param status   Trạng thái ban đầu của NPC.
+     * @param cx       Tọa độ X trên bản đồ.
+     * @param cy       Tọa độ Y trên bản đồ.
+     * @param tempId   ID template của NPC (xác định loại NPC).
+     * @return         Một instance của Npc tương ứng hoặc NPC mặc định nếu tempId không hợp lệ.
+     */
     public static Npc createNPC(int mapId, int status, int cx, int cy, int tempId) {
         int avatar = Manager.NPC_TEMPLATES.get(tempId).avatar;
         try {
@@ -4836,8 +6259,8 @@ public class NpcFactory {
                     return duongtank(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.HOANGUC:
                     return hoanguc(mapId, status, cx, cy, tempId, avatar);
-//                case ConstNpc.GOHAN_NHAT_NGUYET:
-//                    return gohannn(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.GOHAN_NHAT_NGUYET:
+                    return gohannn(mapId, status, cx, cy, tempId, avatar);
                 default:
                     return new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override
@@ -4863,7 +6286,18 @@ public class NpcFactory {
         }
     }
 
-    //girlbeo-mark
+    /**
+     * Tạo NPC Rồng Thiêng (Shenron) để phục vụ chức năng ước nguyện.
+     * 
+     * NPC này sẽ xử lý các menu khác nhau dựa trên index menu của người chơi:
+     *  - IGNORE_MENU: không thực hiện gì.
+     *  - SHENRON_CONFIRM: xử lý việc xác nhận hoặc hủy ước nguyện.
+     *  - SHENRON_1_1 / SHENRON_1_2: chuyển đổi giữa các menu ước nguyện sao 1.
+     *  - Các trường hợp khác: hiển thị menu xác nhận của Shenron.
+     * 
+     * Lưu ý: NPC được tạo với các giá trị mặc định (-1) cho mapId, status, tọa độ và avatar,
+     * và tempId là ConstNpc.RONG_THIENG.
+     */
     public static void createNpcRongThieng() {
         Npc npc = new Npc(-1, -1, -1, -1, ConstNpc.RONG_THIENG, -1) {
             @Override
@@ -4897,6 +6331,29 @@ public class NpcFactory {
         };
     }
 
+    /**
+     * Tạo NPC "Con Mèo" với avatar cố định để thực hiện nhiều chức năng trong trò chơi.
+     * 
+     * NPC này xử lý rất nhiều menu dựa trên index menu của người chơi, bao gồm nhưng không giới hạn:
+     *  - IGNORE_MENU: không thực hiện gì.
+     *  - MAKE_MATCH_PVP: gửi lời mời PVP.
+     *  - MAKE_FRIEND / REVENGE: quản lý bạn bè hoặc trả thù.
+     *  - SUMMON_SHENRON / TUTORIAL_SUMMON_DRAGON: hướng dẫn hoặc triệu hồi Rồng Thiêng.
+     *  - MENU_OPTION_USE_ITEM*: sử dụng vật phẩm đặc biệt.
+     *  - INTRINSIC / CONFIRM_OPEN_INTRINSIC*: hiển thị, mở intrinsic hoặc VIP intrinsic.
+     *  - CONFIRM_LEAVE_CLAN / CONFIRM_NHUONG_PC: rời clan hoặc nhường PC.
+     *  - BAN_PLAYER / MENU_ADMIN: thao tác admin với người chơi.
+     *  - Các case 19850-19872: thao tác item và set thuộc tính cho player.
+     *  - XU_HRZ: chọn gói nạp vàng.
+     *  - CONFIRM_DISSOLUTION_CLAN: giải tán bang hội.
+     *  - CONFIRM_REMOVE_ALL_ITEM_LUCKY_ROUND: xóa vật phẩm trong rương.
+     *  - MENU_FIND_PLAYER: thao tác dịch chuyển, đổi tên, ban hoặc logout player.
+     *  - MENU_GIAO_BONG: thao tác giao bóng.
+     *  - CONFIRM_DOI_THUONG_SU_KIEN: mở hộp VIP sự kiện.
+     * 
+     * Lưu ý: NPC được tạo với các giá trị mặc định (-1) cho mapId, status, tọa độ, 
+     * và avatar cố định là 351.
+     */
     public static void createNpcConMeo() {
         Npc npc = new Npc(-1, -1, -1, -1, ConstNpc.CON_MEO, 351) {
             @Override
