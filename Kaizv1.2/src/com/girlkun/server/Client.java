@@ -25,19 +25,41 @@ import java.util.Map;
 //import com.girlkun.models.matches.pvp.DaiHoiVoThuat;
 //import com.girlkun.models.matches.pvp.DaiHoiVoThuatService;
 
-public class Client implements Runnable{
+/**
+ * Lớp Client quản lý toàn bộ người chơi đang kết nối vào server.
+ * - Chứa danh sách Player theo ID, userId, name
+ * - Xử lý đăng nhập, đăng xuất, kick session, lưu dữ liệu khi thoát
+ * - Vòng lặp cập nhật session client
+ *
+ * Singleton pattern (dùng Client.gI() để lấy instance).
+ *
+ * @author Lucifer
+ */
+public class Client implements Runnable {
 
+    /** Singleton instance */
     private static Client i;
 
+    /** Map quản lý Player theo id */
     private final Map<Long, Player> players_id = new HashMap<Long, Player>();
+    /** Map quản lý Player theo userId */
     private final Map<Integer, Player> players_userId = new HashMap<Integer, Player>();
+    /** Map quản lý Player theo tên */
     private final Map<String, Player> players_name = new HashMap<String, Player>();
+    /** Danh sách toàn bộ Player online */
     private final List<Player> players = new ArrayList<>();
 
+    /**
+     * @return danh sách toàn bộ Player đang online
+     */
     public List<Player> getPlayers() {
         return this.players;
     }
 
+    /**
+     * Lấy instance duy nhất (Singleton)
+     * @return instance Client
+     */
     public static Client gI() {
         if (i == null) {
             i = new Client();
@@ -45,6 +67,10 @@ public class Client implements Runnable{
         return i;
     }
 
+    /**
+     * Đăng ký player vào hệ thống quản lý
+     * @param player người chơi
+     */
     public void put(Player player) {
         if (!players_id.containsKey(player.id)) {
             this.players_id.put(player.id, player);
@@ -58,9 +84,12 @@ public class Client implements Runnable{
         if (!players.contains(player)) {
             this.players.add(player);
         }
-
     }
 
+    /**
+     * Xóa session ra khỏi hệ thống
+     * @param session phiên kết nối
+     */
     private void remove(MySession session) {
         if (session.player != null) {
             this.remove(session.player);
@@ -69,32 +98,29 @@ public class Client implements Runnable{
         if (session.joinedGame) {
             session.joinedGame = false;
             try {
-                GirlkunDB.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
+                GirlkunDB.executeUpdate("update account set last_time_logout = ? where id = ?", 
+                        new Timestamp(System.currentTimeMillis()), session.userId);
             } catch (Exception e) {
-                
+                // bỏ qua lỗi DB
             }
         }
         ServerManager.gI().disconnect(session);
     }
 
-    private void remove(Player player) 
-    {
+    /**
+     * Xóa player ra khỏi hệ thống và xử lý lưu dữ liệu
+     * @param player người chơi
+     */
+    private void remove(Player player) {
         this.players_id.remove(player.id);
         this.players_name.remove(player.name);
         this.players_userId.remove(player.getSession().userId);
         this.players.remove(player);
         if (!player.beforeDispose) {
-//            DaiHoiVoThuatService.gI(DaiHoiVoThuat.gI().getDaiHoiNow()).removePlayerWait(player);
-//            DaiHoiVoThuatService.gI(DaiHoiVoThuat.gI().getDaiHoiNow()).removePlayer(player);
             player.beforeDispose = true;
             player.mapIdBeforeLogout = player.zone.map.mapId;
-//            if (player.idNRNM != -1) {
-//                ItemMap itemMap = new ItemMap(player.zone, player.idNRNM, 1, player.location.x, player.location.y, -1);
-//                Service.gI().dropItemMap(player.zone, itemMap);
-//                NgocRongNamecService.gI().pNrNamec[player.idNRNM - 353] = "";
-//                NgocRongNamecService.gI().idpNrNamec[player.idNRNM - 353] = -1;
-//                player.idNRNM = -1;
-//            }
+
+            // Thoát map, hủy giao dịch, xóa buff, xử lý clan, mob, pet, Shenron
             ChangeMapService.gI().exitMap(player);
             TransactionService.gI().cancelTrade(player);
             if (player.clan != null) {
@@ -104,9 +130,7 @@ public class Client implements Runnable{
                 Item tdlt = null;
                 try {
                     tdlt = InventoryServiceNew.gI().findItemBag(player, 521);
-                } catch (Exception e) 
-                {
-                     
+                } catch (Exception e) {
                 }
                 if (tdlt != null) {
                     ItemTimeService.gI().turnOffTDLT(player, tdlt);
@@ -129,6 +153,10 @@ public class Client implements Runnable{
         PlayerDAO.updatePlayer(player);
     }
 
+    /**
+     * Kick session ra khỏi server
+     * @param session phiên kết nối
+     */
     public void kickSession(MySession session) {
         if (session != null) {
             this.remove(session);
@@ -136,30 +164,48 @@ public class Client implements Runnable{
         }
     }
 
+    /**
+     * Lấy Player theo id
+     * @param playerId id người chơi
+     * @return Player
+     */
     public Player getPlayer(long playerId) {
         return this.players_id.get(playerId);
     }
 
+    /**
+     * Lấy Player theo userId
+     * @param userId id tài khoản
+     * @return Player
+     */
     public Player getPlayerByUser(int userId) {
         return this.players_userId.get(userId);
     }
 
+    /**
+     * Lấy Player theo tên
+     * @param name tên người chơi
+     * @return Player
+     */
     public Player getPlayer(String name) {
         return this.players_name.get(name);
     }
 
+    /**
+     * Đóng toàn bộ kết nối, lưu dữ liệu người chơi trước khi server tắt
+     */
     public void close() {
-        Logger.log(Logger.BLACK, "Hệ thống tiến hành lưu dữ liệu người chơi và đăng xuất người chơi khỏi server." + players.size() + "\n");
-//        while(!GirlkunSessionManager.gI().getSessions().isEmpty()){
-//            Logger.error("LEFT PLAYER: " + this.players.size() + ".........................\n");
-//            this.kickSession((MySession) GirlkunSessionManager.gI().getSessions().remove(0));
-//        }
+        Logger.log(Logger.BLACK, "Hệ thống tiến hành lưu dữ liệu người chơi và đăng xuất người chơi khỏi server." 
+                + players.size() + "\n");
         while (!players.isEmpty()) {
             this.kickSession((MySession) players.remove(0).getSession());
         }
-        Logger.error("Hệ thống lỗi đăng xuất người ch\n");
+        Logger.error("Hệ thống lỗi đăng xuất người chơi\n");
     }
 
+    /**
+     * Kick ra các session không có player (session ma)
+     */
     public void cloneMySessionNotConnect() {
         Logger.error("BEGIN KICK OUT MySession Not Connect...............................\n");
         Logger.error("COUNT: " + GirlkunSessionManager.gI().getSessions().size());
@@ -173,8 +219,11 @@ public class Client implements Runnable{
         }
         Logger.error("..........................................................SUCCESSFUL\n");
     }
-    
-      @Override
+
+    /**
+     * Vòng lặp chính để cập nhật session client
+     */
+    @Override
     public void run() {
         while (ServerManager.isRunning) {
             try {
@@ -182,11 +231,14 @@ public class Client implements Runnable{
                 update();
                 Thread.sleep(800 - (System.currentTimeMillis() - st));
             } catch (Exception e) {
-                 
+                // bỏ qua lỗi vòng lặp
             }
         }
     }
 
+    /**
+     * Cập nhật session: xử lý timeWait, auto kick khi quá hạn
+     */
     private void update() {
         if (GirlkunSessionManager.gI().getSessions() != null) {
             for (ISession s : GirlkunSessionManager.gI().getSessions()) {
@@ -201,6 +253,10 @@ public class Client implements Runnable{
         }
     }
 
+    /**
+     * Hiển thị thông tin thống kê số lượng session, player
+     * @param player người chơi gọi lệnh
+     */
     public void show(Player player) {
         String txt = "";
         txt += "sessions: " + GirlkunSessionManager.gI().getSessions().size() + "\n";
