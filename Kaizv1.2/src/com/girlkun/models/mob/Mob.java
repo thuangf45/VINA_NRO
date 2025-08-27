@@ -848,7 +848,7 @@ public class Mob {
                 list.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, player.location.y, player.id));
             }
         }
-        if (this.tempId > 0 && this.zone.map.mapId > 105 && this.zone.map.mapId < 110 && player.setClothes.IsSetThanlinh()) {
+        if (this.tempId > 0 && this.zone.map.mapId > 105 && this.zone.map.mapId < 110 && player.setClothes.IsSetThanLinh()) {
             if (Util.isTrue(10, 100)) {    //up bí kíp
                 list.add(new ItemMap(zone, Util.nextInt(667, 663), 1, x, player.location.y, player.id));
             }
