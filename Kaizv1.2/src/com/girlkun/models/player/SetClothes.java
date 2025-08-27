@@ -2,36 +2,113 @@ package com.girlkun.models.player;
 
 import com.girlkun.models.item.Item;
 
-
+/**
+ * Lớp SetClothes quản lý các bộ trang phục và chỉ số liên quan của người chơi trong game.
+ * Lớp này kiểm tra và thiết lập các bộ trang phục đặc biệt (như Hủy Diệt, Thần Linh, Thiên Sứ)
+ * dựa trên các vật phẩm mà người chơi đang mặc, đồng thời theo dõi các chỉ số của các bộ trang phục.
+ * 
+ * @author Lucifer
+ */
 public class SetClothes {
 
+    /**
+     * Người chơi được gán với hệ thống quản lý trang phục.
+     */
     private Player player;
 
+    /**
+     * Số lượng vật phẩm thuộc bộ Songoku.
+     */
+    public byte songoku;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Thiên Xin Hăng.
+     */
+    public byte thienXinHang;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Kirin.
+     */
+    public byte kirin;
+
+    /**
+     * Trạng thái kích hoạt bộ trang phục Hủy Diệt.
+     */
+    public boolean huydietClothers;
+
+    /**
+     * Trạng thái kích hoạt bộ trang phục Thần Linh.
+     */
+    public boolean thanlinhClothers;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Ốc Tiêu.
+     */
+    public byte ocTieu;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Pikkoro Daimao.
+     */
+    public byte pikkoroDaimao;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Picolo.
+     */
+    public byte picolo;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Kakarot.
+     */
+    public byte kakarot;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Cadic.
+     */
+    public byte cadic;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Nappa.
+     */
+    public byte nappa;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ World Cup.
+     */
+    public byte worldcup;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Đại Hội Võ Thuật (DHD).
+     */
+    public byte setDHD;
+
+    /**
+     * Số lượng vật phẩm thuộc bộ Thiên Sứ.
+     */
+    public byte thienSuClothes = 0;
+
+    /**
+     * Trạng thái kích hoạt bộ trang phục Thần (God Clothes).
+     */
+    public boolean godClothes;
+
+    /**
+     * ID của cải trang Hải Tặc, mặc định là -1 nếu không có cải trang.
+     */
+    public int ctHaiTac = -1;
+
+    /**
+     * Khởi tạo một đối tượng SetClothes cho một người chơi cụ thể.
+     * 
+     * @param player Người chơi được gán với hệ thống quản lý trang phục.
+     */
     public SetClothes(Player player) {
         this.player = player;
     }
 
-    public byte songoku;
-    public byte thienXinHang;
-    public byte kirin;
-    
-    public boolean huydietClothers;
-    public boolean thanlinhClothers;
-
-    public byte ocTieu;
-    public byte pikkoroDaimao;
-    public byte picolo;
-
-    public byte kakarot;
-    public byte cadic;
-    public byte nappa;
-
-    public byte worldcup;
-    public byte setDHD;
-    public byte thienSuClothes = 0;
-    public boolean godClothes;
-    public int ctHaiTac = -1;
-
+    /**
+     * Thiết lập các trạng thái và chỉ số của bộ trang phục dựa trên vật phẩm mà người chơi đang mặc.
+     * Kiểm tra và kích hoạt các bộ trang phục như Hủy Diệt, Thần Linh, và Thần.
+     */
     public void setup() {
         setDefault();
         setupSKT();
@@ -76,10 +153,15 @@ public class SetClothes {
                 case 627:
                     this.ctHaiTac = ct.template.id;
                     break;
-
             }
         }
     }
+
+    /**
+     * Kiểm tra và kích hoạt bộ trang phục Hủy Diệt dựa trên các vật phẩm người chơi đang mặc.
+     * 
+     * @return true nếu bộ Hủy Diệt được kích hoạt, false nếu không.
+     */
     public boolean setHuyDiet() {
         for (int i = 0; i < 6; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
@@ -97,6 +179,12 @@ public class SetClothes {
         }
         return this.huydietClothers ? true : false;
     }
+
+    /**
+     * Kiểm tra và kích hoạt bộ trang phục Thần Linh dựa trên các vật phẩm người chơi đang mặc.
+     * 
+     * @return true nếu bộ Thần Linh được kích hoạt, false nếu không.
+     */
     public boolean setThanLinh() {
         for (int i = 0; i < 6; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
@@ -114,11 +202,17 @@ public class SetClothes {
         }
         return this.thanlinhClothers ? true : false;
     }
+
+    /**
+     * Kiểm tra xem người chơi có đang mặc đủ bộ trang phục Thiên Sứ hay không, dựa trên giới tính.
+     * 
+     * @return true nếu bộ Thiên Sứ được kích hoạt, false nếu không.
+     */
     public boolean IsSetThienSu() {
         int[][] DoThienSu = new int[][]{
-            {1048, 1051, 1054, 1057, 1060},// td
-            {1049, 1052, 1055, 1058, 1060},// namec
-            {1050, 1053, 1056, 1059, 1060},// xayda    
+            {1048, 1051, 1054, 1057, 1060}, // Trái Đất
+            {1049, 1052, 1055, 1058, 1060}, // Namec
+            {1050, 1053, 1056, 1059, 1060}  // Xayda
         };
         int z = 0;
         for (int i = 0; i < 5; i++) {
@@ -126,22 +220,26 @@ public class SetClothes {
             if (item.isNotNullItem()) {
                 if (item.template.id == DoThienSu[this.player.gender][i]) {
                     z++;
+                } else {
+                    return false;
                 }
-                else {return false;}
-            }
-            else 
-            {
+            } else {
                 return false;
             }
-            
         }
         return z == 5;
     }
+
+    /**
+     * Kiểm tra xem người chơi có đang mặc đủ bộ trang phục Hủy Diệt hay không, dựa trên giới tính.
+     * 
+     * @return true nếu bộ Hủy Diệt được kích hoạt, false nếu không.
+     */
     public boolean IsSetHuyDiet() {
         int[][] DoHuyDiet = new int[][]{
-              {650, 651, 657, 658,656},// td
-        {652, 653, 659, 660,656},// namec
-        {654, 655, 661, 662,656},// xayda    
+            {650, 651, 657, 658, 656}, // Trái Đất
+            {652, 653, 659, 660, 656}, // Namec
+            {654, 655, 661, 662, 656}  // Xayda
         };
         int z = 0;
         for (int i = 0; i < 5; i++) {
@@ -149,22 +247,26 @@ public class SetClothes {
             if (item.isNotNullItem()) {
                 if (item.template.id == DoHuyDiet[this.player.gender][i]) {
                     z++;
+                } else {
+                    return false;
                 }
-                else {return false;}
-            }
-            else 
-            {
+            } else {
                 return false;
             }
-            
         }
         return z == 5;
     }
-    public boolean IsSetThanlinh() {
+
+    /**
+     * Kiểm tra xem người chơi có đang mặc đủ bộ trang phục Thần Linh hay không, dựa trên giới tính.
+     * 
+     * @return true nếu bộ Thần Linh được kích hoạt, false nếu không.
+     */
+    public boolean IsSetThanLinh() {
         int[][] DoHuyDiet = new int[][]{
-              {555, 556, 562, 563,561},// td
-        {557, 558, 564, 565,561},// namec
-        {559, 569, 566, 567,561},// xayda    
+            {555, 556, 562, 563, 561}, // Trái Đất
+            {557, 558, 564, 565, 561}, // Namec
+            {559, 569, 566, 567, 561}  // Xayda
         };
         int z = 0;
         for (int i = 0; i < 5; i++) {
@@ -172,17 +274,20 @@ public class SetClothes {
             if (item.isNotNullItem()) {
                 if (item.template.id == DoHuyDiet[this.player.gender][i]) {
                     z++;
+                } else {
+                    return false;
                 }
-                else {return false;}
-            }
-            else 
-            {
+            } else {
                 return false;
             }
-            
         }
         return z == 5;
     }
+
+    /**
+     * Thiết lập các chỉ số của các bộ trang phục đặc biệt (như Songoku, Thiên Xin Hăng, Kirin, v.v.)
+     * dựa trên các tùy chọn (item options) của vật phẩm mà người chơi đang mặc.
+     */
     private void setupSKT() {
         for (int i = 0; i < 5; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
@@ -252,6 +357,9 @@ public class SetClothes {
         }
     }
 
+    /**
+     * Đặt lại tất cả các chỉ số và trạng thái của bộ trang phục về giá trị mặc định.
+     */
     private void setDefault() {
         this.songoku = 0;
         this.thienXinHang = 0;
@@ -268,6 +376,9 @@ public class SetClothes {
         this.ctHaiTac = -1;
     }
 
+    /**
+     * Giải phóng tài nguyên bằng cách đặt tham chiếu đến người chơi về null.
+     */
     public void dispose() {
         this.player = null;
     }
