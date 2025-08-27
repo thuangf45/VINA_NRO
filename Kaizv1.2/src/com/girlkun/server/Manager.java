@@ -24,8 +24,6 @@ import com.girlkun.models.npc.Npc;
 import com.girlkun.models.npc.NpcFactory;
 import com.girlkun.models.player.Referee;
 import com.girlkun.models.player.TestDame;
-//import com.girlkun.models.player.Yajiro;
-//import com.girlkun.models.player.Admin;
 import com.girlkun.models.reward.ItemMobReward;
 import com.girlkun.models.reward.ItemOptionMobReward;
 import com.girlkun.models.reward.MobReward;
@@ -33,8 +31,8 @@ import com.girlkun.models.shop.Shop;
 import com.girlkun.models.skill.NClass;
 import com.girlkun.models.skill.Skill;
 import com.girlkun.models.task.SideTaskTemplate;
-import com.girlkun.models.task.SubTaskMain;
 import com.girlkun.models.task.TaskMain;
+import com.girlkun.models.task.SubTaskMain;
 import com.girlkun.services.ItemService;
 import com.girlkun.services.Service;
 import com.girlkun.utils.Logger;
@@ -65,93 +63,391 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+/**
+ * Lớp Manager quản lý các dữ liệu tĩnh và khởi tạo các thành phần chính của server game.
+ * Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất, 
+ * chịu trách nhiệm tải dữ liệu từ cơ sở dữ liệu, tệp tin, và khởi tạo bản đồ, NPC, và các thành phần khác.
+ * 
+ * @author Lucifer
+ */
 public class Manager {
 
+    /**
+     * Thể hiện duy nhất của lớp Manager (singleton pattern).
+     */
     private static Manager i;
 
+    /**
+     * Số hiệu server hiện tại.
+     */
     public static byte SERVER = 1;
+
+    /**
+     * Thời gian chờ đăng nhập (giây).
+     */
     public static byte SECOND_WAIT_LOGIN = 0;
+
+    /**
+     * Số lượng kết nối tối đa từ một địa chỉ IP.
+     */
     public static int MAX_PER_IP = 2;
+
+    /**
+     * Số lượng người chơi tối đa trên server.
+     */
     public static int MAX_PLAYER = 10000;
+
+    /**
+     * Tỷ lệ kinh nghiệm của server (phần trăm).
+     */
     public static byte RATE_EXP_SERVER = 100;
+
+    /**
+     * Chạy server ở chế độ local (true) hay không (false).
+     */
     public static boolean LOCAL = false;
+
+    /**
+     * Tổng số lượng pet trong game.
+     */
     public static int TotalPet = 0;
+
+    /**
+     * Tổng số lượng cải trang trong game.
+     */
     public static int TotalCaiTrang = 0;
+
+    /**
+     * Tổng số lượng cờ trong game.
+     */
     public static int TotalFlag = 0;
+
+    /**
+     * Danh sách các mẫu bản đồ (map templates).
+     */
     public static MapTemplate[] MAP_TEMPLATES;
+
+    /**
+     * Danh sách các mẫu thành tích (achievements).
+     */
     public static final List<ArchivementTemplate> Archivement_TEMPLATES = new ArrayList<>();
+
+    /**
+     * Danh sách các bản đồ trong game.
+     */
     public static final List<com.girlkun.models.map.Map> MAPS = new ArrayList<>();
+
+    /**
+     * Danh sách các mẫu tùy chọn vật phẩm.
+     */
     public static final List<ItemOptionTemplate> ITEM_OPTION_TEMPLATES = new ArrayList<>();
+
+    /**
+     * Danh sách phần thưởng từ quái vật, ánh xạ theo ID quái vật.
+     */
     public static final Map<Integer, MobReward> MOB_REWARDS = new HashMap<>();
+
+    /**
+     * Danh sách phần thưởng từ vòng quay may mắn.
+     */
     public static final List<ItemLuckyRound> LUCKY_ROUND_REWARDS = new ArrayList();
+
+    /**
+     * Danh sách ánh xạ tên hình ảnh với số khung (frame).
+     */
     public static final Map<String, Byte> IMAGES_BY_NAME = new HashMap<String, Byte>();
+
+    /**
+     * Danh sách các mẫu vật phẩm.
+     */
     public static final List<ItemTemplate> ITEM_TEMPLATES = new ArrayList<>();
+
+    /**
+     * Danh sách các mẫu quái vật.
+     */
     public static final List<MobTemplate> MOB_TEMPLATES = new ArrayList<>();
+
+    /**
+     * Danh sách các mẫu NPC.
+     */
     public static final List<NpcTemplate> NPC_TEMPLATES = new ArrayList<>();
+
+    /**
+     * Danh sách các phụ đề (captions).
+     */
     public static final List<String> CAPTIONS = new ArrayList<>();
+
+    /**
+     * Danh sách các nhiệm vụ chính.
+     */
     public static final List<TaskMain> TASKS = new ArrayList<>();
+
+    /**
+     * Danh sách các mẫu nhiệm vụ phụ.
+     */
     public static final List<SideTaskTemplate> SIDE_TASKS_TEMPLATE = new ArrayList<>();
+
+    /**
+     * Danh sách các nội tại (intrinsics) của nhân vật.
+     */
     public static final List<Intrinsic> INTRINSICS = new ArrayList<>();
+
+    /**
+     * Danh sách nội tại của nhân vật Trái Đất.
+     */
     public static final List<Intrinsic> INTRINSIC_TD = new ArrayList<>();
+
+    /**
+     * Danh sách nội tại của nhân vật Namếc.
+     */
     public static final List<Intrinsic> INTRINSIC_NM = new ArrayList<>();
+
+    /**
+     * Danh sách nội tại của nhân vật Xayda.
+     */
     public static final List<Intrinsic> INTRINSIC_XD = new ArrayList<>();
+
+    /**
+     * Danh sách các avatar đầu nhân vật.
+     */
     public static final List<HeadAvatar> HEAD_AVATARS = new ArrayList<>();
+
+    /**
+     * Danh sách các cờ (flags) trong túi.
+     */
     public static final List<FlagBag> FLAGS_BAGS = new ArrayList<>();
+
+    /**
+     * Danh sách các lớp nhân vật (NClass).
+     */
     public static final List<NClass> NCLASS = new ArrayList<>();
+
+    /**
+     * Danh sách các NPC trong game.
+     */
     public static final List<Npc> NPCS = new ArrayList<>();
+
+    /**
+     * Danh sách các cửa hàng trong game.
+     */
     public static List<Shop> SHOPS = new ArrayList<>();
+
+    /**
+     * Danh sách các bang hội trong game.
+     */
     public static final List<Clan> CLANS = new ArrayList<>();
+
+    /**
+     * Danh sách bảng xếp hạng khí (TopGas).
+     */
     public static final List<TopGas> TopGas = new ArrayList<>();
+
+    /**
+     * Danh sách các thông báo trong game.
+     */
     public static final List<String> NOTIFY = new ArrayList<>();
+
+    /**
+     * Danh sách các giải đấu võ thuật.
+     */
     public static final ArrayList<DaiHoiVoThuat> LIST_DHVT = new ArrayList<>();
+
+    /**
+     * Danh sách phần thưởng hồng ngọc.
+     */
     public static final List<Item> RUBY_REWARDS = new ArrayList<>();
 
+    /**
+     * Truy vấn SQL lấy top sức mạnh.
+     */
     public static final String queryTopSM = "SELECT id, CAST( split_str(data_point,',',2) AS UNSIGNED) AS sm FROM player ORDER BY CAST( split_str(data_point,',',2) AS UNSIGNED) DESC LIMIT 20;";
+
+    /**
+     * Truy vấn SQL lấy top sức đánh.
+     */
     public static final String queryTopSD = "SELECT id, CAST( split_str(data_point,',',8)  AS UNSIGNED) AS sd FROM player ORDER BY CAST( split_str(data_point,',',8)  AS UNSIGNED) DESC LIMIT 20;";
+
+    /**
+     * Truy vấn SQL lấy top máu.
+     */
     public static final String queryTopHP = "SELECT id, CAST( split_str(data_point,',',14) AS UNSIGNED) AS hp FROM player ORDER BY CAST( split_str(data_point,',',14) AS UNSIGNED) DESC LIMIT 20;";
+
+    /**
+     * Truy vấn SQL lấy top khí.
+     */
     public static final String queryTopKI = "SELECT id, CAST( split_str(data_point,',',7) AS UNSIGNED) AS ki FROM player ORDER BY CAST( split_str(data_point,',',7) AS UNSIGNED) DESC LIMIT 20;";
-   public static final String queryTopNV = "SELECT id, CAST(data_task,',',1),'[',2) AS UNSIGNED) AS nv FROM player ORDER BY CAST( split_str(split_str(data_task,',',1),'[',2) AS UNSIGNED) DESC, CAST(split_str(data_task,',',2) AS UNSIGNED) DESC, CAST( split_str(data_point,',',2) AS UNSIGNED) DESC LIMIT 50;";
+
+    /**
+     * Truy vấn SQL lấy top nhiệm vụ.
+     */
+    public static final String queryTopNV = "SELECT id, CAST(data_task,',',1),'[',2) AS UNSIGNED) AS nv FROM player ORDER BY CAST( split_str(split_str(data_task,',',1),'[',2) AS UNSIGNED) DESC, CAST(split_str(data_task,',',2) AS UNSIGNED) DESC, CAST( split_str(data_point,',',2) AS UNSIGNED) DESC LIMIT 50;";
+
+    /**
+     * Truy vấn SQL lấy top sự kiện.
+     */
     public static final String queryTopSK = "SELECT id, CAST( split_str( data_inventory,',',5) AS UNSIGNED) AS event FROM player ORDER BY CAST( split_str( data_inventory,',',5) AS UNSIGNED) DESC LIMIT 20;";
+
+    /**
+     * Truy vấn SQL lấy top hồng ngọc.
+     */
     public static final String queryTopRUBY = "SELECT id, CAST( split_str( data_inventory,',',3) AS UNSIGNED) AS HONGNGOC FROM player ORDER BY CAST( split_str( data_inventory,',',3) AS UNSIGNED) DESC LIMIT 10;";
+
+    /**
+     * Truy vấn SQL lấy top Ngũ Hành Sơn.
+     */
     public static final String queryTopNHS = "SELECT id, CAST( NguHanhSonPoint AS UNSIGNED) AS nhs FROM player ORDER BY CAST( NguHanhSonPoint AS UNSIGNED) DESC LIMIT 20;";
-//    public static final String queryTopNV =  "SELECT id, CAST(SPLIT_STR(SPLIT_STR(data_task, ',', 1), '[', 2) AS UNSIGNED) AS nv\n" +
-//"FROM player WHERE id NOT IN (SELECT id FROM account WHERE is_admin = 1) ORDER BY "
-//            + " CAST(SPLIT_STR(SPLIT_STR(data_task, ',', 1), '[', 2) AS UNSIGNED) DESC,"
-//            + " CAST(SPLIT_STR(data_task, ',', 2) AS UNSIGNED) DESC,"
-//            + " CAST(SPLIT_STR(data_point, ',', 2) AS UNSIGNED) DESC LIMIT 50;";
-    
+
+    /**
+     * Danh sách top sức mạnh.
+     */
     public static List<TOP> topSM;
+
+    /**
+     * Danh sách top sức đánh.
+     */
     public static List<TOP> topSD;
+
+    /**
+     * Danh sách top máu.
+     */
     public static List<TOP> topHP;
+
+    /**
+     * Danh sách top khí.
+     */
     public static List<TOP> topKI;
+
+    /**
+     * Danh sách top nhiệm vụ.
+     */
     public static List<TOP> topNV;
+
+    /**
+     * Danh sách top sự kiện.
+     */
     public static List<TOP> topSK;
+
+    /**
+     * Danh sách top hồng ngọc.
+     */
     public static List<TOP> topRUBY;
+
+    /**
+     * Danh sách top Ngũ Hành Sơn.
+     */
     public static List<TOP> topNHS;
+
+    /**
+     * Thời gian cập nhật bảng xếp hạng.
+     */
     public static long timeRealTop = 0;
+
+    /**
+     * Danh sách ID vật phẩm thiên thần.
+     */
     public static final short[] itemIds_TL = {555, 557, 559, 556, 558, 563, 567};
+
+    /**
+     * Danh sách ID vật phẩm hủy diệt.
+     */
     public static final short[] itemIds_HuyDiet = {650, 651, 652, 653, 654, 655, 656, 657, 658, 659, 660, 661, 662};
+
+    /**
+     * Danh sách ID avatar đen.
+     */
     public static final short[] itemAVATAR_BLACK = {1124, 1125};
+
+    /**
+     * Danh sách ID vật phẩm ngọc rồng sao đen.
+     */
     public static final short[] itemIds_NR_SB = {16, 17, 568, 1333, 1334};
+
+    /**
+     * Danh sách ID vật phẩm cải bắp.
+     */
     public static final short[] itemIds_CB = {1991, 1992};
+
+    /**
+     * Danh sách ID đá cải tiến cấp 12.
+     */
     public static final short[] itemDC12 = {233, 237, 241, 245, 249, 253, 257, 261, 265, 269, 273, 277};
 
+    /**
+     * Danh sách áo Trái Đất.
+     */
     public static final short[] aotd = {138, 139, 230, 231, 232, 233, 555};
+
+    /**
+     * Danh sách quần Trái Đất.
+     */
     public static final short[] quantd = {142, 143, 242, 243, 244, 245, 556};
+
+    /**
+     * Danh sách găng Trái Đất.
+     */
     public static final short[] gangtd = {146, 147, 254, 255, 256, 257, 562};
+
+    /**
+     * Danh sách giày Trái Đất.
+     */
     public static final short[] giaytd = {150, 151, 266, 267, 268, 269, 563};
+
+    /**
+     * Danh sách áo Xayda.
+     */
     public static final short[] aoxd = {170, 171, 238, 239, 240, 241, 559};
+
+    /**
+     * Danh sách quần Xayda.
+     */
     public static final short[] quanxd = {174, 175, 250, 251, 252, 253, 560};
+
+    /**
+     * Danh sách găng Xayda.
+     */
     public static final short[] gangxd = {178, 179, 262, 263, 264, 265, 566};
+
+    /**
+     * Danh sách giày Xayda.
+     */
     public static final short[] giayxd = {182, 183, 274, 275, 276, 277, 567};
+
+    /**
+     * Danh sách áo Namếc.
+     */
     public static final short[] aonm = {154, 155, 234, 235, 236, 237, 557};
+
+    /**
+     * Danh sách quần Namếc.
+     */
     public static final short[] quannm = {158, 159, 246, 247, 248, 249, 558};
+
+    /**
+     * Danh sách găng Namếc.
+     */
     public static final short[] gangnm = {162, 163, 258, 259, 260, 261, 564};
+
+    /**
+     * Danh sách giày Namếc.
+     */
     public static final short[] giaynm = {166, 167, 270, 271, 272, 273, 565};
+
+    /**
+     * Danh sách rada sự kiện VIP.
+     */
     public static final short[] radaSKHVip = {186, 187, 278, 279, 280, 281, 561};
 
+    /**
+     * Danh sách các bộ trang phục sự kiện VIP theo hành tinh.
+     */
     public static final short[][][] doSKHVip = {{aotd, quantd, gangtd, giaytd}, {aonm, quannm, gangnm, giaynm}, {aoxd, quanxd, gangxd, giayxd}};
 
+    /**
+     * Lấy thể hiện duy nhất của lớp Manager.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp Manager.
+     */
     public static Manager gI() {
         if (i == null) {
             i = new Manager();
@@ -159,6 +455,12 @@ public class Manager {
         return i;
     }
 
+    /**
+     * Khởi tạo một đối tượng Manager.
+     * Tải cấu hình từ tệp properties và khởi tạo dữ liệu từ cơ sở dữ liệu.
+     * 
+     * @throws IOException Nếu có lỗi khi đọc tệp properties.
+     */
     private Manager() {
         try {
             loadProperties();
@@ -166,7 +468,6 @@ public class Manager {
             System.err.print("\nError at 298\n");
             e.printStackTrace();
             System.exit(0);
-
         }
         this.loadDatabase();
         NpcFactory.createNpcConMeo();
@@ -174,6 +475,12 @@ public class Manager {
         this.initMap();
     }
 
+    /**
+     * Kiểm tra xem có hỗ trợ nhiệm vụ trong khoảng thời gian cụ thể hay không.
+     * Hỗ trợ nhiệm vụ vào các ngày Thứ Ba, Thứ Năm, Thứ Bảy, Chủ Nhật trong khoảng 8h-11h và 20h-23h.
+     * 
+     * @return true nếu hỗ trợ nhiệm vụ, false nếu không.
+     */
     public boolean HoTroNhiemVu() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -188,6 +495,10 @@ public class Manager {
         return false;
     }
 
+    /**
+     * Khởi tạo các bản đồ trong game từ dữ liệu mẫu bản đồ.
+     * Tạo và chạy các luồng cập nhật cho từng bản đồ.
+     */
     private void initMap() {
         int[][] tileTyleTop = readTileIndexTileType(ConstMap.TILE_TOP);
         for (MapTemplate mapTemp : MAP_TEMPLATES) {
@@ -208,16 +519,13 @@ public class Manager {
         TestDame td = new TestDame();
         td.initTraidat();
         r.initReferee();
-
-//        Yajiro r1 = new Yajiro();
-//        r1.initYajiro();
-//         Logger.log(Logger.BLACK,"Init map thành công!\n");
-//
-//         Admin r2 = new Admin();
-//        r2.initAdmin();
-//         Logger.log(Logger.BLACK,"Init map thành công!\n");
     }
 
+    /**
+     * Tải dữ liệu phần (part) từ cơ sở dữ liệu và lưu vào tệp.
+     * 
+     * @throws Exception Nếu có lỗi khi truy vấn cơ sở dữ liệu hoặc ghi tệp.
+     */
     public static void loadPart() {
         JSONValue jv = new JSONValue();
         JSONArray dataArray = null;
@@ -225,7 +533,6 @@ public class Manager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection con = GirlkunDB.getConnection();) {
-            //load part
             ps = con.prepareStatement("select * from part");
             rs = ps.executeQuery();
             List<Part> parts = new ArrayList<>();
@@ -263,6 +570,9 @@ public class Manager {
         }
     }
 
+    /**
+     * Tải dữ liệu từ cơ sở dữ liệu và tệp tin, bao gồm các mẫu bản đồ, vật phẩm, kỹ năng, NPC, và các thành phần khác.
+     */
     private void loadDatabase() {
         long st = System.currentTimeMillis();
         JSONValue jv = new JSONValue();
@@ -271,6 +581,7 @@ public class Manager {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection con = GirlkunDB.getConnection();) {
+            // Tải dữ liệu phần (part)
             ps = con.prepareStatement("select * from part");
             rs = ps.executeQuery();
             List<Part> parts = new ArrayList<>();
@@ -303,7 +614,7 @@ public class Manager {
             dos.close();
             Logger.log(Logger.BLACK, "Tải dữ liệu Part >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Thành công [" + parts.size() + "]\n");
 
-            //load small version
+            // Tải dữ liệu phiên bản nhỏ (small version)
             ps = con.prepareStatement("select count(id) from small_version");
             rs = ps.executeQuery();
             List<byte[]> smallVersion = new ArrayList<>();
@@ -333,7 +644,7 @@ public class Manager {
                 dos.close();
             }
 
-            //load clan
+            // Tải dữ liệu bang hội
             ps = con.prepareStatement("select * from clan_sv" + SERVER);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -394,22 +705,7 @@ public class Manager {
 
             Logger.log(Logger.BLACK, "Loading ---> Cland (" + CLANS.size() + ") (" + Clan.NEXT_ID + ")\n");
 
-            ps = con.prepareStatement("select * from dhvt_template");
-            rs = ps.executeQuery();
-//            while (rs.next()) {
-//                DaiHoiVoThuat dhvt = new DaiHoiVoThuat();
-//                dhvt.NameCup = rs.getString(2);
-//                dhvt.Time = rs.getString(3).split("\n");
-//                dhvt.gem = rs.getInt(4);
-//                dhvt.gold = rs.getInt(5);
-//                dhvt.min_start = rs.getInt(6);
-//                dhvt.min_start_temp = rs.getInt(6);
-//                dhvt.min_limit = rs.getInt(7);
-//                LIST_DHVT.add(dhvt);
-//            }
-//            Logger.log(Logger.BLACK, ": tải dữ liệu Đại Hội Võ Thuật thành công (" + LIST_DHVT.size() + ")\n");
-
-            //load skill
+            // Tải dữ liệu kỹ năng
             ps = con.prepareStatement("select * from skill_template order by nclass_id, slot");
             rs = ps.executeQuery();
             byte nClassId = -1;
@@ -460,9 +756,9 @@ public class Manager {
                     skillTemplate.skillss.add(skill);
                 }
             }
-            Logger.log(Logger.BLACK, "Loading ----> Skills(" + NCLASS.size() + ")\n");
+            Logger.log(Logger.BLACK, "Loading ----> Skills (" + NCLASS.size() + ")\n");
 
-            //load head avatar
+            // Tải dữ liệu avatar đầu
             ps = con.prepareStatement("select * from head_avatar");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -471,7 +767,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Head (" + HEAD_AVATARS.size() + ")\n");
 
-            //load flag bag
+            // Tải dữ liệu cờ trong túi
             ps = con.prepareStatement("select * from flag_bag");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -490,7 +786,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Flag Bag (" + FLAGS_BAGS.size() + ")\n");
 
-            //load intrinsic
+            // Tải dữ liệu nội tại
             ps = con.prepareStatement("select * from intrinsic");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -522,7 +818,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Intrins (" + INTRINSICS.size() + ")\n");
 
-            //load task
+            // Tải dữ liệu nhiệm vụ
             ps = con.prepareStatement("SELECT id, task_main_template.name, detail, "
                     + "task_sub_template.name AS 'sub_name', max_count, notify, npc_id, map "
                     + "FROM task_main_template JOIN task_sub_template ON task_main_template.id = "
@@ -550,7 +846,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Task (" + TASKS.size() + ")\n");
 
-            //load side task
+            // Tải dữ liệu nhiệm vụ phụ
             ps = con.prepareStatement("select * from side_task_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -576,7 +872,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Side task (" + SIDE_TASKS_TEMPLATE.size() + ")\n");
 
-            //load item template
+            // Tải dữ liệu mẫu vật phẩm
             ps = con.prepareStatement("select * from item_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -599,7 +895,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> item_temple (" + ITEM_TEMPLATES.size() + ")\n");
 
-            //load item option template
+            // Tải dữ liệu tùy chọn vật phẩm
             ps = con.prepareStatement("select id, name from item_option_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -610,11 +906,11 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> item_option (" + ITEM_OPTION_TEMPLATES.size() + ")\n");
 
-            //load shop
+            // Tải dữ liệu cửa hàng
             SHOPS = ShopDAO.getShops(con);
             Logger.log(Logger.BLACK, "Loading ----> Shop (" + SHOPS.size() + ")\n");
 
-            //load reward lucky round
+            // Tải phần thưởng vòng quay may mắn
             File folder = new File("data/girlkun/data_lucky_round_reward");
             for (File fileEntry : folder.listFiles()) {
                 if (!fileEntry.isDirectory()) {
@@ -648,7 +944,8 @@ public class Manager {
                 }
             }
             Logger.log(Logger.BLACK, "Loading ----> vòng quay thượng đế (" + LUCKY_ROUND_REWARDS.size() + ")\n");
-            //load reward mob
+
+            // Tải phần thưởng quái vật
             folder = new File("data/girlkun/mob_reward");
             String DatamobreWard = "";
             for (File fileEntry : folder.listFiles()) {
@@ -680,16 +977,16 @@ public class Manager {
                                 new int[]{Integer.parseInt(ratio[0]), Integer.parseInt(ratio[1])}, gender);
                         DatamobreWard += "\nItemName:" + item.getTemp().name;
                         DatamobreWard += "\nRatio:" + Integer.parseInt(ratio[0]) + "to" + Integer.parseInt(ratio[1]);
-                        if (item.getTemp().type == 30) { // sao pha lê
+                        if (item.getTemp().type == 30) { // Sao pha lê
                             item.setRatio(new int[]{20, Integer.parseInt(ratio[1])});
                         }
-                        if (item.getTemp().type == 14) { //14 đá nâng cấp
+                        if (item.getTemp().type == 14) { // Đá nâng cấp
                             item.setRatio(new int[]{20, Integer.parseInt(ratio[1])});
                         }
                         if (item.getTemp().type < 5) {
                             item.setRatio(new int[]{Integer.parseInt(ratio[0]), Integer.parseInt(ratio[1])});
                         }
-                        if (item.getTemp().type == 9) { //vàng
+                        if (item.getTemp().type == 9) { // Vàng
                             mobReward.getGoldReward().add(item);
                         } else {
                             boolean flag = false;
@@ -713,13 +1010,12 @@ public class Manager {
                             item.getOption().add(option);
                         }
                     }
-
                 }
             }
             Service.gI().DataMobReward += DatamobreWard;
             Logger.log(Logger.BLACK, "Loading ----> Item mods (" + MOB_REWARDS.size() + ")\n");
 
-            //load notify
+            // Tải thông báo
             folder = new File("data/girlkun/notify");
             for (File fileEntry : folder.listFiles()) {
                 if (!fileEntry.isDirectory()) {
@@ -734,7 +1030,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Thông Báo (" + NOTIFY.size() + ")\n");
 
-            //load caption
+            // Tải dữ liệu phụ đề
             ps = con.prepareStatement("select * from caption");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -742,7 +1038,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> khăn choàng (" + CAPTIONS.size() + ")\n");
 
-            //load image by name
+            // Tải dữ liệu hình ảnh theo tên
             ps = con.prepareStatement("select name, n_frame from img_by_name");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -750,7 +1046,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> ảnh font nền (" + IMAGES_BY_NAME.size() + ")\n");
 
-            //load mob template
+            // Tải dữ liệu mẫu quái vật
             ps = con.prepareStatement("select * from mob_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -768,6 +1064,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ---> Số Lượng quái (" + MOB_TEMPLATES.size() + ")\n");
 
+            // Tải dữ liệu vật phẩm ký gửi
             ps = con.prepareStatement("SELECT * FROM shop_ky_gui");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -794,7 +1091,7 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ---> Item kí gửi [" + ShopKyGuiManager.gI().listItem.size() + "]!\n");
 
-            //load npc template
+            // Tải dữ liệu mẫu NPC
             ps = con.prepareStatement("select * from npc_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -808,7 +1105,8 @@ public class Manager {
                 NPC_TEMPLATES.add(npcTemp);
             }
             Logger.log(Logger.BLACK, "Loading ----> npc temple (" + NPC_TEMPLATES.size() + ")\n");
-//           // Thanh Tuu
+
+            // Tải dữ liệu thành tích
             ps = con.prepareStatement("select * from archive_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -820,7 +1118,8 @@ public class Manager {
                 Archivement_TEMPLATES.add(a);
             }
             Logger.log(Logger.PURPLE, "Loading ----> Thành tựu (" + Archivement_TEMPLATES.size() + ")\n");
-            //load map template
+
+            // Tải dữ liệu mẫu bản đồ
             ps = con.prepareStatement("select count(id) from map_template");
             rs = ps.executeQuery();
             if (rs.first()) {
@@ -835,8 +1134,6 @@ public class Manager {
                     String mapName = rs.getString("name");
                     mapTemplate.id = mapId;
                     mapTemplate.name = mapName;
-                    //load data
-
                     dataArray = (JSONArray) jv.parse(rs.getString("data"));
                     mapTemplate.type = Byte.parseByte(String.valueOf(dataArray.get(0)));
                     mapTemplate.planetId = Byte.parseByte(String.valueOf(dataArray.get(1)));
@@ -844,7 +1141,6 @@ public class Manager {
                     mapTemplate.tileId = Byte.parseByte(String.valueOf(dataArray.get(3)));
                     mapTemplate.bgId = Byte.parseByte(String.valueOf(dataArray.get(4)));
                     dataArray.clear();
-                    ///////////////////////////////////////////////////////////////////
                     mapTemplate.type = rs.getByte("type");
                     mapTemplate.planetId = rs.getByte("planet_id");
                     mapTemplate.bgType = rs.getByte("bg_type");
@@ -852,7 +1148,7 @@ public class Manager {
                     mapTemplate.bgId = rs.getByte("bg_id");
                     mapTemplate.zones = rs.getByte("zones");
                     mapTemplate.maxPlayerPerZone = rs.getByte("max_player");
-                    //load waypoints
+                    // Tải điểm dịch chuyển
                     dataArray = (JSONArray) jv.parse(rs.getString("waypoints")
                             .replaceAll("\\[\"\\[", "[[")
                             .replaceAll("\\]\"\\]", "]]")
@@ -875,7 +1171,7 @@ public class Manager {
                         dtwp.clear();
                     }
                     dataArray.clear();
-                    //load mobs
+                    // Tải quái vật
                     dataArray = (JSONArray) jv.parse(rs.getString("mobs").replaceAll("\\\"", ""));
                     mapTemplate.mobTemp = new byte[dataArray.size()];
                     mapTemplate.mobLevel = new byte[dataArray.size()];
@@ -892,7 +1188,7 @@ public class Manager {
                         dtm.clear();
                     }
                     dataArray.clear();
-                    //load npcs
+                    // Tải NPC
                     dataArray = (JSONArray) jv.parse(rs.getString("npcs").replaceAll("\\\"", ""));
                     mapTemplate.npcId = new byte[dataArray.size()];
                     mapTemplate.npcX = new short[dataArray.size()];
@@ -911,6 +1207,7 @@ public class Manager {
                 RUBY_REWARDS.add(Util.sendDo(861, 0, new ArrayList<>()));
             }
 
+            // Tải dữ liệu radar
             ps = con.prepareStatement("select * from radar");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -948,20 +1245,6 @@ public class Manager {
             }
             Logger.log(Logger.BLACK, "Loading ----> Radar temple (" + RadarService.gI().RADAR_TEMPLATE.size() + ")\n");
 
-//            topNV = realTop(queryTopNV, con);
-//            Logger.success("Load top nv thành công (" + topNV.size() + ")\n");            
-//            topSM = realTop(queryTopSM, con);
-//             Logger.log(Logger.BLACK,"b|1|TOP POWER (" + topSM.size() + ")\n");
-//            topNV = realTop(queryTopNV, con);
-//             Logger.log(Logger.BLACK,"TOP QUEST (" + topNV.size() + ")\n");
-//            topSK = realTop(queryTopSK, con);
-//             Logger.log(Logger.BLACK,"TOP EVENT (" + topSK.size() + ")\n");
-//            topRUBY = realTop(queryTopRUBY, con);
-//             Logger.log(Logger.BLACK,"TOP RUBY (" + topSK.size() + ")\n");
-//            topHP = realTop(queryTopHP, con);
-//             Logger.log(Logger.BLACK,"TOP POINT(" + topHP.size() + ")\n");
-//            topSD = realTop(queryTopSD, con);
-//             Logger.log(Logger.BLACK,"TOP RUBY (" + topSD.size() + ")\n");
             Manager.timeRealTop = System.currentTimeMillis();
             try {
                 if (rs != null) {
@@ -973,13 +1256,11 @@ public class Manager {
             } catch (SQLException e) {
                 System.err.print("\nError at 301\n");
                 e.printStackTrace();
-
             }
         } catch (Exception e) {
             System.err.print("\nError at 302\n");
-           e.printStackTrace();
+            e.printStackTrace();
             System.exit(0);
-
         } finally {
             try {
                 if (rs != null) {
@@ -996,53 +1277,16 @@ public class Manager {
         Logger.log(Logger.BLACK, "Thời gian Loading dữ liệu ----> " + (System.currentTimeMillis() - st) + "(ms)\n");
     }
 
-//    public static List<TOP> realTop(String query, Connection con) {
-//        List<TOP> tops = new ArrayList<>();
-//        try {
-//            PreparedStatement ps = con.prepareStatement(query);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//                TOP top = TOP.builder().id_player(rs.getInt("id")).build();
-//                switch (query) {
-//                    case queryTopSM:
-//                        top.setInfo1(rs.getLong("sm") + "");
-//                        top.setInfo2(rs.getLong("sm") + "");
-//                        break;
-//                    case queryTopNV:
-//                        top.setInfo1(rs.getByte("nv") + "");
-//                        top.setInfo2(rs.getByte("nv") + "");
-//                        break;
-//                    case queryTopSK:
-//                        top.setInfo1(rs.getInt("event") + " điểm");
-//                        top.setInfo2(rs.getInt("event") + " điểm");
-//                        break;
-//                    case queryTopRUBY:
-//                        top.setInfo1(rs.getInt("HONGNGOC") + " Hồng Ngọc");
-//                        top.setInfo2(rs.getInt("HONGNGOC") + " Hồng Ngọc");
-//                        break;
-//                    case queryTopHP:
-//                        top.setInfo1(rs.getInt("hp") + " Sức Đáh");
-//                        top.setInfo2(rs.getInt("hp") + " Trùm");
-//                        break;
-//                    case queryTopSD:
-//                        top.setInfo1(rs.getInt("sd") + " Sức Đánh");
-//                        top.setInfo2(rs.getInt("sd") + " Sức Đánh");
-//                        break;
-//                }
-//                tops.add(top);
-//            }
-//        } catch (Exception e) {
-//            System.err.print("\nError at 304\n");
-//            e.printStackTrace();
-//        }
-//        return tops;
-//    }
-
+    /**
+     * Tải cấu hình server từ tệp properties.
+     * 
+     * @throws IOException Nếu có lỗi khi đọc tệp properties.
+     */
     public void loadProperties() throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream("data/girlkun/girlkun.properties"));
         Object value = null;
-        //###Config sv
+        // Cấu hình server
         if ((value = properties.get("server.girlkun.port")) != null) {
             ServerManager.PORT = Integer.parseInt(String.valueOf(value));
         }
@@ -1075,8 +1319,10 @@ public class Manager {
     }
 
     /**
-     * @param tileTypeFocus tile type: top, bot, left, right...
-     * @return [tileMapId][tileType]
+     * Đọc chỉ số loại ô (tile type) từ tệp tile set.
+     * 
+     * @param tileTypeFocus Loại ô cần đọc (top, bot, left, right...).
+     * @return Mảng hai chiều chứa chỉ số ô theo loại bản đồ.
      */
     private int[][] readTileIndexTileType(int tileTypeFocus) {
         int[][] tileIndexTileType = null;
@@ -1102,14 +1348,16 @@ public class Manager {
             }
         } catch (Exception e) {
             System.err.print("\nError at 305\n");
-           e.printStackTrace();
+            e.printStackTrace();
         }
         return tileIndexTileType;
     }
 
     /**
-     * @param mapId mapId
-     * @return tile map for paint
+     * Đọc dữ liệu bản đồ từ tệp tile map.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return Mảng hai chiều chứa dữ liệu ô bản đồ.
      */
     private int[][] readTileMap(int mapId) {
         int[][] tileMap = null;
@@ -1134,7 +1382,13 @@ public class Manager {
         return tileMap;
     }
 
-    //service*******************************************************************
+    /**
+     * Tìm bang hội theo ID.
+     * 
+     * @param id ID của bang hội.
+     * @return Bang hội tương ứng.
+     * @throws Exception Nếu không tìm thấy bang hội.
+     */
     public static Clan getClanById(int id) throws Exception {
         for (Clan clan : CLANS) {
             if (clan.id == id) {
@@ -1144,15 +1398,30 @@ public class Manager {
         throw new Exception("không tìm thấy id bang hội: " + id);
     }
 
+    /**
+     * Thêm một bang hội vào danh sách.
+     * 
+     * @param clan Bang hội cần thêm.
+     */
     public static void addClan(Clan clan) {
         CLANS.add(clan);
     }
 
+    /**
+     * Lấy số lượng bang hội hiện có.
+     * 
+     * @return Số lượng bang hội.
+     */
     public static int getNumClan() {
         return CLANS.size();
-
     }
 
+    /**
+     * Tìm mẫu quái vật theo ID.
+     * 
+     * @param mobTempId ID của mẫu quái vật.
+     * @return Mẫu quái vật tương ứng hoặc null nếu không tìm thấy.
+     */
     public static MobTemplate getMobTemplateByTemp(int mobTempId) {
         for (MobTemplate mobTemp : MOB_TEMPLATES) {
             if (mobTemp.id == mobTempId) {
@@ -1162,6 +1431,12 @@ public class Manager {
         return null;
     }
 
+    /**
+     * Lấy số khung (frame) của hình ảnh theo tên.
+     * 
+     * @param name Tên hình ảnh.
+     * @return Số khung của hình ảnh hoặc 0 nếu không tìm thấy.
+     */
     public static byte getNFrameImageByName(String name) {
         Object n = IMAGES_BY_NAME.get(name);
         if (n != null) {
@@ -1170,5 +1445,4 @@ public class Manager {
             return 0;
         }
     }
-
 }
