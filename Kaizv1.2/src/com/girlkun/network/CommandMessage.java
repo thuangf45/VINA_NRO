@@ -1,17 +1,11 @@
-/*    */ package com.girlkun.network;
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ public class CommandMessage
-/*    */ {
-/* 10 */   public static byte REQUEST_KEY = -27;
-/*    */ }
+package com.girlkun.network;
 
-
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\CommandMessage.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Lớp định nghĩa các mã lệnh (command) dùng trong giao tiếp mạng của game.
+ * @author Lucifer
  */
+public class CommandMessage {
+
+    /** Mã lệnh yêu cầu khóa (key) trong giao tiếp mạng. */
+    public static byte REQUEST_KEY = -27;
+}
