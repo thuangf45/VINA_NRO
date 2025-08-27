@@ -7,7 +7,7 @@ import com.girlkun.utils.Util;
 
 /**
  * Lớp NewPet đại diện cho thú cưng của người chơi trong trò chơi, kế thừa từ lớp Player.
- * @author Arriety
+ * @author Lucifer
  */
 public class NewPet extends Player {
     
