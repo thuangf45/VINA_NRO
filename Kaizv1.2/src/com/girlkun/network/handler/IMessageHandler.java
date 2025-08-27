@@ -3,12 +3,18 @@ package com.girlkun.network.handler;
 import com.girlkun.network.io.Message;
 import com.girlkun.network.session.ISession;
 
-public interface IMessageHandler {
-  void onMessage(ISession paramISession, Message paramMessage) throws Exception;
-}
-
-
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\handler\IMessageHandler.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Interface định nghĩa phương thức xử lý tin nhắn mạng trong game.
+ * @author Lucifer
  */
+public interface IMessageHandler {
+
+    /**
+     * Xử lý tin nhắn nhận được từ phiên kết nối mạng.
+     *
+     * @param paramISession Phiên kết nối mạng.
+     * @param paramMessage Tin nhắn cần xử lý.
+     * @throws Exception Nếu xảy ra lỗi trong quá trình xử lý tin nhắn.
+     */
+    void onMessage(ISession paramISession, Message paramMessage) throws Exception;
+}
