@@ -9,7 +9,6 @@ import com.girlkun.network.io.Sender;
 import com.girlkun.network.server.GirlkunServer;
 import com.girlkun.network.server.GirlkunSessionManager;
 import com.girlkun.utils.StringUtil;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -18,193 +17,265 @@ import java.util.logging.Logger;
 import com.girlkun.models.player.Player;
 import java.net.InetAddress;
 
-public class Session
-        implements ISession {
+/**
+ * Lớp thực hiện giao diện ISession, quản lý phiên làm việc mạng, bao gồm gửi/nhận thông điệp,
+ * xử lý khóa mã hóa, và quản lý kết nối với client hoặc server.
+ *
+ * @author Lucifer
+ */
+public class Session implements ISession {
 
+    /**
+     * Thể hiện duy nhất của lớp Session (singleton pattern).
+     */
     private static ISession I;
+
+    /**
+     * Biến đếm để tạo ID duy nhất cho các phiên làm việc.
+     */
     private static int ID_INIT;
+
+    /**
+     * Loại phiên làm việc (client hoặc server).
+     */
     public TypeSession typeSession;
+
+    /**
+     * Thời gian chờ tối đa cho các thao tác mạng (đơn vị không xác định).
+     */
     public byte timeWait = 50;
 
-    public static ISession gI() throws Exception {
-        /*  26 */
-        if (I == null) {
-            /*  27 */
-            throw new Exception("Instance chưa được khởi tạo!");
-        }
-        /*  29 */
-        return I;
-    }
+    /**
+     * Khóa mã hóa dùng cho phiên làm việc.
+     */
+    private byte[] KEYS = "Girlkun75".getBytes();
 
-    public static ISession initInstance(String host, int port) throws Exception {
-        /*  33 */
-        if (I != null) {
-            /*  34 */
-            throw new Exception("Instance đã được khởi tạo!");
-        }
-        /*  36 */
-        I = new Session(host, port);
-        /*  37 */
-        return I;
-    }
-
-
-    /*  44 */    private byte[] KEYS = "Girlkun75".getBytes();
-
+    /**
+     * Trạng thái xác định xem khóa đã được gửi hay chưa.
+     */
     private boolean sentKey;
 
+    /**
+     * ID duy nhất của phiên làm việc.
+     */
     public int id;
 
+    /**
+     * Socket kết nối với client hoặc server.
+     */
     private Socket socket;
 
+    /**
+     * Trạng thái kết nối của phiên làm việc.
+     */
     private boolean connected;
 
+    /**
+     * Cờ xác định xem phiên làm việc có được phép kết nối lại hay không.
+     */
     private boolean reconnect;
 
+    /**
+     * Đối tượng xử lý gửi thông điệp.
+     */
     private Sender sender;
 
+    /**
+     * Đối tượng xử lý thu thập thông điệp.
+     */
     private Collector collector;
 
+    /**
+     * Luồng xử lý gửi thông điệp.
+     */
     private Thread tSender;
 
+    /**
+     * Luồng xử lý thu thập thông điệp.
+     */
     private Thread tCollector;
 
+    /**
+     * Đối tượng xử lý khóa mã hóa cho phiên làm việc.
+     */
     private IKeySessionHandler keyHandler;
 
+    /**
+     * Địa chỉ IP của client kết nối.
+     */
     private String ip;
 
+    /**
+     * Địa chỉ host của server (dùng cho client).
+     */
     private String host;
 
+    /**
+     * Cổng mạng của server (dùng cho client).
+     */
     private int port;
 
+    /**
+     * Lấy thể hiện duy nhất của Session (singleton pattern).
+     *
+     * @return thể hiện ISession
+     * @throws Exception nếu instance chưa được khởi tạo
+     */
+    public static ISession gI() throws Exception {
+        if (I == null) {
+            throw new Exception("Instance chưa được khởi tạo!");
+        }
+        return I;
+    }
+
+    /**
+     * Khởi tạo thể hiện Session với host và cổng mạng.
+     *
+     * @param host địa chỉ server
+     * @param port cổng mạng
+     * @return thể hiện ISession
+     * @throws Exception nếu instance đã được khởi tạo
+     */
+    public static ISession initInstance(String host, int port) throws Exception {
+        if (I != null) {
+            throw new Exception("Instance đã được khởi tạo!");
+        }
+        I = new Session(host, port);
+        return I;
+    }
+
+    /**
+     * Khởi tạo Session với host và cổng mạng cho client.
+     *
+     * @param host địa chỉ server
+     * @param port cổng mạng
+     * @throws IOException nếu xảy ra lỗi khi tạo socket
+     */
     public Session(String host, int port) throws IOException {
-        /*  73 */
         this.id = 752002;
-        /*  74 */
         this.socket = new Socket(host, port);
-        /*  75 */
         this.socket.setSendBufferSize(1048576);
-        /*  76 */
         this.socket.setReceiveBufferSize(1048576);
-        /*  77 */
         this.typeSession = TypeSession.CLIENT;
-        /*  78 */
         this.connected = true;
-        /*  79 */
         this.host = host;
-        /*  80 */
         this.port = port;
-        /*  81 */
         initThreadSession();
     }
 
+    /**
+     * Khởi tạo Session với socket cho server.
+     *
+     * @param socket socket kết nối với client
+     */
     public Session(Socket socket) {
-        
-        
-        /*  91 */
         this.id = ID_INIT++;
-        /*  92 */
         this.typeSession = TypeSession.SERVER;
-        /*  93 */
         this.socket = socket;
         try {
-            /*  95 */
             this.socket.setSendBufferSize(1048576);
-            /*  96 */
             this.socket.setReceiveBufferSize(1048576);
-            /*  97 */
-        } catch (Exception exception) {
-        }
-
-
-        /* 100 */
+        } catch (Exception exception) {}
         this.connected = true;
-        /* 101 */
         this.ip = ((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress().toString().replace("/", "");
-        /* 102 */
         initThreadSession();
     }
 
+    /**
+     * Gửi một thông điệp qua phiên làm việc nếu đang kết nối và số lượng thông điệp chờ không vượt quá giới hạn.
+     *
+     * @param msg thông điệp cần gửi
+     */
     public void sendMessage(Message msg) {
-        /* 107 */
         if (this.sender != null && isConnected() && this.sender.getNumMessages() < 200) {
-            /* 108 */
             this.sender.sendMessage(msg);
         }
     }
 
+    /**
+     * Thiết lập đối tượng xử lý gửi và thu thập thông điệp.
+     *
+     * @param collect đối tượng xử lý gửi và thu thập thông điệp
+     * @return đối tượng ISession
+     */
     public ISession setSendCollect(IMessageSendCollect collect) {
-        /* 114 */
         this.sender.setSend(collect);
-        /* 115 */
         this.collector.setCollect(collect);
-        /* 116 */
         return this;
     }
 
+    /**
+     * Thiết lập đối tượng xử lý thông điệp nhận được.
+     *
+     * @param handler đối tượng xử lý thông điệp
+     * @return đối tượng ISession
+     */
     public ISession setMessageHandler(IMessageHandler handler) {
-        /* 121 */
         this.collector.setMessageHandler(handler);
-        /* 122 */
         return this;
     }
 
+    /**
+     * Thiết lập đối tượng xử lý khóa mã hóa cho phiên làm việc.
+     *
+     * @param handler đối tượng xử lý khóa phiên làm việc
+     * @return đối tượng ISession
+     */
     public ISession setKeyHandler(IKeySessionHandler handler) {
-        /* 127 */
         this.keyHandler = handler;
-        /* 128 */
         return this;
     }
 
+    /**
+     * Bắt đầu luồng gửi thông điệp.
+     *
+     * @return đối tượng ISession
+     */
     public ISession startSend() {
-        /* 133 */
-
         this.tSender.start();
-        /* 134 */
         return this;
     }
 
+    /**
+     * Bắt đầu luồng thu thập thông điệp.
+     *
+     * @return đối tượng ISession
+     */
     public ISession startCollect() {
-        /* 139 */
         this.tCollector.start();
-        /* 140 */
         return this;
     }
 
+    /**
+     * Lấy địa chỉ IP của client kết nối.
+     *
+     * @return địa chỉ IP dưới dạng chuỗi
+     */
     public String getIP() {
-        /* 145 */
         return this.ip;
     }
 
+    /**
+     * Lấy ID duy nhất của phiên làm việc.
+     *
+     * @return ID của phiên làm việc
+     */
     public long getID() {
-        /* 150 */
         return this.id;
     }
 
+    /**
+     * Ngắt kết nối phiên làm việc và xử lý kết nối lại nếu được phép.
+     */
     public void disconnect() {
-        /* 155 */
         this.connected = false;
-        /* 156 */
         this.sentKey = false;
-        /* 157 */
         if (this.sender != null) {
-            /* 158 */
             this.sender.close();
         }
-        /* 160 */
         if (this.collector != null) {
-            /* 161 */
             this.collector.close();
         }
-        /* 163 */
-//        if (this.socket != null) {
-//            try {
-//                /* 165 */
-//                this.socket.close();
-//                /* 166 */
-//            } catch (IOException iOException) {
-//            }
-//        }
         if (socket != null) {
             try {
                 socket.close();
@@ -213,162 +284,182 @@ public class Session
                 Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
-        /* 169 */
         if (this.reconnect) {
-            /* 170 */
             reconnect();
             return;
         }
-//        this.socket = null;
-//        this.sender = null;
-//        this.collector = null;
-
-        /* 173 */
         dispose();
     }
 
+    /**
+     * Giải phóng tài nguyên của phiên làm việc.
+     */
     public void dispose() {
-        /* 178 */
         if (this.sender != null) {
-            /* 179 */
             this.sender.dispose();
         }
-        /* 181 */
         if (this.collector != null) {
-            /* 182 */
             this.collector.dispose();
         }
-        /* 184 */
         this.socket = null;
-        /* 185 */
         this.sender = null;
-        /* 186 */
         this.collector = null;
-        /* 187 */
         this.tSender = null;
-        /* 188 */
         this.tCollector = null;
-        /* 189 */
         this.ip = null;
-        /* 190 */
         GirlkunSessionManager.gI().removeSession(this);
     }
 
+    /**
+     * Gửi khóa mã hóa cho phiên làm việc.
+     *
+     * @throws Exception nếu keyHandler chưa được khởi tạo hoặc xảy ra lỗi khi gửi
+     */
     public void sendKey() throws Exception {
-        /* 195 */
         if (this.keyHandler == null) {
-            /* 196 */
             throw new Exception("Key handler chưa được khởi tạo!");
         }
-        /* 198 */
         if (GirlkunServer.gI().isRandomKey()) {
-            /* 199 */
             this.KEYS = StringUtil.randomText(7).getBytes();
         }
-        /* 201 */
         this.keyHandler.sendKey(this);
     }
 
+    /**
+     * Thiết lập khóa mã hóa từ một thông điệp.
+     *
+     * @param message thông điệp chứa dữ liệu khóa
+     * @throws Exception nếu keyHandler chưa được khởi tạo hoặc xảy ra lỗi
+     */
     public void setKey(Message message) throws Exception {
-        /* 206 */
         if (this.keyHandler == null) {
-            /* 207 */
             throw new Exception("Key handler chưa được khởi tạo!");
         }
-        /* 209 */
         this.keyHandler.setKey(this, message);
     }
 
+    /**
+     * Thiết lập khóa mã hóa từ một mảng byte.
+     *
+     * @param key mảng byte chứa dữ liệu khóa
+     */
     public void setKey(byte[] key) {
-        /* 214 */
         this.KEYS = key;
     }
 
+    /**
+     * Kiểm tra xem khóa đã được gửi hay chưa.
+     *
+     * @return true nếu khóa đã được gửi, false nếu chưa
+     */
     public boolean sentKey() {
-        /* 219 */
         return this.sentKey;
     }
 
+    /**
+     * Thiết lập trạng thái gửi khóa.
+     *
+     * @param sent true nếu khóa đã được gửi, false nếu chưa
+     */
     public void setSentKey(boolean sent) {
-        /* 224 */
         this.sentKey = sent;
     }
 
+    /**
+     * Thực hiện gửi một thông điệp qua phiên làm việc.
+     *
+     * @param msg thông điệp cần gửi
+     * @throws Exception nếu xảy ra lỗi trong quá trình gửi
+     */
     public void doSendMessage(Message msg) throws Exception {
-        /* 229 */
         this.sender.doSendMessage(msg);
     }
 
+    /**
+     * Bắt đầu cả hai luồng gửi và thu thập thông điệp.
+     *
+     * @return đối tượng ISession
+     */
     public ISession start() {
-        /* 234 */
         this.tSender.start();
-        /* 235 */
         this.tCollector.start();
-        /* 236 */
         return this;
     }
 
+    /**
+     * Kiểm tra xem phiên làm việc có đang kết nối hay không.
+     *
+     * @return true nếu phiên làm việc đang kết nối, false nếu không
+     */
     public boolean isConnected() {
-        /* 241 */
         return this != null && this.connected;
     }
 
+    /**
+     * Lấy khóa mã hóa hiện tại.
+     *
+     * @return mảng byte chứa dữ liệu khóa
+     */
     public byte[] getKey() {
-        /* 246 */
         return this.KEYS;
     }
 
+    /**
+     * Lấy loại phiên làm việc hiện tại.
+     *
+     * @return loại phiên làm việc
+     */
     public TypeSession getTypeSession() {
-        /* 251 */
         return this.typeSession;
     }
 
+    /**
+     * Thiết lập khả năng kết nối lại cho phiên làm việc.
+     *
+     * @param b true nếu cho phép kết nối lại, false nếu không
+     * @return đối tượng ISession
+     */
     public ISession setReconnect(boolean b) {
-        /* 256 */
         this.reconnect = b;
-        /* 257 */
         return this;
     }
 
+    /**
+     * Lấy số lượng thông điệp đang chờ xử lý trong phiên làm việc.
+     *
+     * @return số lượng thông điệp, hoặc -1 nếu không kết nối
+     */
     public int getNumMessages() {
-        /* 262 */
         if (isConnected()) {
-            /* 263 */
             return this.sender.getNumMessages();
         }
-        /* 265 */
         return -1;
     }
 
+    /**
+     * Thực hiện kết nối lại nếu phiên làm việc là client và đang không kết nối.
+     */
     public void reconnect() {
-        /* 270 */
         if (this.typeSession == TypeSession.CLIENT && !isConnected()) {
             try {
-                /* 272 */
                 this.socket = new Socket(this.host, this.port);
-                /* 273 */
                 this.connected = true;
-                /* 274 */
                 initThreadSession();
-                /* 275 */
                 start();
-                /* 276 */
             } catch (Exception e) {
                 try {
-                    /* 278 */
                     Thread.sleep(1000L);
-                    /* 279 */
                     reconnect();
-                    /* 280 */
                 } catch (Exception ex) {
-                    /* 281 */
                     ex.printStackTrace();
                 }
             }
         }
     }
 
+    /**
+     * Khởi tạo các luồng gửi và thu thập thông điệp cho phiên làm việc.
+     */
     public void initThreadSession() {
         this.tSender = new Thread((this.sender != null) ? (Runnable) this.sender.setSocket(this.socket) : (Runnable) (this.sender = new Sender(this, this.socket)), "Thread tsender");
         this.tCollector = new Thread((this.collector != null) ? (Runnable) this.collector.setSocket(this.socket) : (Runnable) (this.collector = new Collector(this, this.socket)), "Thread collecter");
