@@ -21,12 +21,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Lớp NPoint quản lý các chỉ số và trạng thái của người chơi trong trò chơi.
+ * @author Lucifer
+ */
 public class NPoint {
 
+    /**
+     * Giới hạn tối đa của các cấp độ sức mạnh.
+     */
     public static final byte MAX_LIMIT = 15;
 
+    /**
+     * Người chơi liên quan đến các chỉ số.
+     */
     private Player player;
 
+    /**
+     * Khởi tạo đối tượng NPoint với người chơi tương ứng.
+     * @param player Người chơi liên quan.
+     */
     public NPoint(Player player) {
         this.player = player;
         this.tlHp = new ArrayList<>();
@@ -39,131 +53,236 @@ public class NPoint {
         this.tlDameCrit = new ArrayList<>();
     }
 
+    /**
+     * Kiểm tra có phải đòn chí mạng hay không.
+     */
     public boolean isCrit;
+
+    /**
+     * Kiểm tra đòn chí mạng 100%.
+     */
     public boolean isCrit100;
 
+    /**
+     * Nội tại của người chơi.
+     */
     private Intrinsic intrinsic;
+
+    /**
+     * Tỉ lệ sát thương nội tại.
+     */
     private int percentDameIntrinsic;
+
+    /**
+     * Sát thương sau khi tính toán.
+     */
     public int dameAfter;
 
     /*-----------------------Chỉ số cơ bản------------------------------------*/
+    /**
+     * Số lần tấn công.
+     */
     public byte numAttack;
+
+    /**
+     * Thể lực hiện tại và tối đa.
+     */
     public short stamina, maxStamina;
 
+    /**
+     * Cấp độ giới hạn sức mạnh.
+     */
     public byte limitPower;
+
+    /**
+     * Sức mạnh hiện tại của người chơi.
+     */
     public long power;
+
+    /**
+     * Tiềm năng của người chơi.
+     */
     public long tiemNang;
 
+    /**
+     * Máu hiện tại, tối đa và cơ bản.
+     */
     public int hp, hpMax, hpg;
+
+    /**
+     * Mana hiện tại, tối đa và cơ bản.
+     */
     public int mp, mpMax, mpg;
+
+    /**
+     * Sát thương hiện tại và cơ bản.
+     */
     public int dame, dameg;
+
+    /**
+     * Phòng thủ hiện tại và cơ bản.
+     */
     public int def, defg;
+
+    /**
+     * Tỉ lệ chí mạng hiện tại và cơ bản.
+     */
     public int crit, critg;
+
+    /**
+     * Tốc độ di chuyển của người chơi.
+     */
     public byte speed = 8;
 
+    /**
+     * Kích hoạt khả năng dịch chuyển tức thời.
+     */
     public boolean teleport;
 
-    public boolean isDraburaFrost; //Cải trang Dracula Frost
-    public boolean isDrabura; //Cải trang Dracula Frost
-    public boolean isThoDaiCa; //Cải trang Dracula Frost
+    /**
+     * Kiểm tra trạng thái cải trang Dracula Frost.
+     */
+    public boolean isDraburaFrost;
+
+    /**
+     * Kiểm tra trạng thái cải trang Dracula.
+     */
+    public boolean isDrabura;
+
+    /**
+     * Kiểm tra trạng thái cải trang Thỏ Đại Ca.
+     */
+    public boolean isThoDaiCa;
+
+    /**
+     * Kiểm tra kháng Thái Dương Hạ San.
+     */
     public boolean khangTDHS;
 
     /**
-     * Chỉ số cộng thêm
+     * Chỉ số cộng thêm cho máu, mana, sát thương, phòng thủ, chí mạng, hồi máu, hồi mana.
      */
     public int hpAdd, mpAdd, dameAdd, defAdd, critAdd, hpHoiAdd, mpHoiAdd;
 
     /**
-     * //+#% sức đánh chí mạng
+     * Tỉ lệ sức đánh chí mạng cộng thêm.
      */
     public List<Integer> tlDameCrit;
 
     /**
-     * Tỉ lệ hp, mp cộng thêm
+     * Tỉ lệ máu, mana cộng thêm.
      */
     public List<Integer> tlHp, tlMp;
 
     /**
-     * Tỉ lệ giáp cộng thêm
+     * Tỉ lệ giáp cộng thêm.
      */
     public List<Integer> tlDef;
 
     /**
-     * Tỉ lệ sức đánh/ sức đánh khi đánh quái
+     * Tỉ lệ sức đánh và sức đánh khi đánh quái.
      */
     public List<Integer> tlDame, tlDameAttMob;
 
     /**
-     * Lượng hp, mp hồi mỗi 30s, mp hồi cho người khác
+     * Lượng máu, mana hồi mỗi 30s và mana hồi cho người khác.
      */
     public int hpHoi, mpHoi, mpHoiCute;
 
     /**
-     * Tỉ lệ hp, mp hồi cộng thêm
+     * Tỉ lệ hồi máu, mana cộng thêm.
      */
     public short tlHpHoi, tlMpHoi;
 
     /**
-     * Tỉ lệ hp, mp hồi bản thân và đồng đội cộng thêm
+     * Tỉ lệ hồi máu, mana cho bản thân và đồng đội.
      */
     public short tlHpHoiBanThanVaDongDoi, tlMpHoiBanThanVaDongDoi;
 
     /**
-     * Tỉ lệ hút hp, mp khi đánh, hp khi đánh quái
+     * Tỉ lệ hút máu, mana khi đánh và hút máu khi đánh quái.
      */
     public short tlHutHp, tlHutMp, tlHutHpMob;
 
     /**
-     * Tỉ lệ hút hp, mp xung quanh mỗi 5s
+     * Tỉ lệ hút máu, mana xung quanh mỗi 5s.
      */
     public short tlHutHpMpXQ;
 
     /**
-     * Tỉ lệ phản sát thương
+     * Tỉ lệ phản sát thương.
      */
     public short tlPST;
 
     /**
-     * Tỉ lệ tiềm năng sức mạnh
+     * Tỉ lệ tiềm năng sức mạnh.
      */
     public List<Integer> tlTNSM;
 
     /**
-     * Tỉ lệ vàng cộng thêm
+     * Tỉ lệ vàng cộng thêm.
      */
     public short tlGold;
 
     /**
-     * Tỉ lệ né đòn
+     * Tỉ lệ né đòn.
      */
     public short tlNeDon;
 
     /**
-     * Tỉ lệ sức đánh đẹp cộng thêm cho bản thân và người xung quanh
+     * Tỉ lệ sức đánh đẹp cho bản thân và người xung quanh.
      */
     public List<Integer> tlSDDep;
 
     /**
-     * Tỉ lệ giảm sức đánh
+     * Tỉ lệ giảm sức đánh.
      */
     public short tlSubSD;
 
+    /**
+     * Số lần vô hiệu hóa chướng ngại.
+     */
     public int voHieuChuong;
 
     /*------------------------Effect skin-------------------------------------*/
+    /**
+     * Trang bị giáp luyện tập.
+     */
     public Item trainArmor;
+
+    /**
+     * Kiểm tra đã mặc giáp luyện tập.
+     */
     public boolean wornTrainArmor;
+
+    /**
+     * Kiểm tra đang mặc giáp luyện tập.
+     */
     public boolean wearingTrainArmor;
 
+    /**
+     * Kiểm tra trạng thái vô hình.
+     */
     public boolean wearingVoHinh;
+
+    /**
+     * Kiểm tra trạng thái không bị ảnh hưởng bởi cái lạnh.
+     */
     public boolean isKhongLanh;
 
+    /**
+     * Tỉ lệ giảm máu ở độ cao.
+     */
     public short tlHpGiamODo;
+
+    /**
+     * Giá trị kiểm tra thử nghiệm.
+     */
     public short test;
 
     /*-------------------------------------------------------------------------*/
     /**
-     * Tính toán mọi chỉ số sau khi có thay đổi
+     * Tính toán lại mọi chỉ số sau khi có thay đổi.
      */
     public void calPoint() {
         if (this.player.pet != null && this.player.pet.nPoint != null) {
@@ -172,6 +291,9 @@ public class NPoint {
         this.setPointWhenWearClothes();
     }
 
+    /**
+     * Cập nhật chỉ số khi mặc trang bị.
+     */
     private void setPointWhenWearClothes() {
         resetPoint();
         if (this.player.rewardBlackBall.timeOutOfDateReward[1] > System.currentTimeMillis()) {
@@ -465,6 +587,9 @@ public class NPoint {
         setBasePoint();
     }
 
+    /**
+     * Cập nhật chỉ số từ danh hiệu.
+     */
     public void setChiSoDanhHieu() {
         for (Item item : player.ListDanhHieu) {
             for (Item.ItemOption op : item.itemOptions) {
@@ -499,6 +624,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Cập nhật chỉ số từ hợp thể Porata.
+     */
     public void setChiSoPorata() {
         if (this.player.isPl() && this.player.fusion.typeFusion == ConstPlayer.HOP_THE_PORATA2) {
             for (Item item : this.player.inventory.itemsBag) {
@@ -529,7 +657,6 @@ public class NPoint {
                             case 108: // #% Né đòn
                                 this.tlNeDon += io.param;
                                 break;
-
                         }
                     }
                     break;
@@ -538,6 +665,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Cập nhật sát thương từ giáp luyện tập.
+     */
     private void setDameTrainArmor() {
         if (!this.player.isPet && !this.player.isBoss) {
             if (this.player.inventory.itemsBody.size() < 7) {
@@ -562,12 +692,14 @@ public class NPoint {
                     }
                 }
             } catch (Exception e) {
-
             }
         }
     }
 
-    public void setBasePoint() {
+    /**
+     * Thiết lập các chỉ số cơ bản.
+     */
+    private void setBasePoint() {
         setHpMax();
         setHp();
         setMpMax();
@@ -580,10 +712,15 @@ public class NPoint {
         setNeDon();
     }
 
+    /**
+     * Thiết lập tỉ lệ né đòn.
+     */
     private void setNeDon() {
-
     }
 
+    /**
+     * Thiết lập lượng máu hồi phục.
+     */
     private void setHpHoi() {
         this.hpHoi = this.hpMax / 100;
         this.hpHoi += this.hpHoiAdd;
@@ -591,6 +728,9 @@ public class NPoint {
         this.hpHoi += ((long) this.hpMax * this.tlHpHoiBanThanVaDongDoi / 100);
     }
 
+    /**
+     * Thiết lập lượng mana hồi phục.
+     */
     private void setMpHoi() {
         this.mpHoi = this.mpMax / 100;
         this.mpHoi += this.mpHoiAdd;
@@ -598,6 +738,9 @@ public class NPoint {
         this.mpHoi += ((long) this.mpMax * this.tlMpHoiBanThanVaDongDoi / 100);
     }
 
+    /**
+     * Thiết lập máu tối đa.
+     */
     private void setHpMax() {
         this.hpMax = this.hpg;
         this.hpMax += this.hpAdd;
@@ -657,10 +800,8 @@ public class NPoint {
                 && ((Pet) this.player).status != Pet.FUSION)) {
             if (this.player.effectSkill.tiLeHPHuytSao != 0) {
                 this.hpMax += ((long) this.hpMax * this.player.effectSkill.tiLeHPHuytSao / 100L);
-
             }
         }
-
         //bổ huyết
         if (this.player.itemTime != null && this.player.itemTime.isUseBoHuyet) {
             this.hpMax *= 2;
@@ -678,14 +819,18 @@ public class NPoint {
         }
     }
 
-    // (hp sư phụ + hp đệ tử ) + 15%
-    // (hp sư phụ + 15% +hp đệ tử)
+    /**
+     * Thiết lập máu hiện tại.
+     */
     private void setHp() {
         if (this.hp > this.hpMax) {
             this.hp = this.hpMax;
         }
     }
 
+    /**
+     * Thiết lập mana tối đa.
+     */
     private void setMpMax() {
         this.mpMax = this.mpg;
         this.mpMax += this.mpAdd;
@@ -743,12 +888,18 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập mana hiện tại.
+     */
     private void setMp() {
         if (this.mp > this.mpMax) {
             this.mp = this.mpMax;
         }
     }
 
+    /**
+     * Thiết lập sát thương.
+     */
     private void setDame() {
         this.dame = this.dameg;
         this.dame += this.dameAdd;
@@ -760,7 +911,6 @@ public class NPoint {
                 }
             }
         } catch (NoSuchElementException e) {
-
         }
         for (Integer tl : this.tlSDDep) {
             this.dame += ((long) this.dame * tl / 100);
@@ -829,6 +979,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập phòng thủ.
+     */
     private void setDef() {
         this.def = this.defg * 4;
         this.def += this.defAdd;
@@ -842,6 +995,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập tỉ lệ chí mạng.
+     */
     private void setCrit() {
         this.crit = this.critg;
         this.crit += this.critAdd;
@@ -855,6 +1011,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Đặt lại tất cả chỉ số về giá trị mặc định.
+     */
     private void resetPoint() {
         this.voHieuChuong = 0;
         this.hpAdd = 0;
@@ -898,6 +1057,10 @@ public class NPoint {
         this.khangTDHS = false;
     }
 
+    /**
+     * Thêm máu cho người chơi.
+     * @param hp Số lượng máu cần thêm.
+     */
     public void addHp(int hp) {
         this.hp += hp;
         if (this.hp > this.hpMax) {
@@ -905,6 +1068,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thêm mana cho người chơi.
+     * @param mp Số lượng mana cần thêm.
+     */
     public void addMp(int mp) {
         this.mp += mp;
         if (this.mp > this.mpMax) {
@@ -912,6 +1079,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập máu hiện tại.
+     * @param hp Số lượng máu cần thiết lập.
+     */
     public void setHp(long hp) {
         if (hp > this.hpMax) {
             this.hp = this.hpMax;
@@ -920,6 +1091,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập mana hiện tại.
+     * @param mp Số lượng mana cần thiết lập.
+     */
     public void setMp(long mp) {
         if (mp > this.mpMax) {
             this.mp = this.mpMax;
@@ -928,6 +1103,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập sát thương hiện tại.
+     * @param dame Số lượng sát thương cần thiết lập.
+     */
     public void setDame(long dame) {
         if (dame > this.dameg) {
             this.dame = this.dameg;
@@ -936,6 +1115,9 @@ public class NPoint {
         }
     }
 
+    /**
+     * Thiết lập trạng thái đòn chí mạng.
+     */
     private void setIsCrit() {
         if (intrinsic != null && intrinsic.id == 25
                 && this.getCurrPercentHP() <= intrinsic.param1) {
@@ -948,6 +1130,11 @@ public class NPoint {
         }
     }
 
+    /**
+     * Tính toán sát thương khi tấn công.
+     * @param isAttackMob Kiểm tra có phải tấn công quái hay không.
+     * @return Sát thương sau khi tính toán.
+     */
     public int getDameAttack(boolean isAttackMob) {
         setIsCrit();
         long dameAttack = this.dame;
@@ -1098,6 +1285,10 @@ public class NPoint {
         return (int) dameAttack;
     }
 
+    /**
+     * Lấy phần trăm máu hiện tại.
+     * @return Phần trăm máu hiện tại.
+     */
     public int getCurrPercentHP() {
         if (this.hpMax == 0) {
             return 100;
@@ -1105,24 +1296,41 @@ public class NPoint {
         return (int) ((long) this.hp * 100 / this.hpMax);
     }
 
+    /**
+     * Lấy phần trăm mana hiện tại.
+     * @return Phần trăm mana hiện tại.
+     */
     public int getCurrPercentMP() {
         return (int) ((long) this.mp * 100 / this.mpMax);
     }
 
+    /**
+     * Đặt đầy máu, mana và sát thương.
+     */
     public void setFullHpMpDame() {
         this.hp = this.hpMax;
         this.mp = this.mpMax;
         this.dame = this.dameg;
     }
 
+    /**
+     * Đặt đầy máu.
+     */
     public void setFullHp() {
         this.hp = this.hpMax;
     }
 
+    /**
+     * Đặt đầy mana.
+     */
     public void setFullMp() {
         this.mp = this.mpMax;
     }
 
+    /**
+     * Trừ máu của người chơi.
+     * @param sub Số lượng máu cần trừ.
+     */
     public void subHP(int sub) {
         this.hp -= sub;
         if (this.hp < 0) {
@@ -1130,11 +1338,18 @@ public class NPoint {
         }
     }
 
+    /**
+     * Đặt đầy máu và mana.
+     */
     public void setFullHpMp() {
         this.hp = this.hpMax;
         this.mp = this.mpMax;
     }
 
+    /**
+     * Trừ mana của người chơi.
+     * @param sub Số lượng mana cần trừ.
+     */
     public void subMP(int sub) {
         this.mp -= sub;
         if (this.mp < 0) {
@@ -1142,6 +1357,11 @@ public class NPoint {
         }
     }
 
+    /**
+     * Tính toán tiềm năng sức mạnh sau khi cộng thêm.
+     * @param tiemNang Số tiềm năng cần cộng.
+     * @return Tiềm năng sau khi tính toán.
+     */
     public long calSucManhTiemNang(long tiemNang) {
         if (power < getPowerLimit()) {
             for (Integer tl : this.tlTNSM) {
@@ -1164,18 +1384,18 @@ public class NPoint {
             if (this.player.charms.tdTriTue4 > System.currentTimeMillis()) {
                 tiemNang += tn * 3;
             }
-//            if (this.player.itemTime.isX2EXP && this.player.itemTime.lastX2EXP > 0) {
-//                tiemNang += tn * 2;
-//            }
-//            if (this.player.itemTime.isX3EXP && this.player.itemTime.lastX3EXP > 0) {
-//                tiemNang += tn * 3;
-//            }
-//            if (this.player.itemTime.isX5EXP && this.player.itemTime.lastX5EXP > 0) {
-//                tiemNang += tn * 5;
-//            }
-//            if (this.player.itemTime.isX7EXP && this.player.itemTime.lastX7EXP > 0) {
-//                tiemNang += tn * 7;
-//            }
+            if (this.player.itemTime.isX2EXP && this.player.itemTime.lastX2EXP > 0) {
+                tiemNang += tn * 2;
+            }
+            if (this.player.itemTime.isX3EXP && this.player.itemTime.lastX3EXP > 0) {
+                tiemNang += tn * 3;
+            }
+            if (this.player.itemTime.isX5EXP && this.player.itemTime.lastX5EXP > 0) {
+                tiemNang += tn * 5;
+            }
+            if (this.player.itemTime.isX7EXP && this.player.itemTime.lastX7EXP > 0) {
+                tiemNang += tn * 7;
+            }
             if (this.intrinsic != null && this.intrinsic.id == 24) {
                 tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
             }
@@ -1201,6 +1421,11 @@ public class NPoint {
         return tiemNang;
     }
 
+    /**
+     * Tính toán giảm tiềm năng sức mạnh dựa trên sức mạnh hiện tại.
+     * @param tiemNang Số tiềm năng ban đầu.
+     * @return Tiềm năng sau khi giảm.
+     */
     public long calSubTNSM(long tiemNang) {
         if (power >= 80_000_000_000L && power < 100_000_000_000L) {
             tiemNang -= ((double) tiemNang * 80 / 100);
@@ -1232,6 +1457,11 @@ public class NPoint {
         return tiemNang;
     }
 
+    /**
+     * Lấy tỉ lệ hút máu.
+     * @param isMob Kiểm tra có phải đánh quái hay không.
+     * @return Tỉ lệ hút máu.
+     */
     public short getTileHutHp(boolean isMob) {
         if (isMob) {
             return (short) (this.tlHutHp + this.tlHutHpMob);
@@ -1240,10 +1470,19 @@ public class NPoint {
         }
     }
 
+    /**
+     * Lấy tỉ lệ hút mana.
+     * @return Tỉ lệ hút mana.
+     */
     public short getTiLeHutMp() {
         return this.tlHutMp;
     }
 
+    /**
+     * Tính toán sát thương sau khi trừ phòng thủ.
+     * @param dame Sát thương ban đầu.
+     * @return Sát thương sau khi trừ.
+     */
     public int subDameInjureWithDeff(int dame) {
         int def = this.def;
         dame -= def;
@@ -1266,10 +1505,18 @@ public class NPoint {
     }
 
     /*------------------------------------------------------------------------*/
+    /**
+     * Kiểm tra xem người chơi có thể mở giới hạn sức mạnh hay không.
+     * @return true nếu có thể mở, false nếu không.
+     */
     public boolean canOpenPower() {
         return this.power >= getPowerLimit();
     }
 
+    /**
+     * Lấy giới hạn sức mạnh hiện tại.
+     * @return Giới hạn sức mạnh.
+     */
     public long getPowerLimit() {
         switch (limitPower) {
             case 0:
@@ -1309,6 +1556,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Lấy giới hạn sức mạnh tiếp theo.
+     * @return Giới hạn sức mạnh tiếp theo.
+     */
     public long getPowerNextLimit() {
         switch (limitPower + 1) {
             case 0:
@@ -1348,6 +1599,10 @@ public class NPoint {
         }
     }
 
+    /**
+     * Lấy giới hạn máu và mana.
+     * @return Giới hạn máu và mana.
+     */
     public int getHpMpLimit() {
         if (limitPower == 0) {
             return 220000;
@@ -1400,6 +1655,10 @@ public class NPoint {
         return 0;
     }
 
+    /**
+     * Lấy giới hạn sát thương.
+     * @return Giới hạn sát thương.
+     */
     public int getDameLimit() {
         if (limitPower == 0) {
             return 11000;
@@ -1452,6 +1711,10 @@ public class NPoint {
         return 0;
     }
 
+    /**
+     * Lấy giới hạn phòng thủ.
+     * @return Giới hạn phòng thủ.
+     */
     public short getDefLimit() {
         if (limitPower == 0) {
             return 550;
@@ -1501,10 +1764,13 @@ public class NPoint {
         if (limitPower == 15) {
             return 1700;
         }
-
         return 0;
     }
 
+    /**
+     * Lấy giới hạn chí mạng.
+     * @return Giới hạn chí mạng.
+     */
     public byte getCritLimit() {
         if (limitPower == 0) {
             return 5;
@@ -1542,9 +1808,6 @@ public class NPoint {
         if (limitPower == 11) {
             return 10;
         }
-        if (limitPower == 11) {
-            return 10;
-        }
         if (limitPower == 12) {
             return 10;
         }
@@ -1560,17 +1823,29 @@ public class NPoint {
         return 0;
     }
 
-    //**************************************************************************
-    //POWER - TIEM NANG
+    /**
+     * Tăng sức mạnh của người chơi.
+     * @param power Số sức mạnh cần tăng.
+     */
     public void powerUp(long power) {
         this.power += power;
         TaskService.gI().checkDoneTaskPower(player, this.power);
     }
 
+    /**
+     * Tăng tiềm năng của người chơi.
+     * @param tiemNang Số tiềm năng cần tăng.
+     */
     public void tiemNangUp(long tiemNang) {
         this.tiemNang += tiemNang;
     }
 
+    /**
+     * Kiểm tra và sử dụng tiềm năng để tăng chỉ số.
+     * @param type Loại chỉ số (0: HP, 1: MP, 2: Dame, 3: Def, 4: Crit).
+     * @param point Số điểm cần tăng.
+     * @return true nếu sử dụng thành công, false nếu không.
+     */
     public boolean doUseTiemNang(byte type, short point) {
         if (point <= 0 || point > 100) {
             return false;
@@ -1596,6 +1871,11 @@ public class NPoint {
         return false;
     }
 
+    /**
+     * Tăng chỉ số của người chơi.
+     * @param type Loại chỉ số (0: HP, 1: MP, 2: Dame, 3: Def, 4: Crit).
+     * @param point Số điểm cần tăng.
+     */
     public void increasePoint(byte type, short point) {
         if (point <= 0 || point > 100) {
             return;
@@ -1664,6 +1944,11 @@ public class NPoint {
         Service.gI().point(player);
     }
 
+    /**
+     * Kiểm tra và sử dụng tiềm năng.
+     * @param tiemNang Số tiềm năng cần sử dụng.
+     * @return true nếu sử dụng thành công, false nếu không.
+     */
     private boolean doUseTiemNang(long tiemNang) {
         if (this.tiemNang < tiemNang) {
             Service.gI().sendThongBaoOK(player, "Bạn không đủ tiềm năng");
@@ -1677,10 +1962,19 @@ public class NPoint {
         return false;
     }
 
-    //--------------------------------------------------------------------------
+    /**
+     * Thời điểm lần cuối hồi phục máu/mana.
+     */
     private long lastTimeHoiPhuc;
+
+    /**
+     * Thời điểm lần cuối hồi phục thể lực.
+     */
     private long lastTimeHoiStamina;
 
+    /**
+     * Cập nhật trạng thái hồi phục máu, mana và thể lực.
+     */
     public void update() {
         if (player != null && player.effectSkill != null) {
             if (player.effectSkill.isCharging && player.effectSkill.countCharging < 10) {
@@ -1715,6 +2009,9 @@ public class NPoint {
         //hồi phục thể lực
     }
 
+    /**
+     * Giải phóng tài nguyên của đối tượng.
+     */
     public void dispose() {
         this.intrinsic = null;
         this.player = null;
@@ -1726,5 +2023,4 @@ public class NPoint {
         this.tlSDDep = null;
         this.tlTNSM = null;
     }
-
 }
