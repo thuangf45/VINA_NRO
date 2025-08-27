@@ -1,18 +1,20 @@
-/*    */ package com.girlkun.network.session;
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ public enum TypeSession
-/*    */ {
-/* 10 */   SERVER,
-/* 11 */   CLIENT;
-/*    */ }
+package com.girlkun.network.session;
 
-
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\session\TypeSession.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Enum định nghĩa các loại phiên làm việc mạng.
+ * Dùng để phân biệt giữa phiên làm việc phía server và phía client.
+ *
+ * @author Lucifer
  */
+public enum TypeSession {
+
+    /**
+     * Đại diện cho phiên làm việc phía server.
+     */
+    SERVER,
+
+    /**
+     * Đại diện cho phiên làm việc phía client.
+     */
+    CLIENT;
+}
