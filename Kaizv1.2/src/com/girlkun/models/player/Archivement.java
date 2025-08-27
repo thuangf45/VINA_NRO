@@ -16,15 +16,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * Đại diện cho hệ thống thành tựu của người chơi trong game, xử lý dữ liệu thành tựu,
+ * phần thưởng và tương tác với cơ sở dữ liệu.
+ * @author Lucifer
+ */
 public class Archivement {
 
+    /** Mô tả phần đầu tiên của thông tin thành tựu. @author Lucifer */
     public String info1;
+
+    /** Mô tả phần thứ hai của thông tin thành tựu. @author Lucifer */
     public String info2;
+
+    /** Số lượng tiền tệ trong game (ruby) thưởng khi hoàn thành thành tựu. @author Lucifer */
     public short money;
+
+    /** Trạng thái hoàn thành của thành tựu. @author Lucifer */
     public boolean isFinish;
+
+    /** Trạng thái nhận phần thưởng của thành tựu. @author Lucifer */
     public boolean isRecieve;
+
+    /** Thể hiện singleton của lớp Archivement. @author Lucifer */
     public static Archivement gI = null;
 
+    /**
+     * Lấy thể hiện singleton của lớp Archivement.
+     *
+     * @return thể hiện singleton của Archivement.
+     * @author Lucifer
+     */
     public static Archivement gI() {
         if (gI == null) {
             return new Archivement();
@@ -32,49 +54,123 @@ public class Archivement {
         return gI;
     }
 
+    /**
+     * Constructor mặc định cho lớp Archivement.
+     * @author Lucifer
+     */
     public Archivement() {
     }
 
+    /**
+     * Lấy phần đầu tiên của thông tin thành tựu.
+     *
+     * @return chuỗi thông tin đầu tiên.
+     * @author Lucifer
+     */
     public String getInfo1() {
         return info1;
     }
 
+    /**
+     * Thiết lập phần đầu tiên của thông tin thành tựu.
+     *
+     * @param info1 chuỗi thông tin đầu tiên cần thiết lập.
+     * @author Lucifer
+     */
     public void setInfo1(String info1) {
         this.info1 = info1;
     }
 
+    /**
+     * Lấy phần thứ hai của thông tin thành tựu.
+     *
+     * @return chuỗi thông tin thứ hai.
+     * @author Lucifer
+     */
     public String getInfo2() {
         return info2;
     }
 
+    /**
+     * Thiết lập phần thứ hai của thông tin thành tựu.
+     *
+     * @param info2 chuỗi thông tin thứ hai cần thiết lập.
+     * @author Lucifer
+     */
     public void setInfo2(String info2) {
         this.info2 = info2;
     }
 
+    /**
+     * Lấy số lượng tiền tệ trong game được thưởng cho thành tựu.
+     *
+     * @return số lượng tiền tệ (ruby).
+     * @author Lucifer
+     */
     public short getMoney() {
         return money;
     }
 
+    /**
+     * Thiết lập số lượng tiền tệ trong game được thưởng cho thành tựu.
+     *
+     * @param money số lượng tiền tệ cần thiết lập.
+     * @author Lucifer
+     */
     public void setMoney(short money) {
         this.money = money;
     }
 
+    /**
+     * Kiểm tra xem thành tựu đã hoàn thành chưa.
+     *
+     * @return true nếu thành tựu đã hoàn thành, false nếu chưa.
+     * @author Lucifer
+     */
     public boolean isFinish() {
         return isFinish;
     }
 
+    /**
+     * Thiết lập trạng thái hoàn thành của thành tựu.
+     *
+     * @param finish trạng thái hoàn thành cần thiết lập.
+     * @author Lucifer
+     */
     public void setFinish(boolean finish) {
         isFinish = finish;
     }
 
+    /**
+     * Kiểm tra xem phần thưởng thành tựu đã được nhận chưa.
+     *
+     * @return true nếu phần thưởng đã được nhận, false nếu chưa.
+     * @author Lucifer
+     */
     public boolean isRecieve() {
         return isRecieve;
     }
 
+    /**
+     * Thiết lập trạng thái nhận phần thưởng của thành tựu.
+     *
+     * @param recieve trạng thái nhận phần thưởng cần thiết lập.
+     * @author Lucifer
+     */
     public void setRecieve(boolean recieve) {
-        isRecieve = recieve;
+        this.isRecieve = recieve;
     }
 
+    /**
+     * Constructor cho lớp Archivement với các tham số được chỉ định.
+     *
+     * @param info1     phần đầu tiên của thông tin thành tựu.
+     * @param info2     phần thứ hai của thông tin thành tựu.
+     * @param money     số lượng tiền tệ trong game được thưởng.
+     * @param isFinish  trạng thái hoàn thành của thành tựu.
+     * @param isRecieve trạng thái nhận phần thưởng của thành tựu.
+     * @author Lucifer
+     */
     public Archivement(String info1, String info2, short money, boolean isFinish, boolean isRecieve) {
         this.info1 = info1;
         this.info2 = info2;
@@ -83,6 +179,12 @@ public class Archivement {
         this.isRecieve = isRecieve;
     }
 
+    /**
+     * Gửi thông điệp hiển thị danh sách thành tựu tới người chơi.
+     *
+     * @param pl người chơi nhận danh sách thành tựu.
+     * @author Lucifer
+     */
     public void Show(Player pl) {
         Message msg = null;
         try {
@@ -100,7 +202,6 @@ public class Archivement {
             pl.sendMessage(msg);
             msg.cleanup();
         } catch (IOException e) {
-
             e.getStackTrace();
         } finally {
             if (msg != null) {
@@ -110,6 +211,14 @@ public class Archivement {
         }
     }
 
+    /**
+     * Kiểm tra tổng số tiền nạp để xác định điều kiện hoàn thành thành tựu.
+     *
+     * @param pl    người chơi cần kiểm tra.
+     * @param index chỉ số của mốc thành tựu.
+     * @return true nếu đạt điều kiện, false nếu không.
+     * @author Lucifer
+     */
     public boolean checktongnap(Player pl, int index) {
         if (index == 0 && pl.getSession().TongNap > 50000) {
             return true;
@@ -141,10 +250,17 @@ public class Archivement {
         return false;
     }
 
+    /**
+     * Xử lý nhận phần thưởng ruby cho thành tựu tại chỉ số index.
+     *
+     * @param index chỉ số của thành tựu.
+     * @param pl    người chơi nhận phần thưởng.
+     * @author Lucifer
+     */
     public void receiveGem(int index, Player pl) {
         Archivement temp = pl.archivementList.get(index);
         if (temp.isRecieve) {
-            Service.gI().sendThongBao(pl, "Nhận rồi đừng nhận nữua");
+            Service.gI().sendThongBao(pl, "Nhận rồi đừng nhận nữa");
             return;
         }
         if (temp != null) {
@@ -185,6 +301,10 @@ public class Archivement {
         }
     }
 
+    /**
+     * Danh sách mô tả các mốc nạp tiền và phần thưởng tương ứng.
+     * @author Lucifer
+     */
     public static final String[] Textmocnap = new String[]{
         "\bMốc 50K: Nhận 10 Xu \n"
         + "\bMốc 100k: Nhận 20 Xu \n"
@@ -197,8 +317,14 @@ public class Archivement {
         + "\bMốc 5000K: Nhận CẢI TRANG 50% HP KI SD , 4 Hộp Thần Linh, 1 DANH HIỆU ĐẠI GIA\n"
     };
 
+    /**
+     * Xử lý việc trao phần thưởng cho người chơi dựa trên chỉ số thành tựu.
+     *
+     * @param pl    người chơi nhận phần thưởng.
+     * @param index chỉ số của thành tựu.
+     * @author Lucifer
+     */
     private void nhanQua(Player pl, int index) {
-
         int ql = 0;
         int ql1 = 0;
         int ql2 = 0;
@@ -225,23 +351,21 @@ public class Archivement {
                 InventoryServiceNew.gI().addItemBag(pl, item);
                 InventoryServiceNew.gI().sendItemBags(pl);
                 break;
-            case 2://30000
+            case 2:
                 item = ItemService.gI().createNewItem((short) 1335);
                 ql = 30;
                 item.quantity = ql;
                 InventoryServiceNew.gI().addItemBag(pl, item);
                 InventoryServiceNew.gI().sendItemBags(pl);
                 break;
-            case 3://50000
+            case 3:
                 item = ItemService.gI().createNewItem((short) 1335);
                 ql = 50;
                 item.quantity = ql;
                 InventoryServiceNew.gI().addItemBag(pl, item);
                 InventoryServiceNew.gI().sendItemBags(pl);
                 break;
-
-            case 4://70000
-                // ______________Item 1_______________
+            case 4:
                 item = ItemService.gI().createNewItem((short) 1425);
                 ql = 1;
                 item.quantity = ql;
@@ -255,8 +379,7 @@ public class Archivement {
                 InventoryServiceNew.gI().addItemBag(pl, item1);
                 InventoryServiceNew.gI().sendItemBags(pl);
                 break;
-            case 5://100000
-                // ______________Item 1_______________
+            case 5:
                 item = ItemService.gI().createNewItem((short) 1426);
                 ql = 1;
                 item.quantity = ql;
@@ -326,15 +449,18 @@ public class Archivement {
                 InventoryServiceNew.gI().addItemBag(pl, item2);
                 InventoryServiceNew.gI().addItemBag(pl, item3);
                 InventoryServiceNew.gI().sendItemBags(pl);
-
         }
 
-        InventoryServiceNew.gI()
-                .sendItemBags(pl);
-        Service.gI()
-                .sendMoney(pl);
+        InventoryServiceNew.gI().sendItemBags(pl);
+        Service.gI().sendMoney(pl);
     }
 
+    /**
+     * Lấy danh sách thành tựu của người chơi từ cơ sở dữ liệu và cập nhật danh sách thành tựu.
+     *
+     * @param player người chơi cần lấy danh sách thành tựu.
+     * @author Lucifer
+     */
     public void getAchievement(Player player) {
         try {
             if (player.getSession() == null) {
@@ -345,7 +471,6 @@ public class Archivement {
             PreparedStatement ps = null;
             JSONValue jv = new JSONValue();
             JSONArray dataArray = null;
-            JSONArray dataArrayTemp = null;
             con = GirlkunDB.getConnection();
             ps = con.prepareStatement("SELECT `Achievement` FROM `player` WHERE name = ? LIMIT 1");
             ps.setString(1, player.name);
@@ -361,13 +486,9 @@ public class Archivement {
                                     dataArray.add(0);
                                 }
                             }
-
                             while (dataArray.size() > 10) {
-
                                 dataArray.remove(10);
-
                             }
-
                         }
                         player.archivementList.clear();
                         if (dataArray != null) {
@@ -384,7 +505,6 @@ public class Archivement {
                                     return;
                                 }
                             }
-
                         }
                         dataArray.clear();
                     } catch (Exception e) {
@@ -402,6 +522,13 @@ public class Archivement {
         }
     }
 
+    /**
+     * Lấy mô tả nhiệm vụ dựa trên chỉ số mốc nạp.
+     *
+     * @param index chỉ số của mốc nạp.
+     * @return chuỗi mô tả nhiệm vụ.
+     * @author Lucifer
+     */
     public String getNhiemVu(int index) {
         switch (index) {
             case 0:
@@ -427,6 +554,13 @@ public class Archivement {
         }
     }
 
+    /**
+     * Lấy số lượng ruby thưởng dựa trên chỉ số mốc nạp.
+     *
+     * @param index chỉ số của mốc nạp.
+     * @return số lượng ruby thưởng, hoặc -1 nếu không hợp lệ.
+     * @author Lucifer
+     */
     public int getRuby(int index) {
         switch (index) {
             case 0:
