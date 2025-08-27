@@ -1,33 +1,42 @@
-/*    */ package com.girlkun.network.session;
-/*    */ 
-/*    */ import java.util.ArrayList;
-/*    */ import java.util.List;
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ public class SessionManager
-/*    */ {
-/*    */   private static SessionManager i;
-/*    */   private List<Session> sessions;
-/*    */   
-/*    */   public static SessionManager gI() {
-/* 16 */     if (i == null) {
-/* 17 */       i = new SessionManager();
-/*    */     }
-/* 19 */     return i;
-/*    */   }
-/*    */ 
-/*    */ 
-/*    */   
-/*    */   public SessionManager() {
-/* 25 */     this.sessions = new ArrayList<>();
-/*    */   }
-/*    */ }
+package com.girlkun.network.session;
 
+import java.util.ArrayList;
+import java.util.List;
 
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\session\SessionManager.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Lớp quản lý danh sách các phiên làm việc mạng (Session).
+ * Cung cấp chức năng khởi tạo và lấy thể hiện duy nhất của lớp theo mẫu Singleton.
+ *
+ * @author Lucifer
  */
+public class SessionManager {
+
+    /**
+     * Thể hiện duy nhất của lớp SessionManager (singleton pattern).
+     */
+    private static SessionManager i;
+
+    /**
+     * Danh sách chứa các phiên làm việc hiện tại.
+     */
+    private List<Session> sessions;
+
+    /**
+     * Lấy thể hiện duy nhất của SessionManager (singleton pattern).
+     *
+     * @return thể hiện SessionManager
+     */
+    public static SessionManager gI() {
+        if (i == null) {
+            i = new SessionManager();
+        }
+        return i;
+    }
+
+    /**
+     * Khởi tạo SessionManager với danh sách phiên làm việc rỗng.
+     */
+    public SessionManager() {
+        this.sessions = new ArrayList<>();
+    }
+}
