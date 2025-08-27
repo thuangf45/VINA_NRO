@@ -3,14 +3,25 @@ package com.girlkun.network.handler;
 import com.girlkun.network.io.Message;
 import com.girlkun.network.session.ISession;
 
-public interface IKeySessionHandler {
-  void sendKey(ISession paramISession);
-  
-  void setKey(ISession paramISession, Message paramMessage) throws Exception;
-}
-
-
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\handler\IKeySessionHandler.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Interface định nghĩa các phương thức xử lý khóa mã hóa cho phiên kết nối mạng trong game.
+ * @author Lucifer
  */
+public interface IKeySessionHandler {
+
+    /**
+     * Gửi khóa mã hóa đến phiên kết nối.
+     *
+     * @param paramISession Phiên kết nối mạng.
+     */
+    void sendKey(ISession paramISession);
+
+    /**
+     * Thiết lập khóa mã hóa cho phiên kết nối từ tin nhắn nhận được.
+     *
+     * @param paramISession Phiên kết nối mạng.
+     * @param paramMessage Tin nhắn chứa dữ liệu khóa.
+     * @throws Exception Nếu xảy ra lỗi trong quá trình thiết lập khóa.
+     */
+    void setKey(ISession paramISession, Message paramMessage) throws Exception;
+}
