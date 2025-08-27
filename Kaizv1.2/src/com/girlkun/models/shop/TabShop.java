@@ -4,24 +4,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @Stole By Arriety💖
- *
+ * Đại diện cho một tab trong cửa hàng (Shop).
+ * <p>
+ * Mỗi tab chứa danh sách các ItemShop (mặt hàng) có thể được hiển thị trong tab đó.
+ * Class hỗ trợ sao chép tab với tùy chọn lọc theo giới tính của người chơi.
+ * </p>
+ * 
+ * @author Lucifer
  */
 public class TabShop {
     
+    /** Cửa hàng chứa tab này */
     public Shop shop;
 
+    /** Id của tab */
     public int id;
     
+    /** Tên hiển thị của tab */
     public String name;
     
+    /** Danh sách mặt hàng trong tab */
     public List<ItemShop> itemShops;
 
+    /**
+     * Khởi tạo tab rỗng.
+     */
     public TabShop() {
         this.itemShops = new ArrayList<>();
     }
     
+    /**
+     * Khởi tạo tab mới dựa trên một tab khác, lọc các mặt hàng theo giới tính.
+     * 
+     * @param tabShop tab gốc để sao chép
+     * @param gender giới tính của người chơi (0: nam, 1: nữ, 2: khác)
+     */
     public TabShop(TabShop tabShop, int gender){
         this.itemShops = new ArrayList();
         this.shop = tabShop.shop;
@@ -35,6 +52,11 @@ public class TabShop {
         }
     }
     
+    /**
+     * Khởi tạo tab mới dựa trên một tab khác mà không lọc.
+     * 
+     * @param tabShop tab gốc để sao chép
+     */
     public TabShop(TabShop tabShop){
         this.itemShops = new ArrayList<>();
         this.shop = tabShop.shop;
@@ -45,6 +67,13 @@ public class TabShop {
         }
     }
     
+    /**
+     * Giải phóng tài nguyên của tab.
+     * <p>
+     * Bao gồm giải phóng tham chiếu shop, name, và danh sách itemShops.
+     * Gọi phương thức dispose() của từng ItemShop trước khi xóa danh sách.
+     * </p>
+     */
     public void dispose(){
         this.shop = null;
         this.name = null;
