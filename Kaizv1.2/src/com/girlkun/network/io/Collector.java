@@ -1,99 +1,130 @@
-/*    */ package com.girlkun.network.io;
-/*    */ 
-/*    */ import com.girlkun.network.CommandMessage;
-/*    */ import com.girlkun.network.handler.IMessageHandler;
-/*    */ import com.girlkun.network.handler.IMessageSendCollect;
-/*    */ import com.girlkun.network.server.GirlkunServer;
-/*    */ import com.girlkun.network.session.ISession;
-/*    */ import com.girlkun.network.session.TypeSession;
-/*    */ import java.io.DataInputStream;
-/*    */ import java.net.Socket;
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ 
-/*    */ public class Collector
-/*    */   implements Runnable
-/*    */ {
-/*    */   private ISession session;
-/*    */   private DataInputStream dis;
-/*    */   private IMessageSendCollect collect;
-/*    */   private IMessageHandler messageHandler;
-/*    */   
-/*    */   public Collector(ISession session, Socket socket) {
-/* 26 */     this.session = session;
-/* 27 */     setSocket(socket);
-/*    */   }
-/*    */   
-/*    */   public Collector setSocket(Socket socket) {
-/*    */     try {
-/* 32 */       this.dis = new DataInputStream(socket.getInputStream());
-/* 33 */     } catch (Exception exception) {}
-/*    */     
-/* 35 */     return this;
-/*    */   }
-/*    */ 
-/*    */   
-/*    */
-   public void run() {
-/*    */     try {
-/*    */       while (true) {
-/* 42 */         if (this.session.isConnected()) {
-/* 43 */           Message msg = this.collect.readMessage(this.session, this.dis);
-/*    */           
-/* 45 */           if (msg.command == CommandMessage.REQUEST_KEY) {
-/* 46 */             if (this.session.getTypeSession() == TypeSession.SERVER) {
-/* 47 */               this.session.sendKey();
-/*    */             } else {
-/* 49 */               this.session.setKey(msg);
-/*    */             } 
-/*    */           } else {
-/* 52 */             this.messageHandler.onMessage(this.session, msg);
-/*    */           } 
-/* 54 */           msg.cleanup();
-/*    */         } 
-/* 56 */         Thread.sleep(1L);
-/*    */       } 
-/* 58 */     } catch (Exception ex) {
-/*    */       try {
-/* 60 */         GirlkunServer.gI().getAcceptHandler().sessionDisconnect(this.session);
-/* 61 */       } catch (Exception exception) {}
-/*    */       
-/* 63 */       if (this.session != null) {
-/* 64 */         System.out.println("Mất kết nối với session " + this.session.getIP() + "...");
-/* 65 */         this.session.disconnect();
-/*    */       } 
-/*    */       return;
-/*    */     } 
-/*    */   }
-/*    */   public void setCollect(IMessageSendCollect collect) {
-/* 71 */     this.collect = collect;
-/*    */   }
-/*    */   
-/*    */   public void setMessageHandler(IMessageHandler handler) {
-/* 75 */     this.messageHandler = handler;
-/*    */   }
-/*    */   
-/*    */   public void close() {
-/* 79 */     if (this.dis != null) {
-/*    */       try {
-/* 81 */         this.dis.close();
-/* 82 */       } catch (Exception exception) {}
-/*    */     }
-/*    */   }
-/*    */ 
-/*    */   
-/*    */   public void dispose() {
-/* 88 */     this.session = null;
-/* 89 */     this.dis = null;
-/* 90 */     this.collect = null;
-/*    */   }
-/*    */ }
+package com.girlkun.network.io;
 
+import com.girlkun.network.CommandMessage;
+import com.girlkun.network.handler.IMessageHandler;
+import com.girlkun.network.handler.IMessageSendCollect;
+import com.girlkun.network.server.GirlkunServer;
+import com.girlkun.network.session.ISession;
+import com.girlkun.network.session.TypeSession;
+import java.io.DataInputStream;
+import java.net.Socket;
 
-/* Location:              C:\Users\VoHoangKiet\Downloads\TEA_V5\lib\GirlkunNetwork.jar!\com\girlkun\network\io\Collector.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
+/**
+ * Lớp xử lý việc thu thập và xử lý tin nhắn mạng trong game, chạy trong một luồng riêng.
+ * @author Lucifer
  */
+public class Collector implements Runnable {
+
+    /** Phiên kết nối mạng. */
+    private ISession session;
+
+    /** Luồng dữ liệu đầu vào từ socket. */
+    private DataInputStream dis;
+
+    /** Đối tượng xử lý việc thu thập và gửi tin nhắn. */
+    private IMessageSendCollect collect;
+
+    /** Đối tượng xử lý tin nhắn nhận được. */
+    private IMessageHandler messageHandler;
+
+    /**
+     * Khởi tạo đối tượng Collector với phiên kết nối và socket.
+     *
+     * @param session Phiên kết nối mạng.
+     * @param socket Socket dùng để giao tiếp mạng.
+     */
+    public Collector(ISession session, Socket socket) {
+        this.session = session;
+        setSocket(socket);
+    }
+
+    /**
+     * Thiết lập socket và khởi tạo luồng dữ liệu đầu vào.
+     *
+     * @param socket Socket dùng để giao tiếp mạng.
+     * @return Đối tượng Collector hiện tại.
+     */
+    public Collector setSocket(Socket socket) {
+        try {
+            this.dis = new DataInputStream(socket.getInputStream());
+        } catch (Exception exception) {
+
+        }
+        return this;
+    }
+
+    /**
+     * Chạy luồng xử lý tin nhắn mạng, liên tục đọc và xử lý các tin nhắn từ phiên kết nối.
+     */
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                if (this.session.isConnected()) {
+                    Message msg = this.collect.readMessage(this.session, this.dis);
+                    if (msg.command == CommandMessage.REQUEST_KEY) {
+                        if (this.session.getTypeSession() == TypeSession.SERVER) {
+                            this.session.sendKey();
+                        } else {
+                            this.session.setKey(msg);
+                        }
+                    } else {
+                        this.messageHandler.onMessage(this.session, msg);
+                    }
+                    msg.cleanup();
+                }
+                Thread.sleep(1L);
+            }
+        } catch (Exception ex) {
+            try {
+                GirlkunServer.gI().getAcceptHandler().sessionDisconnect(this.session);
+            } catch (Exception exception) {
+
+            }
+            if (this.session != null) {
+                System.out.println("Mất kết nối với session " + this.session.getIP() + "...");
+                this.session.disconnect();
+            }
+        }
+    }
+
+    /**
+     * Thiết lập đối tượng xử lý việc thu thập và gửi tin nhắn.
+     *
+     * @param collect Đối tượng IMessageSendCollect.
+     */
+    public void setCollect(IMessageSendCollect collect) {
+        this.collect = collect;
+    }
+
+    /**
+     * Thiết lập đối tượng xử lý tin nhắn.
+     *
+     * @param handler Đối tượng IMessageHandler.
+     */
+    public void setMessageHandler(IMessageHandler handler) {
+        this.messageHandler = handler;
+    }
+
+    /**
+     * Đóng luồng dữ liệu đầu vào.
+     */
+    public void close() {
+        if (this.dis != null) {
+            try {
+                this.dis.close();
+            } catch (Exception exception) {
+
+            }
+        }
+    }
+
+    /**
+     * Giải phóng tài nguyên của đối tượng Collector.
+     */
+    public void dispose() {
+        this.session = null;
+        this.dis = null;
+        this.collect = null;
+    }
+}
