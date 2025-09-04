@@ -9,11 +9,25 @@ import com.girlkun.network.io.Message;
 import com.girlkun.utils.Util;
 import java.util.List;
 
+/**
+ * Lớp IntrinsicService quản lý các chức năng liên quan đến nội tại (intrinsic) trong game, bao gồm hiển thị thông tin nội tại,
+ * mở hoặc thay đổi nội tại, và cấp vật phẩm set hủy diệt. Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * 
+ * @author Lucifer
+ */
 public class IntrinsicService {
 
+    /** Thể hiện duy nhất của lớp IntrinsicService (singleton pattern) */
     private static IntrinsicService I;
+    /** Mảng chi phí vàng để mở nội tại theo số lần mở */
     private static final int[] COST_OPEN = {10, 20, 40, 80, 160, 320, 640, 1280};
 
+    /**
+     * Lấy thể hiện duy nhất của lớp IntrinsicService.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp IntrinsicService.
+     */
     public static IntrinsicService gI() {
         if (IntrinsicService.I == null) {
             IntrinsicService.I = new IntrinsicService();
@@ -21,6 +35,12 @@ public class IntrinsicService {
         return IntrinsicService.I;
     }
 
+    /**
+     * Lấy danh sách nội tại dựa trên giới tính của nhân vật.
+     * 
+     * @param playerGender Giới tính của nhân vật (0: Trái Đất, 1: Namek, khác: Xayda).
+     * @return Danh sách các nội tại tương ứng với giới tính.
+     */
     public List<Intrinsic> getIntrinsics(byte playerGender) {
         switch (playerGender) {
             case 0:
@@ -32,6 +52,12 @@ public class IntrinsicService {
         }
     }
 
+    /**
+     * Lấy thông tin nội tại dựa trên ID.
+     * 
+     * @param id ID của nội tại cần tìm.
+     * @return Đối tượng Intrinsic nếu tìm thấy, ngược lại trả về null.
+     */
     public Intrinsic getIntrinsicById(int id) {
         for (Intrinsic intrinsic : Manager.INTRINSICS) {
             if (intrinsic.id == id) {
@@ -41,6 +67,11 @@ public class IntrinsicService {
         return null;
     }
 
+    /**
+     * Gửi thông tin nội tại hiện tại của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin nội tại.
+     */
     public void sendInfoIntrinsic(Player player) {
         Message msg;
         try {
@@ -51,17 +82,22 @@ public class IntrinsicService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-             
+            // Bỏ qua lỗi để tránh gián đoạn gửi thông tin
         }
     }
 
+    /**
+     * Hiển thị danh sách tất cả nội tại có thể chọn cho người chơi.
+     * 
+     * @param player Người chơi cần xem danh sách nội tại.
+     */
     public void showAllIntrinsic(Player player) {
         List<Intrinsic> listIntrinsic = getIntrinsics(player.gender);
         Message msg;
         try {
             msg = new Message(112);
             msg.writer().writeByte(1);
-            msg.writer().writeByte(1); //count tab
+            msg.writer().writeByte(1); // count tab
             msg.writer().writeUTF("Nội tại");
             msg.writer().writeByte(listIntrinsic.size() - 1);
             for (int i = 1; i < listIntrinsic.size(); i++) {
@@ -71,16 +107,27 @@ public class IntrinsicService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-             
+            // Bỏ qua lỗi để tránh gián đoạn gửi thông tin
         }
     }
 
+    /**
+     * Hiển thị menu nội tại cho người chơi.
+     * 
+     * @param player Người chơi cần mở menu nội tại.
+     */
     public void showMenu(Player player) {
         NpcService.gI().createMenuConMeo(player, ConstNpc.INTRINSIC, -1,
                 "Nội tại là một kỹ năng bị động hỗ trợ đặc biệt\nBạn có muốn mở hoặc thay đổi nội tại không?",
                 "Xem\ntất cả\nNội Tại", "Mở\nNội Tại", "Mở VIP", "Từ chối");
     }
 
+    /**
+     * Xử lý lựa chọn nội tại cho nhân vật Trái Đất.
+     * 
+     * @param player Người chơi thực hiện lựa chọn.
+     * @param id ID của menu hoặc hành động.
+     */
     public void sattd(Player player, int id) {
         if (id == 1105) {
             NpcService.gI().createMenuConMeo(player, ConstNpc.menutd, -1,
@@ -114,7 +161,6 @@ public class IntrinsicService {
                 InventoryServiceNew.gI().sendItemBags(player);
             } else {
                 Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-
             }
         }
         if (id == 19801) {
@@ -141,16 +187,15 @@ public class IntrinsicService {
                 InventoryServiceNew.gI().sendItemBags(player);
             } else {
                 Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-
             }
         }
         if (id == 19802) {
             Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1980);
-             Item ao = ItemService.gI().otphd((short)654);
-        Item quan = ItemService.gI().otphd((short)655);
-        Item gang = ItemService.gI().otphd((short)661);
-        Item giay = ItemService.gI().otphd((short)662);
-        Item nhan = ItemService.gI().otphd((short)656);
+            Item ao = ItemService.gI().otphd((short)654);
+            Item quan = ItemService.gI().otphd((short)655);
+            Item gang = ItemService.gI().otphd((short)661);
+            Item giay = ItemService.gI().otphd((short)662);
+            Item nhan = ItemService.gI().otphd((short)656);
             ao.itemOptions.add(new Item.ItemOption(30, 0));
             quan.itemOptions.add(new Item.ItemOption(30, 0));
             gang.itemOptions.add(new Item.ItemOption(30, 0));
@@ -168,11 +213,16 @@ public class IntrinsicService {
                 InventoryServiceNew.gI().sendItemBags(player);
             } else {
                 Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-
             }
         }
     }
 
+    /**
+     * Xử lý lựa chọn nội tại cho nhân vật Namek.
+     * 
+     * @param player Người chơi thực hiện lựa chọn.
+     * @param id ID của menu hoặc hành động.
+     */
     public void satnm(Player player, int id) {
         if (id == 1105) {
             NpcService.gI().createMenuConMeo(player, ConstNpc.menunm, -1,
@@ -182,9 +232,14 @@ public class IntrinsicService {
             NpcService.gI().createMenuConMeo(player, (id * 10) + 1, -1,
                     "chọn lẹ đi để tau đi chơi với ny", "Set\ngod ki", "Set\ngod dame", "Set\nsummon", "Từ chối");
         }
-
     }
 
+    /**
+     * Xử lý lựa chọn nội tại cho nhân vật Xayda.
+     * 
+     * @param player Người chơi thực hiện lựa chọn.
+     * @param id ID của menu hoặc hành động.
+     */
     public void setxd(Player player, int id) {
         if (id == 1105) {
             NpcService.gI().createMenuConMeo(player, ConstNpc.menuxd, -1,
@@ -196,20 +251,35 @@ public class IntrinsicService {
         }
     }
 
+    /**
+     * Hiển thị menu xác nhận mở nội tại với chi phí vàng.
+     * 
+     * @param player Người chơi cần xác nhận mở nội tại.
+     */
     public void showConfirmOpen(Player player) {
         try {
             NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_OPEN_INTRINSIC, -1, "Bạn muốn đổi Nội Tại khác\nvới giá là "
                     + COST_OPEN[player.playerIntrinsic.countOpen] + " Tr vàng ?", "Mở\nNội Tại", "Từ chối");
         } catch (ArrayIndexOutOfBoundsException e) {
-             
+            // Bỏ qua lỗi để tránh gián đoạn xử lý
         }
     }
 
+    /**
+     * Hiển thị menu xác nhận mở nội tại VIP với chi phí ngọc.
+     * 
+     * @param player Người chơi cần xác nhận mở nội tại VIP.
+     */
     public void showConfirmOpenVip(Player player) {
         NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_OPEN_INTRINSIC_VIP, -1,
                 "Bạn có muốn mở Nội Tại\nvới giá là 100 ngọc và\ntái lập giá vàng quay lại ban đầu không?", "Mở\nNội VIP", "Từ chối");
     }
 
+    /**
+     * Thay đổi nội tại ngẫu nhiên cho người chơi.
+     * 
+     * @param player Người chơi cần thay đổi nội tại.
+     */
     private void changeIntrinsic(Player player) {
         List<Intrinsic> listIntrinsic = getIntrinsics(player.gender);
         player.playerIntrinsic.intrinsic = new Intrinsic(listIntrinsic.get(Util.nextInt(1, listIntrinsic.size() - 1)));
@@ -219,6 +289,11 @@ public class IntrinsicService {
         sendInfoIntrinsic(player);
     }
 
+    /**
+     * Mở nội tại mới với chi phí vàng.
+     * 
+     * @param player Người chơi thực hiện mở nội tại.
+     */
     public void open(Player player) {
         if (player.nPoint.power >= 10000000000L) {
             int goldRequire = COST_OPEN[player.playerIntrinsic.countOpen] * 1000000;
@@ -236,6 +311,11 @@ public class IntrinsicService {
         }
     }
 
+    /**
+     * Mở nội tại VIP với chi phí ngọc và tái lập số lần mở.
+     * 
+     * @param player Người chơi thực hiện mở nội tại VIP.
+     */
     public void openVip(Player player) {
         if (player.nPoint.power >= 10000000000L) {
             int gemRequire = 100;
@@ -252,5 +332,4 @@ public class IntrinsicService {
             Service.gI().sendThongBao(player, "Yêu cầu sức mạnh tối thiểu 10 tỷ");
         }
     }
-
 }
