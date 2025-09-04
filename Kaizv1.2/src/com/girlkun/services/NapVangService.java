@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.girlkun.services;
 
 import com.girlkun.database.GirlkunDB;
@@ -10,16 +5,26 @@ import com.girlkun.models.item.Item;
 import com.girlkun.models.player.Player;
 
 /**
- *
- * @author Administrator
+ * Lớp NapVangService xử lý chức năng đổi Xu thành HRZ (vàng) trong game.
+ * Cung cấp phương thức để người chơi đổi các mức Xu khác nhau thành số lượng HRZ tương ứng.
+ * 
+ * @author Lucifer
  */
 public class NapVangService {
     
-    public static void ChonGiaTien(int chon, Player p) throws Exception{
-        switch (chon){
-            case 20: {//(20k)
+    /**
+     * Xử lý yêu cầu đổi Xu thành HRZ dựa trên lựa chọn của người chơi.
+     * Kiểm tra số dư Xu, chỗ trống trong hành trang, và thực hiện đổi HRZ nếu hợp lệ.
+     * 
+     * @param chon Mức Xu muốn đổi (20, 50, 100, hoặc 500).
+     * @param p Người chơi thực hiện đổi Xu.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public static void ChonGiaTien(int chon, Player p) throws Exception {
+        switch (chon) {
+            case 20: { // Đổi 20 Xu thành 200 HRZ
                 if (p.session.vnd < 20) {
-                    Service.gI().sendThongBao(p, "Bạn phải có tối thiêu 20 Xu");
+                    Service.gI().sendThongBao(p, "Bạn phải có tối thiểu 20 Xu");
                     return;
                 }
                 if (InventoryServiceNew.gI().getCountEmptyBag(p) == 0) {
@@ -33,13 +38,12 @@ public class NapVangService {
                     InventoryServiceNew.gI().sendItemBags(p);
                     GirlkunDB.executeUpdate("update account set vnd = '" + p.getSession().vnd + "' where id = " + p.getSession().userId);
                     Service.gI().sendThongBao(p, "Bạn vừa đổi thành công 200 HRZ");
-
                 }
                 break;
             }
-            case 50: {
+            case 50: { // Đổi 50 Xu thành 500 HRZ
                 if (p.session.vnd < 50) {
-                    Service.gI().sendThongBao(p, "Bạn phải có tối thiêu 50 Xu");
+                    Service.gI().sendThongBao(p, "Bạn phải có tối thiểu 50 Xu");
                     return;
                 }
                 if (InventoryServiceNew.gI().getCountEmptyBag(p) == 0) {
@@ -53,13 +57,12 @@ public class NapVangService {
                     InventoryServiceNew.gI().sendItemBags(p);
                     GirlkunDB.executeUpdate("update account set vnd = '" + p.getSession().vnd + "' where id = " + p.getSession().userId);
                     Service.gI().sendThongBao(p, "Bạn vừa đổi thành công 500 HRZ");
-
                 }
                 break;
             }
-            case 100: {
+            case 100: { // Đổi 100 Xu thành 1000 HRZ
                 if (p.session.vnd < 100) {
-                    Service.gI().sendThongBao(p, "Bạn phải có tối thiêu 500 Xu");
+                    Service.gI().sendThongBao(p, "Bạn phải có tối thiểu 100 Xu");
                     return;
                 }
                 if (InventoryServiceNew.gI().getCountEmptyBag(p) == 0) {
@@ -73,13 +76,12 @@ public class NapVangService {
                     InventoryServiceNew.gI().sendItemBags(p);
                     GirlkunDB.executeUpdate("update account set vnd = '" + p.getSession().vnd + "' where id = " + p.getSession().userId);
                     Service.gI().sendThongBao(p, "Bạn vừa đổi thành công 1000 HRZ");
-
                 }
                 break;
             }
-            case 500: {
+            case 500: { // Đổi 500 Xu thành 6000 HRZ
                 if (p.session.vnd < 500) {
-                    Service.gI().sendThongBao(p, "Bạn phải có tối thiêu 500 Xu");
+                    Service.gI().sendThongBao(p, "Bạn phải có tối thiểu 500 Xu");
                     return;
                 }
                 if (InventoryServiceNew.gI().getCountEmptyBag(p) == 0) {
@@ -93,7 +95,6 @@ public class NapVangService {
                     InventoryServiceNew.gI().sendItemBags(p);
                     GirlkunDB.executeUpdate("update account set vnd = '" + p.getSession().vnd + "' where id = " + p.getSession().userId);
                     Service.gI().sendThongBao(p, "Bạn vừa đổi thành công 6000 HRZ");
-
                 }
                 break;
             }
