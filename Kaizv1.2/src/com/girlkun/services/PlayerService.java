@@ -9,20 +9,46 @@ import com.girlkun.services.func.ChangeMapService;
 import com.girlkun.utils.Logger;
 import com.girlkun.utils.Util;
 
+/**
+ * Lớp PlayerService quản lý các chức năng liên quan đến người chơi trong game.
+ * Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * Cung cấp các phương thức để kiểm tra bộ trang bị, gửi thông tin, di chuyển, hồi sinh, và quản lý trạng thái PK.
+ * 
+ * @author Lucifer
+ */
 public class PlayerService {
 
+    /**
+     * Thể hiện duy nhất của lớp PlayerService (singleton pattern).
+     */
     private static PlayerService i;
 
+    /**
+     * Constructor mặc định.
+     */
     public PlayerService() {
     }
 
+    /**
+     * Lấy thể hiện duy nhất của lớp PlayerService.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp PlayerService.
+     */
     public static PlayerService gI() {
         if (i == null) {
             i = new PlayerService();
         }
         return i;
     }
-    public boolean isFullSetThanLinh(Player player) { // kiểm tra full set than linh
+
+    /**
+     * Kiểm tra xem người chơi có đang mặc đủ bộ trang bị Thần Linh không.
+     * 
+     * @param player Người chơi cần kiểm tra.
+     * @return True nếu người chơi mặc đủ bộ Thần Linh, ngược lại trả về false.
+     */
+    public boolean isFullSetThanLinh(Player player) {
         if (player == null) {
             return false;
         }
@@ -55,7 +81,14 @@ public class PlayerService {
             return false;
         }
     }
-     public boolean isFullSetHuyDiet(Player player) { // kiểm tra full set than linh
+
+    /**
+     * Kiểm tra xem người chơi có đang mặc đủ bộ trang bị Hủy Diệt không.
+     * 
+     * @param player Người chơi cần kiểm tra.
+     * @return True nếu người chơi mặc đủ bộ Hủy Diệt, ngược lại trả về false.
+     */
+    public boolean isFullSetHuyDiet(Player player) {
         if (player == null) {
             return false;
         }
@@ -89,21 +122,32 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông báo sức mạnh hoặc tiềm năng cho người chơi.
+     * 
+     * @param player Người chơi nhận thông báo.
+     * @param type Loại thông báo (0: sức mạnh, 1: tiềm năng, 2: cả hai).
+     * @param param Giá trị cần gửi.
+     */
     public void sendTNSM(Player player, byte type, long param) {
         if (param > 0) {
             Message msg;
             try {
                 msg = new Message(-3);
-                msg.writer().writeByte(type);// 0 là cộng sm, 1 cộng tn, 2 là cộng cả 2
-                msg.writer().writeInt((int) param);// số tn cần cộng
+                msg.writer().writeByte(type); // 0 là cộng sm, 1 cộng tn, 2 là cộng cả 2
+                msg.writer().writeInt((int) param); // số tn cần cộng
                 player.sendMessage(msg);
                 msg.cleanup();
             } catch (Exception e) {
-                  
             }
         }
     }
 
+    /**
+     * Gửi thông điệp tới tất cả người chơi trong server.
+     * 
+     * @param msg Thông điệp cần gửi.
+     */
     public void sendMessageAllPlayer(Message msg) {
         for (Player pl : Client.gI().getPlayers()) {
             if (pl != null) {
@@ -111,23 +155,31 @@ public class PlayerService {
             }
         }
         msg.cleanup();
-
     }
 
-    public void sendMessageIgnore(Player plIgnore, Message msg) 
-    {
-        for (Player pl : Client.gI().getPlayers())
-        {
-            try
-            { if (pl != null && !pl.equals(plIgnore)) 
-            {
-                pl.sendMessage(msg);
-            }}
-            catch(Exception e){}
+    /**
+     * Gửi thông điệp tới tất cả người chơi trừ một người chơi cụ thể.
+     * 
+     * @param plIgnore Người chơi bị bỏ qua.
+     * @param msg Thông điệp cần gửi.
+     */
+    public void sendMessageIgnore(Player plIgnore, Message msg) {
+        for (Player pl : Client.gI().getPlayers()) {
+            try {
+                if (pl != null && !pl.equals(plIgnore)) {
+                    pl.sendMessage(msg);
+                }
+            } catch (Exception e) {
+            }
         }
         msg.cleanup();
     }
 
+    /**
+     * Gửi thông tin HP của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin HP.
+     */
     public void sendInfoHp(Player player) {
         Message msg;
         try {
@@ -140,6 +192,11 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông tin MP của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin MP.
+     */
     public void sendInfoMp(Player player) {
         Message msg;
         try {
@@ -152,11 +209,23 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông tin HP và MP của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin.
+     */
     public void sendInfoHpMp(Player player) {
         sendInfoHp(player);
         sendInfoMp(player);
     }
 
+    /**
+     * Hồi phục HP và MP cho người chơi nếu chưa chết.
+     * 
+     * @param player Người chơi cần hồi phục.
+     * @param hp Lượng HP cần hồi.
+     * @param mp Lượng MP cần hồi.
+     */
     public void hoiPhuc(Player player, int hp, int mp) {
         if (!player.isDie()) {
             if (hp > 0) {
@@ -172,32 +241,42 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông tin về HP, MP, vàng, ngọc, và ruby của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin.
+     */
     public void sendInfoHpMpMoney(Player player) {
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 4);
             try {
-                if (player.getSession() != null &&player.getSession().version >= 214) 
-                {
+                if (player.getSession() != null && player.getSession().version >= 214) {
                     msg.writer().writeLong(player.inventory.gold);
                 } else {
                     msg.writer().writeInt((int) player.inventory.gold);
                 }
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 msg.writer().writeInt((int) player.inventory.gold);
             }
-            msg.writer().writeInt(player.inventory.gem);//luong
-            msg.writer().writeInt(player.nPoint.hp);//chp
-            msg.writer().writeInt(player.nPoint.mp);//cmp
-            msg.writer().writeInt(player.inventory.ruby);//ruby
+            msg.writer().writeInt(player.inventory.gem); //luong
+            msg.writer().writeInt(player.nPoint.hp); //chp
+            msg.writer().writeInt(player.nPoint.mp); //cmp
+            msg.writer().writeInt(player.inventory.ruby); //ruby
             player.sendMessage(msg);
         } catch (Exception e) {
             Logger.logException(PlayerService.class, e);
         }
     }
 
-    public void playerMove(Player player, int x, int y) { //NRSD đưa về nhà
+    /**
+     * Di chuyển người chơi đến tọa độ mới và xử lý các hiệu ứng liên quan.
+     * 
+     * @param player Người chơi cần di chuyển.
+     * @param x Tọa độ x đích.
+     * @param y Tọa độ y đích.
+     */
+    public void playerMove(Player player, int x, int y) {
         if (player.zone == null) {
             return;
         }
@@ -245,6 +324,11 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông tin thể lực hiện tại của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin.
+     */
     public void sendCurrentStamina(Player player) {
         Message msg;
         try {
@@ -257,6 +341,11 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Gửi thông tin thể lực tối đa của người chơi.
+     * 
+     * @param player Người chơi cần gửi thông tin.
+     */
     public void sendMaxStamina(Player player) {
         Message msg;
         try {
@@ -269,15 +358,32 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Thay đổi và gửi loại PK của người chơi.
+     * 
+     * @param player Người chơi cần thay đổi loại PK.
+     * @param type Loại PK (0: NON_PK, 1: PK_PVP, 2: PK_ALL).
+     */
     public void changeAndSendTypePK(Player player, int type) {
         changeTypePK(player, type);
         sendTypePk(player);
     }
 
+    /**
+     * Thay đổi loại PK của người chơi.
+     * 
+     * @param player Người chơi cần thay đổi loại PK.
+     * @param type Loại PK (0: NON_PK, 1: PK_PVP, 2: PK_ALL).
+     */
     public void changeTypePK(Player player, int type) {
         player.typePk = (byte) type;
     }
 
+    /**
+     * Gửi thông tin loại PK của người chơi đến tất cả người chơi trong khu vực.
+     * 
+     * @param player Người chơi cần gửi thông tin PK.
+     */
     public void sendTypePk(Player player) {
         Message msg;
         try {
@@ -290,14 +396,17 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Cấm tài khoản của người chơi.
+     * 
+     * @param playerBaned Người chơi bị cấm.
+     */
     public void banPlayer(Player playerBaned) {
         if (playerBaned != null && playerBaned.iDMark != null) {
             try {
                 GirlkunDB.executeUpdate("update account set ban = 1 where id = ? and username = ?",
                         playerBaned.getSession().userId, playerBaned.getSession().uu);
-            } catch (Exception e)
-            {
-                  
+            } catch (Exception e) {
             }
             Service.gI().sendThongBao(playerBaned,
                     "Tài khoản của bạn đã bị khóa\nGame sẽ mất kết nối sau 5 giây...");
@@ -306,11 +415,19 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Hằng số chi phí vàng để hồi sinh.
+     */
     private static final int COST_GOLD_HOI_SINH = 10000000;
     private static final int COST_GEM_HOI_SINH = 1;
     private static final int COST_GOLD_HOI_SINH_NRSD = 200000;
     private static final int COST_GOLD_HOI_SINH_PVP = 200000000;
 
+    /**
+     * Hồi sinh người chơi với chi phí vàng hoặc ngọc tùy thuộc vào bản đồ.
+     * 
+     * @param player Người chơi cần hồi sinh.
+     */
     public void hoiSinh(Player player) {
         if (player.isDie()) {
             boolean canHs = false;
@@ -349,6 +466,11 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Hồi sinh người chơi trong bản đồ Mabu với chi phí vàng.
+     * 
+     * @param player Người chơi cần hồi sinh.
+     */
     public void hoiSinhMaBu(Player player) {
         if (player.isDie()) {
             boolean canHs = false;
@@ -377,5 +499,4 @@ public class PlayerService {
             }
         }
     }
-
 }
