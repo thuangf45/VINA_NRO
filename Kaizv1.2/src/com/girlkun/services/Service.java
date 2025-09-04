@@ -1,26 +1,20 @@
 package com.girlkun.services;
 
-import com.girlkun.database.GirlkunDB;
 import com.girlkun.consts.ConstNpc;
 import com.girlkun.consts.ConstPlayer;
-import com.girlkun.jdbc.daos.PlayerDAO;
-import com.girlkun.utils.FileIO;
+import com.girlkun.database.GirlkunDB;
 import com.girlkun.data.DataGame;
 import com.girlkun.jdbc.daos.GodGK;
+import com.girlkun.jdbc.daos.PlayerDAO;
 import com.girlkun.models.Effect.EffectService;
 import com.girlkun.models.boss.BossManager;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.girlkun.models.item.Item;
+import com.girlkun.models.item.Item.ItemOption;
 import com.girlkun.models.map.ItemMap;
 import com.girlkun.models.mob.Mob;
-import com.girlkun.models.player.Pet;
-import com.girlkun.models.item.Item.ItemOption;
 import com.girlkun.models.map.Zone;
 import com.girlkun.models.matches.TOP;
+import com.girlkun.models.player.Pet;
 import com.girlkun.models.player.Player;
 import com.girlkun.models.shop.ItemShop;
 import com.girlkun.models.shop.Shop;
@@ -35,18 +29,32 @@ import com.girlkun.server.Manager;
 import com.girlkun.server.ServerManager;
 import com.girlkun.services.func.ChangeMapService;
 import com.girlkun.services.func.Input;
+import com.girlkun.utils.FileIO;
 import com.girlkun.utils.Logger;
 import com.girlkun.utils.TimeUtil;
 import com.girlkun.utils.Util;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * Lớp cung cấp các dịch vụ chính để xử lý logic game, bao gồm gửi tin nhắn mạng, quản lý vật phẩm, và xử lý tương tác người chơi.
+ * @author Lucifer
+ */
 public class Service {
 
     private static Service instance;
     public long lasttimechatbanv = 0;
     public long lasttimechatmuav = 0;
 
+    /**
+     * Lấy instance của Service theo mẫu Singleton.
+     *
+     * @return Đối tượng Service.
+     */
     public static Service gI() {
         if (instance == null) {
             instance = new Service();
@@ -54,6 +62,11 @@ public class Service {
         return instance;
     }
 
+    /**
+     * Lấy instance của Service theo mẫu Singleton.
+     *
+     * @return Đối tượng Service.
+     */
     public static Service getInstance() {
         if (instance == null) {
             instance = new Service();
@@ -61,6 +74,12 @@ public class Service {
         return instance;
     }
 
+    /**
+     * Gửi danh hiệu cho người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần gửi danh hiệu.
+     * @param part ID của danh hiệu.
+     */
     public void sendTitle1(Player player, int part) {
         Message me;
         try {
@@ -78,12 +97,18 @@ public class Service {
             me.writer().writeByte(-1);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi gửi danh hiệu");
         }
     }
 
+    /**
+     * Gửi danh hiệu cho một người chơi cụ thể.
+     *
+     * @param player Người chơi cần gửi danh hiệu.
+     * @param p2 Người chơi nhận thông báo danh hiệu.
+     * @param part ID của danh hiệu.
+     */
     public void sendTitleRv1(Player player, Player p2, int part) {
         Message me;
         try {
@@ -92,7 +117,6 @@ public class Service {
             me.writer().writeInt((int) player.id);
             if (player.partDanhHieu >= 60) {
                 me.writer().writeShort(part);
-
             }
             me.writer().writeShort(part);
             me.writer().writeByte(1);
@@ -103,10 +127,16 @@ public class Service {
             p2.sendMessage(me);
             me.cleanup();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi gửi danh hiệu riêng");
         }
     }
 
+    /**
+     * Gửi danh hiệu dựa trên ID vật phẩm cho người chơi.
+     *
+     * @param player Người chơi cần gửi danh hiệu.
+     * @param id ID của vật phẩm tương ứng với danh hiệu.
+     */
     public void sendTitle(Player player, int id) {
         Message me;
         try {
@@ -149,29 +179,16 @@ public class Service {
             me.writer().writeByte(-1);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi gửi danh hiệu theo ID vật phẩm");
         }
     }
 
-//    public void removeTitle1(Player player) {
-//        Message me;
-//        try {
-//            me = new Message(-128);
-//            me.writer().writeByte(2);
-//            me.writer().writeInt((int) player.id);
-//            player.getSession().sendMessage(me);
-//            this.sendMessAllPlayerInMap(player, me);
-//            me.cleanup();
-//            if (player.titleitem) {
-//                Service.getInstance().sendTitle(player, player.partDanhHieu);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    /**
+     * Xóa dấu chân của người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần xóa dấu chân.
+     */
     public void removeFoot(Player player) {
         Message me;
         try {
@@ -181,13 +198,16 @@ public class Service {
             player.getSession().sendMessage(me);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-//            if (player.inventory.itemsBody.get(11).isNotNullItem()) {
-//                Service.getInstance().sendFoot(player, (short) player.inventory.itemsBody.get(11).template.id);
-//            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi xóa dấu chân");
         }
     }
+
+    /**
+     * Xóa dấu chân của người chơi (phiên bản thứ hai) và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần xóa dấu chân.
+     */
     public void removeFoot1(Player player) {
         Message me;
         try {
@@ -197,14 +217,16 @@ public class Service {
             player.getSession().sendMessage(me);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-//            if (player.inventory.itemsBody.get(11).isNotNullItem()) {
-//                Service.getInstance().sendFoot(player, (short) player.inventory.itemsBody.get(11).template.id);
-//            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi xóa dấu chân (phiên bản 2)");
         }
     }
 
+    /**
+     * Xóa danh hiệu của người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần xóa danh hiệu.
+     */
     public void removeTitle(Player player) {
         Message me;
         try {
@@ -214,13 +236,16 @@ public class Service {
             player.getSession().sendMessage(me);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-//            if (player.inventory.itemsBody.get(11).isNotNullItem()) {
-//                Service.getInstance().sendFoot(player, (short) player.inventory.itemsBody.get(11).template.id);
-//            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi xóa danh hiệu");
         }
     }
+
+    /**
+     * Xóa danh hiệu của người chơi (phiên bản thứ hai) và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần xóa danh hiệu.
+     */
     public void removeTitle1(Player player) {
         Message me;
         try {
@@ -230,14 +255,17 @@ public class Service {
             player.getSession().sendMessage(me);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-//            if (player.inventory.itemsBody.get(11).isNotNullItem()) {
-//                Service.getInstance().sendFoot(player, (short) player.inventory.itemsBody.get(11).template.id);
-//            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi xóa danh hiệu (phiên bản 2)");
         }
     }
 
+    /**
+     * Gửi dấu chân cho người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần gửi dấu chân.
+     * @param id ID của vật phẩm tương ứng với dấu chân.
+     */
     public void sendFoot(Player player, int id) {
         Message me;
         try {
@@ -281,12 +309,18 @@ public class Service {
             me.writer().writeByte(-1);
             this.sendMessAllPlayerInMap(player, me);
             me.cleanup();
-
         } catch (Exception e) {
-            System.out.println("66666");
+            Logger.logException(Service.class, e, "Lỗi khi gửi dấu chân");
         }
     }
 
+    /**
+     * Gửi dấu chân của người chơi đến một người chơi cụ thể.
+     *
+     * @param player Người chơi cần gửi dấu chân.
+     * @param p2 Người chơi nhận thông báo dấu chân.
+     * @param id ID của vật phẩm tương ứng với dấu chân.
+     */
     public void sendFootRv(Player player, Player p2, int id) {
         Message me;
         try {
@@ -324,7 +358,6 @@ public class Service {
                 default:
                     break;
             }
-
             me.writer().writeByte(0);
             me.writer().writeByte(-1);
             me.writer().writeShort(1);
@@ -332,10 +365,17 @@ public class Service {
             p2.sendMessage(me);
             me.cleanup();
         } catch (Exception e) {
-            System.out.println("77777");
+            Logger.logException(Service.class, e, "Lỗi khi gửi dấu chân riêng");
         }
     }
 
+    /**
+     * Gửi danh hiệu của người chơi đến một người chơi cụ thể.
+     *
+     * @param player Người chơi cần gửi danh hiệu.
+     * @param p2 Người chơi nhận thông báo danh hiệu.
+     * @param id ID của vật phẩm tương ứng với danh hiệu.
+     */
     public void sendTitleRv(Player player, Player p2, int id) {
         Message me;
         try {
@@ -379,54 +419,40 @@ public class Service {
             p2.sendMessage(me);
             me.cleanup();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logException(Service.class, e, "Lỗi khi gửi danh hiệu riêng");
         }
     }
 
+    /**
+     * Cập nhật hiệu ứng hóa đá cho người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi cần cập nhật hiệu ứng.
+     * @param typead Loại hiệu ứng thêm.
+     * @param typeTar Loại mục tiêu.
+     * @param type Loại hiệu ứng.
+     */
     public void SendMsgUpdateHoaDa(Player player, byte typead, byte typeTar, byte type) {
+        Message message;
         try {
-            Message message = new Message(-124);
+            message = new Message(-124);
             message.writer().writeByte(typead);
             message.writer().writeByte(typeTar);
             message.writer().writeByte(type);
             message.writer().writeInt((int) player.id);
             sendMessAllPlayerInMap(player, message);
             message.cleanup();
-
         } catch (Exception e) {
-
+            Logger.logException(Service.class, e, "Lỗi khi cập nhật hiệu ứng hóa đá");
         }
     }
 
-    public void showListTop(Player player, List<TOP> tops) {
-//        Message msg;
-//        try {
-//            msg = new Message(-96);
-//            msg.writer().writeByte(0);
-//            msg.writer().writeUTF("Top");
-//            msg.writer().writeByte(tops.size());
-//            for (int i = 0; i < tops.size(); i++) {
-//                TOP top = tops.get(i);
-//                Player pl = GodGK.loadById(top.getId_player());
-//                msg.writer().writeInt(i + 1);
-//                msg.writer().writeInt((int) pl.id);
-//                msg.writer().writeShort(pl.getHead());
-//                if (player.getSession().version > 214) {
-//                    msg.writer().writeShort(-1);
-//                }
-//                msg.writer().writeShort(pl.getBody());
-//                msg.writer().writeShort(pl.getLeg());
-//                msg.writer().writeUTF(pl.name);
-//                msg.writer().writeUTF(top.getInfo1());
-//                msg.writer().writeUTF(top.getInfo2());
-//            }
-//            player.sendMessage(msg);
-//            msg.cleanup();
-//        } catch (Exception e) {
-//            
-//        }
-    }
-
+    /**
+     * Hiển thị danh sách top người chơi cho người chơi.
+     *
+     * @param player Người chơi nhận danh sách top.
+     * @param tops Danh sách top người chơi.
+     * @param isPVP Chế độ PVP (1: PVP, 0: khác).
+     */
     public void showListTop(Player player, List<TOP> tops, byte isPVP) {
         Message msg;
         try {
@@ -439,7 +465,6 @@ public class Service {
             for (int i = 0; i < tops.size(); i++) {
                 TOP top = tops.get(i);
                 Player pl = GodGK.loadById(top.getId_player());
-//                msg.writer().writeInt(isPVP != 1 ? (i + 1) : (int)pl.rankSieuHang);
                 msg.writer().writeInt(i + 1);
                 msg.writer().writeInt((int) pl.id);
                 msg.writer().writeShort(pl.getHead());
@@ -450,22 +475,27 @@ public class Service {
                 msg.writer().writeShort(pl.getLeg());
                 msg.writer().writeUTF(pl.name);
                 msg.writer().writeUTF(top.getInfo1());
-//                msg.writer().writeUTF(isPVP == 1 ? top.getInfo2() : top.getInfo2() + pl.numKillSieuHang);
                 msg.writer().writeUTF(isPVP == 1 ? ("Sức Đánh: " + pl.nPoint.dame + "\n" + "HP: " + pl.nPoint.hpMax + "\n" + "KI: " + pl.nPoint.mpMax + "\n") : top.getInfo2());
             }
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-
+            Logger.logException(Service.class, e, "Lỗi khi hiển thị danh sách top");
         }
     }
 
+    /**
+     * Gửi tin nhắn đến tất cả người chơi trong bản đồ, ngoại trừ người chơi hiện tại.
+     *
+     * @param player Người chơi hiện tại.
+     * @param msg Tin nhắn cần gửi.
+     */
     public void sendMessAnotherNotMeInMap(Player player, Message msg) {
         if (player == null || player.zone == null) {
             msg.dispose();
             return;
         }
-        List<Player> players = new ArrayList<>(player.zone.getPlayers()); // Tạo bản sao của danh sách players
+        List<Player> players = new ArrayList<>(player.zone.getPlayers());
         if (players.isEmpty()) {
             msg.dispose();
             return;
@@ -476,6 +506,14 @@ public class Service {
         msg.cleanup();
     }
 
+    /**
+     * Gửi thông báo dạng pop-up nhiều dòng cho người chơi.
+     *
+     * @param pl Người chơi nhận thông báo.
+     * @param tempID ID mẫu thông báo.
+     * @param avt ID avatar.
+     * @param text Nội dung thông báo.
+     */
     public void sendPopUpMultiLine(Player pl, int tempID, int avt, String text) {
         Message msg = null;
         try {
@@ -484,17 +522,21 @@ public class Service {
             msg.writer().writeUTF(text);
             msg.writer().writeShort(avt);
             pl.sendMessage(msg);
-            msg.cleanup();
         } catch (Exception e) {
-
+            Logger.logException(Service.class, e, "Lỗi khi gửi pop-up nhiều dòng");
         } finally {
             if (msg != null) {
                 msg.cleanup();
-                msg = null;
             }
         }
     }
 
+    /**
+     * Gửi thông tin về thú cưng đi theo người chơi và thông báo đến tất cả người chơi trong bản đồ.
+     *
+     * @param player Người chơi có thú cưng.
+     * @param smallId ID của thú cưng.
+     */
     public void sendPetFollow(Player player, short smallId) {
         Message msg;
         try {
@@ -519,39 +561,15 @@ public class Service {
                         msg.writer().writeByte(fr[i]);
                     }
                 }
-                if (smallId == 20210) {
+                if (smallId == 20210 || smallId == 20212 || smallId == 30674 || smallId == 30676 || smallId == 30678 || smallId == 25246 || smallId == 25248 || smallId == 28890) {
                     msg.writer().writeShort(32);
                     msg.writer().writeShort(32);
-                } else if (smallId == 20212) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);
-                } else if (smallId == 25246) {
-                    msg.writer().writeShort(40);
-                    msg.writer().writeShort(45);
-                } else if (smallId == 25248) {
+                } else if (smallId == 25246 || smallId == 25248) {
                     msg.writer().writeShort(40);
                     msg.writer().writeShort(45);
                 } else if (smallId == 20214) {
                     msg.writer().writeShort(34);
                     msg.writer().writeShort(36);
-                } else if (smallId == 30674) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);
-                } else if (smallId == 30676) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);
-                } else if (smallId == 30678) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);    
-                } else if (smallId == 25246) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);   
-                } else if (smallId == 25248) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);  
-                } else if (smallId == 28890) {
-                    msg.writer().writeShort(32);
-                    msg.writer().writeShort(32);      
                 } else {
                     msg.writer().writeShort(smallId == 20210 ? 65 : 75);
                     msg.writer().writeShort(smallId == 20210 ? 65 : 75);
@@ -560,11 +578,16 @@ public class Service {
             sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.logException(Manager.class, e, "Lỗi pet follow");
+            Logger.logException(Service.class, e, "Lỗi khi gửi thông tin thú cưng đi theo");
         }
     }
 
+    /**
+     * Gửi thông tin thú cưng của người chơi khác đến người chơi hiện tại.
+     *
+     * @param me Người chơi nhận thông tin.
+     * @param pl Người chơi có thú cưng.
+     */
     public void sendPetFollowToMe(Player me, Player pl) {
         Item linhThu = pl.inventory.itemsBody.get(10);
         if (!linhThu.isNotNullItem()) {
@@ -596,19 +619,35 @@ public class Service {
             me.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.logException(Manager.class, e, "Lỗi send pet follow to me");
+            Logger.logException(Service.class, e, "Lỗi khi gửi thông tin thú cưng đến người chơi khác");
         }
     }
 
+    /**
+     * Gửi tin nhắn đến tất cả người chơi trong server.
+     *
+     * @param msg Tin nhắn cần gửi.
+     */
     public void sendMessAllPlayer(Message msg) {
         PlayerService.gI().sendMessageAllPlayer(msg);
     }
 
+    /**
+     * Gửi tin nhắn đến tất cả người chơi trong server, ngoại trừ người chơi hiện tại.
+     *
+     * @param player Người chơi hiện tại.
+     * @param msg Tin nhắn cần gửi.
+     */
     public void sendMessAllPlayerIgnoreMe(Player player, Message msg) {
         PlayerService.gI().sendMessageIgnore(player, msg);
     }
 
+    /**
+     * Gửi tin nhắn đến tất cả người chơi trong bản đồ.
+     *
+     * @param zone Bản đồ cần gửi tin nhắn.
+     * @param msg Tin nhắn cần gửi.
+     */
     public void sendMessAllPlayerInMap(Zone zone, Message msg) {
         if (zone == null) {
             msg.dispose();
@@ -627,6 +666,11 @@ public class Service {
         msg.cleanup();
     }
 
+    /**
+     * Gửi thông tin về số lượng ruby và ngọc cho người chơi.
+     *
+     * @param pl Người chơi nhận thông tin.
+     */
     public void sendRuby(Player pl) {
         Message msg;
         try {
@@ -645,6 +689,13 @@ public class Service {
         }
     }
 
+    /**
+     * Gửi tin nhắn đến tất cả người chơi trong bản đồ của người chơi hiện tại.
+     * Nếu bản đồ là bản đồ offline, chỉ gửi tin nhắn đến người chơi hoặc chủ nhân của pet.
+     *
+     * @param player Người chơi hiện tại, xác định bản đồ để gửi tin nhắn.
+     * @param msg Tin nhắn cần gửi.
+     */
     public void sendMessAllPlayerInMap(Player player, Message msg) {
         if (player == null || player.zone == null) {
             msg.dispose();
@@ -671,7 +722,13 @@ public class Service {
         }
         msg.cleanup();
     }
-
+    
+    /**
+     * Xử lý đăng ký tài khoản người dùng từ thông tin nhận được qua tin nhắn.
+     *
+     * @param session Phiên kết nối của người dùng.
+     * @param _msg Tin nhắn chứa thông tin đăng ký (tên tài khoản và mật khẩu).
+     */
     public void regisAccount(Session session, Message _msg) {
         try {
             _msg.readUTF();
@@ -723,6 +780,12 @@ public class Service {
 //        msg.cleanup();
 //
 //    }
+    
+    /**
+     * Gửi thông tin nhân vật (máu, ID, hiệu ứng) đến tất cả người chơi trong bản đồ, ngoại trừ người chơi hiện tại.
+     *
+     * @param pl Người chơi cần gửi thông tin.
+     */
     public void Send_Info_NV(Player pl) {
         Message msg;
         try {
@@ -738,6 +801,11 @@ public class Service {
         }
     }
 
+    /**
+     * Gửi thông tin về người chơi khi sử dụng đậu thần (máu, ID, hiệu ứng ăn đậu) đến tất cả người chơi trong bản đồ, ngoại trừ người chơi hiện tại.
+     *
+     * @param pl Người chơi sử dụng đậu thần.
+     */
     public void sendInfoPlayerEatPea(Player pl) {
         Message msg;
         try {
@@ -753,6 +821,12 @@ public class Service {
         }
     }
 
+    /**
+     * Gửi thông báo thời gian chờ đăng nhập đến phiên kết nối của người dùng.
+     *
+     * @param session Phiên kết nối của người dùng.
+     * @param second Thời gian chờ (tính bằng giây).
+     */
     public void loginDe(MySession session, short second) {
         Message msg;
         try {
@@ -765,6 +839,13 @@ public class Service {
         }
     }
 
+    /**
+     * Đặt lại vị trí của người chơi tại tọa độ (x, y) và gửi thông báo cập nhật vị trí.
+     *
+     * @param player Người chơi cần đặt lại vị trí.
+     * @param x Tọa độ x mới.
+     * @param y Tọa độ y mới.
+     */
     public void resetPoint(Player player, int x, int y) {
         Message msg;
         try {
@@ -781,6 +862,11 @@ public class Service {
         }
     }
 
+    /**
+     * Xóa thông tin bản đồ hiện tại của người chơi bằng cách gửi tin nhắn xóa bản đồ.
+     *
+     * @param player Người chơi cần xóa thông tin bản đồ.
+     */
     public void clearMap(Player player) {
         Message msg;
         try {
@@ -792,7 +878,12 @@ public class Service {
         }
     }
 
-        public void switchToRegisterScr(ISession session) {
+    /**
+     * Chuyển giao diện client sang màn hình đăng ký tài khoản.
+     *
+     * @param session Phiên kết nối của người dùng.
+     */    
+    public void switchToRegisterScr(ISession session) {
         try {
             Message message;
             try {
@@ -805,8 +896,18 @@ public class Service {
         } catch (Exception e) {
         }
     }
+    
+    /**
+     * Biến lưu trữ dữ liệu phần thưởng của quái vật.
+     */
     public String DataMobReward = "";
 
+    /**
+    * Xử lý lệnh chat của người chơi, bao gồm các lệnh admin và lệnh điều khiển pet, đồng thời gửi tin nhắn chat đến tất cả người chơi trong bản đồ.
+    *
+    * @param player Người chơi gửi lệnh hoặc tin nhắn chat.
+    * @param text Nội dung tin nhắn hoặc lệnh được gửi.
+    */
     public void chat(Player player, String text) {
 //        if (text.equals("a")) {
 //            for (int i = 0; i < 5000; i++) {
@@ -1387,6 +1488,18 @@ public class Service {
         }
     }
 
+    
+    /**
+    * Gửi một tin nhắn riêng tư từ một người chơi đến một người chơi khác, sử dụng mã lệnh 44.
+    * Phương thức này được sử dụng để hỗ trợ giao tiếp riêng tư giữa các người chơi trong game,
+    * có thể được kích hoạt bởi một sự kiện với ID 1111.
+    *
+    * @param me     người chơi nhận tin nhắn
+    * @param plChat người chơi gửi tin nhắn
+    * @param text   nội dung của tin nhắn
+    * @throws IllegalArgumentException nếu bất kỳ tham số nào (me, plChat, hoặc text) là null
+    * @throws IOException             nếu xảy ra lỗi I/O khi ghi dữ liệu tin nhắn
+    */
     public void chatJustForMe(Player me, Player plChat, String text) {
         Message msg;
         try {
@@ -1402,6 +1515,14 @@ public class Service {
 
     private boolean isSave;
 
+    /**
+    * Tự động lưu dữ liệu của tất cả người chơi trong hệ thống game.
+    * Phương thức này được sử dụng để lưu thông tin người chơi vào cơ sở dữ liệu,
+    * có thể được kích hoạt như một phần của sự kiện với ID 1111. 
+    * Quá trình lưu được thực hiện định kỳ và chỉ chạy khi không có tiến trình lưu nào khác đang hoạt động.
+    *
+    * @throws RuntimeException nếu có lỗi xảy ra trong quá trình lưu hoặc khi bị gián đoạn
+    */
     public void AutoSavePlayerData() {
         if (isSave) {
             return;
@@ -1427,6 +1548,15 @@ public class Service {
         isSave = false;
     }
 
+    /**
+     * Gửi thông tin dịch chuyển cho người chơi, sử dụng mã lệnh -105.
+     * Phương thức này truyền dữ liệu về thời gian tối đa và loại dịch chuyển của người chơi,
+     * có thể được kích hoạt trong ngữ cảnh sự kiện với ID 1111.
+     *
+     * @param pl người chơi nhận thông tin dịch chuyển
+     * @throws IllegalArgumentException nếu tham số pl là null
+     * @throws IOException             nếu xảy ra lỗi I/O khi ghi dữ liệu tin nhắn
+     */
     public void Transport(Player pl) {
         Message msg = null;
         try {
@@ -1444,6 +1574,14 @@ public class Service {
         }
     }
 
+    /**
+    * Xác định mức kinh nghiệm cần thiết để đạt cấp độ tiếp theo dựa trên sức mạnh của người chơi.
+    * Phương thức trả về giá trị kinh nghiệm cố định tương ứng với khoảng sức mạnh,
+    * có thể liên quan đến sự kiện hoặc cơ chế với ID 1111.
+    *
+    * @param sucmanh sức mạnh hiện tại của người chơi
+    * @return mức kinh nghiệm cần thiết để lên cấp tiếp theo
+    */
     public long exp_level1(long sucmanh) {
         if (sucmanh < 3000) {
             return 3000;
@@ -1487,6 +1625,15 @@ public class Service {
         return 1000;
     }
 
+    /**
+    * Cập nhật và gửi thông tin chỉ số của người chơi qua tin nhắn với mã lệnh -42.
+    * Phương thức này tính toán các chỉ số của người chơi (như HP, MP, sát thương, phòng thủ, v.v.)
+    * và gửi chúng đến client, có thể liên quan đến sự kiện hoặc cơ chế với ID 1111.
+    * Chỉ áp dụng cho người chơi chính, không áp dụng cho thú cưng, boss hoặc thú cưng mới.
+    *
+    * @param player người chơi cần cập nhật và gửi thông tin chỉ số
+    * @throws IOException nếu xảy ra lỗi I/O khi ghi dữ liệu tin nhắn
+    */
     public void point(Player player) {
         player.nPoint.calPoint();
         Send_Info_NV(player);
@@ -1520,6 +1667,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông điệp xuất hiện Shenron tại bản đồ nơi người chơi đang đứng.
+    * Thông điệp chứa thông tin bản đồ, zone, ID người chơi và tọa độ,
+    * sau đó được gửi đến tất cả người chơi trong cùng bản đồ.
+    *
+    * @param pl Người chơi kích hoạt Shenron, dùng để lấy thông tin map, zone và vị trí.
+    */
     private void activeNamecShenron(Player pl) {
         Message msg;
         try {
@@ -1543,6 +1697,18 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi toàn bộ thông tin của người chơi (Player) về client.
+    * 
+    * Thông điệp bao gồm:
+    * - ID, giới tính, tên, nhiệm vụ chính, sức mạnh
+    * - Kỹ năng hiện có
+    * - Vàng, ngọc, ngọc khóa
+    * - Danh sách item trong body, bag, box
+    * - Avatar, hiệu ứng, trạng thái nhập thể, cờ thành viên mới
+    *
+    * @param pl Người chơi cần gửi thông tin. Nếu null thì không làm gì.
+    */
     public void player(Player pl) {
         if (pl == null) {
             return;
@@ -1666,24 +1832,58 @@ public class Service {
         }
     }
 
+    /**
+    * Tạo {@link Message} dành cho client chưa đăng nhập.
+    * Thông điệp có mã -29 và ghi thêm lệnh con được truyền vào.
+    *
+    * @param command mã lệnh con cần gửi
+    * @return đối tượng {@link Message} đã khởi tạo
+    * @throws IOException nếu có lỗi khi ghi dữ liệu vào message
+    */
     public Message messageNotLogin(byte command) throws IOException {
         Message ms = new Message(-29);
         ms.writer().writeByte(command);
         return ms;
     }
 
+    /**
+    * Tạo {@link Message} dành cho client chưa vào bản đồ.
+    * Thông điệp có mã -28 và ghi thêm lệnh con được truyền vào.
+    *
+    * @param command mã lệnh con cần gửi
+    * @return đối tượng {@link Message} đã khởi tạo
+    * @throws IOException nếu có lỗi khi ghi dữ liệu vào message
+    */
     public Message messageNotMap(byte command) throws IOException {
         Message ms = new Message(-28);
         ms.writer().writeByte(command);
         return ms;
     }
 
+    /**
+     * Tạo {@link Message} dạng sub-command.
+     * Thông điệp có mã -30 và ghi thêm lệnh con được truyền vào.
+     *
+     * @param command mã lệnh con cần gửi
+     * @return đối tượng {@link Message} đã khởi tạo
+     * @throws IOException nếu có lỗi khi ghi dữ liệu vào message
+     */
     public Message messageSubCommand(byte command) throws IOException {
         Message ms = new Message(-30);
         ms.writer().writeByte(command);
         return ms;
     }
 
+    /**
+     * Cộng thêm sức mạnh hoặc tiềm năng cho người chơi hoặc thú cưng. 
+     * Nếu là pet thì chỉ số cũng được chuyển một phần cho chủ nhân. 
+     * Nếu là người chơi thì cách cộng phụ thuộc vào type, đồng thời có thể cộng cho clan nếu isOri = true.
+     *
+     * @param player người chơi hoặc pet được cộng chỉ số
+     * @param type loại cộng chỉ số (1 = TN, 2 = SM + TN, khác = SM)
+     * @param param giá trị chỉ số cần cộng
+     * @param isOri true nếu là giá trị gốc, dùng để cộng thêm cho clan
+     */
     public void addSMTN(Player player, byte type, long param, boolean isOri) {
         if (player.isPet) {
             player.nPoint.powerUp(param);
@@ -1745,6 +1945,14 @@ public class Service {
 //
 //        }
 //    }
+    
+    /**
+     * Trả về tên hành tinh dựa theo mã số.
+     * 0 = Trái Đất, 1 = Namếc, 2 = Xayda, mặc định trả về chuỗi rỗng.
+     *
+     * @param hanhtinh mã số hành tinh
+     * @return tên hành tinh tương ứng hoặc chuỗi rỗng nếu không hợp lệ
+     */
     public String get_HanhTinh(int hanhtinh) {
         switch (hanhtinh) {
             case 0:
@@ -1758,6 +1966,13 @@ public class Service {
         }
     }
 
+    /**
+     * Xác định và trả về cấp độ hiện tại của người chơi dựa trên sức mạnh.
+     * Mỗi khoảng sức mạnh sẽ ứng với một danh hiệu hoặc cấp bậc khác nhau.
+     *
+     * @param pl người chơi cần kiểm tra cấp độ
+     * @return tên cấp độ tương ứng với sức mạnh hiện tại của người chơi
+     */
     public String getCurrStrLevel(Player pl) {
         long sucmanh = pl.nPoint.power;
         if (sucmanh < 3000) {
@@ -1806,6 +2021,13 @@ public class Service {
         return "Thần Huỷ Diệt cấp 2";
     }
 
+    /**
+    * Xác định và trả về cấp số hiện tại của người chơi dựa trên sức mạnh.
+    * Mỗi khoảng sức mạnh ứng với một cấp độ khác nhau, biểu diễn bằng số nguyên.
+    *
+    * @param pl người chơi cần kiểm tra cấp độ
+    * @return số cấp độ tương ứng với sức mạnh của người chơi, mặc định trả về 21 nếu vượt ngưỡng
+    */
     public int getCurrLevel(Player pl) {
         if (pl != null && pl.nPoint != null) {
             long sucmanh = pl.nPoint.power;
@@ -1856,6 +2078,14 @@ public class Service {
         return 21;
     }
 
+    /**
+    * Hồi sinh hoặc khôi phục nhân vật với lượng HP và MP được chỉ định,
+    * đồng thời gửi thông báo cập nhật đến chính người chơi và toàn bộ người chơi trong bản đồ.
+    *
+    * @param pl nhân vật cần hồi sinh hoặc khôi phục
+    * @param hp lượng máu cần đặt cho nhân vật
+    * @param mp lượng mana cần đặt cho nhân vật
+    */
     public void hsChar(Player pl, int hp, int mp) {
         Message msg;
         try {
@@ -1885,6 +2115,14 @@ public class Service {
         }
     }
 
+    /**
+    * Xử lý sự kiện khi nhân vật chết. 
+    * Gửi thông báo chết đến client và các người chơi khác trong bản đồ, 
+    * đồng thời thực hiện một số hành động đặc biệt như ghi lại thời gian chết của pet 
+    * hoặc dịch chuyển nhân vật khỏi bản đồ đặc thù.
+    *
+    * @param pl nhân vật vừa chết
+    */
     public void charDie(Player pl) {
         Message msg;
         try {
@@ -1924,6 +2162,13 @@ public class Service {
         }
     }
 
+    /**
+    * Thực hiện hành động tấn công quái (Mob) trong cùng bản đồ theo ID quái. 
+    * Nếu tìm thấy quái có ID trùng khớp, người chơi sẽ dùng kỹ năng hiện tại để tấn công nó.
+    *
+    * @param pl người chơi thực hiện tấn công
+    * @param mobId ID của quái cần tấn công
+    */
     public void attackMob(Player pl, int mobId) {
         if (pl != null && pl.zone != null) {
             for (Mob mob : pl.zone.mobs) {
@@ -1935,6 +2180,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin cài trang (ngoại hình) của người chơi đến tất cả người chơi trong bản đồ. 
+    * Thông điệp bao gồm ID nhân vật, head, body, leg và trạng thái biến khỉ.
+    *
+    * @param player người chơi cần gửi thông tin cài trang
+    */
     public void Send_Caitrang(Player player) {
         if (player != null) {
             Message msg;
@@ -1958,6 +2209,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo hủy trạng thái biến khỉ của người chơi 
+    * đến tất cả người chơi khác trong cùng bản đồ.
+    *
+    * @param player người chơi cần xóa trạng thái biến khỉ
+    */
     public void setNotMonkey(Player player) {
         Message msg;
         try {
@@ -1971,6 +2228,11 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin cờ trên túi của người chơi đến tất cả người chơi trong cùng bản đồ.
+    *
+    * @param pl người chơi cần gửi trạng thái cờ túi
+    */
     public void sendFlagBag(Player pl) {
         Message msg;
         try {
@@ -1984,6 +2246,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo dạng hộp thoại OK đến người chơi. 
+    * Nếu đối tượng là thú cưng thì không gửi thông báo.
+    *
+    * @param pl   người chơi nhận thông báo
+    * @param text nội dung thông báo
+    */
     public void sendThongBaoOK(Player pl, String text) {
         if (pl.isPet || pl.isNewPet) {
             return;
@@ -1999,6 +2268,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo dạng hộp thoại OK trực tiếp đến một phiên làm việc (session).
+    *
+    * @param session phiên làm việc của người chơi nhận thông báo
+    * @param text    nội dung thông báo
+    */
     public void sendThongBaoOK(MySession session, String text) {
         Message msg;
         try {
@@ -2011,6 +2286,11 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo chung đến tất cả người chơi trong game.
+    *
+    * @param thongBao nội dung thông báo cần gửi
+    */
     public void sendThongBaoAllPlayer(String thongBao) {
         Message msg;
         try {
@@ -2023,6 +2303,11 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi bảng thông báo đặc biệt (VIP) đến tất cả người chơi trong game.
+    *
+    * @param thongBao nội dung thông báo cần gửi
+    */
     public void sendBangThongBaoAllPlayervip(String thongBao) {
         Message msg;
         try {
@@ -2035,6 +2320,14 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo dạng "Big Message" đến một người chơi, 
+    * kèm theo biểu tượng minh họa và nội dung văn bản.
+    *
+    * @param player người chơi nhận thông báo
+    * @param iconId ID biểu tượng hiển thị trong thông báo
+    * @param text   nội dung thông báo
+    */
     public void sendBigMessage(Player player, int iconId, String text) {
         try {
             Message msg;
@@ -2049,10 +2342,23 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo từ Admin đến một người chơi dưới dạng Big Message,
+    * sử dụng biểu tượng mặc định của Admin.
+    *
+    * @param player người chơi nhận thông báo
+    * @param text   nội dung thông báo từ Admin
+    */
     public void sendThongBaoFromAdmin(Player player, String text) {
         sendBigMessage(player, 11061, text);
     }
 
+    /**
+    * Gửi thông báo dạng hộp thoại thường đến một người chơi.
+    *
+    * @param pl       người chơi nhận thông báo
+    * @param thongBao nội dung thông báo cần gửi
+    */
     public void sendThongBao(Player pl, String thongBao) {
         Message msg;
         try {
@@ -2066,6 +2372,11 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo hiển thị bên dưới màn hình đến tất cả người chơi trong game.
+    *
+    * @param text nội dung thông báo cần gửi
+    */
     public void sendThongBaoBenDuoi(String text) {
         Message msg = null;
         try {
@@ -2082,6 +2393,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo đến một danh sách người chơi.
+    *
+    * @param pl       danh sách người chơi nhận thông báo
+    * @param thongBao nội dung thông báo cần gửi
+    */
     public void sendThongBao(List<Player> pl, String thongBao) {
         for (int i = 0; i < pl.size(); i++) {
             Player ply = pl.get(i);
@@ -2091,6 +2408,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin tiền tệ của người chơi (vàng, ngọc, hồng ngọc) về client. 
+    * Dữ liệu vàng được ghi theo kiểu long nếu phiên bản client >= 214, ngược lại dùng int.
+    *
+    * @param pl người chơi cần gửi thông tin tiền tệ
+    */
     public void sendMoney(Player pl) {
         Message msg;
         try {
@@ -2109,6 +2432,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo đến tất cả người chơi khác trong map (ngoại trừ chính người chơi)
+    * rằng người chơi này đã nhặt một vật phẩm trên bản đồ.
+    *
+    * @param player   người chơi đã nhặt vật phẩm
+    * @param itemMapId id của vật phẩm trên bản đồ bị nhặt
+    */
     public void sendToAntherMePickItem(Player player, int itemMapId) {
         Message msg;
         try {
@@ -2121,10 +2451,29 @@ public class Service {
 
         }
     }
-
+    /** 
+     * Danh sách tempId của các loại cờ (flag). 
+     * Mỗi giá trị đại diện cho một loại cờ trong game. 
+     */
     public static final int[] flagTempId = {363, 364, 365, 366, 367, 368, 369, 370, 371, 519, 520, 747};
+    
+    /** 
+     * Danh sách iconId tương ứng với {@link #flagTempId}. 
+     * Chỉ số trong mảng khớp với vị trí trong flagTempId. 
+     */
     public static final int[] flagIconId = {2761, 2330, 2323, 2327, 2326, 2324, 2329, 2328, 2331, 4386, 4385, 2325};
 
+    
+    /**
+     * Mở giao diện chọn cờ cho người chơi.
+     * Gửi gói tin (-103) chứa danh sách các loại cờ có thể chọn.
+     * 
+     * Với flagTempId = 363: yêu cầu level 73, giá 0.
+     * Với flagTempId = 371: yêu cầu level 88, giá 10.
+     * Các loại cờ khác: yêu cầu level 88, giá 5.
+     *
+     * @param pl Người chơi cần mở giao diện cờ
+     */
     public void openFlagUI(Player pl) {
         Message msg;
         try {
@@ -2156,6 +2505,17 @@ public class Service {
         }
     }
 
+    /**
+    * Thay đổi cờ của người chơi và gửi thông báo đến tất cả người chơi trong bản đồ.
+    * Cập nhật cả cờ cho thú cưng nếu có.
+    *
+    * Gửi gói tin (-103) với loại 1: thông báo người chơi hoặc thú cưng thay đổi cờ.
+    * Gửi gói tin (-103) với loại 2: gửi icon cờ tương ứng cho tất cả người chơi trong map.
+    * Sau khi đổi cờ, lưu lại thời điểm thay đổi gần nhất.
+    *
+    * @param pl    người chơi thay đổi cờ
+    * @param index chỉ số cờ trong mảng flagIconId và flagTempId
+    */
     public void changeFlag(Player pl, int index) {
         Message msg;
         try {
@@ -2196,6 +2556,15 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin cờ của một người chơi khác đến chính người chơi hiện tại.
+    * Dùng để hiển thị icon cờ của đối tượng trong bản đồ.
+    *
+    * Gói tin (-103) với loại 2 được gửi, chứa chỉ số cờ và icon tương ứng.
+    *
+    * @param me người chơi nhận thông tin cờ
+    * @param pl người chơi có cờ cần gửi
+    */
     public void sendFlagPlayerToMe(Player me, Player pl) {
         Message msg;
         try {
@@ -2210,6 +2579,15 @@ public class Service {
         }
     }
 
+    /**
+    * Xử lý yêu cầu chọn cờ của người chơi.
+    * Người chơi không thể đổi cờ nếu đang ở map Black Ball War, Ma Bư hoặc PVP.
+    * Kiểm tra thời gian kể từ lần đổi cờ gần nhất, yêu cầu tối thiểu 60 giây.
+    * Nếu thỏa điều kiện, tiến hành đổi cờ; ngược lại thông báo thời gian chờ còn lại.
+    *
+    * @param pl    người chơi muốn chọn cờ
+    * @param index chỉ số cờ cần chọn
+    */
     public void chooseFlag(Player pl, int index) {
         if (MapService.gI().isMapBlackBallWar(pl.zone.map.mapId) || MapService.gI().isMapMaBu(pl.zone.map.mapId) || MapService.gI().isMapPVP(pl.zone.map.mapId)) {
             sendThongBao(pl, "Không thể đổi cờ lúc này!");
@@ -2222,12 +2600,24 @@ public class Service {
         }
     }
 
+    /**
+    * Thực hiện hành động tấn công một người chơi khác trong cùng bản đồ.
+    *
+    * @param pl         người chơi thực hiện tấn công
+    * @param idPlAnPem  ID của người chơi mục tiêu trong bản đồ
+    */
     public void attackPlayer(Player pl, int idPlAnPem) {
         if (pl.zone != null) {
             SkillService.gI().useSkill(pl, pl.zone.getPlayerInMap(idPlAnPem), null, null);
         }
     }
 
+    /**
+    * Xóa toàn bộ thời gian hồi chiêu của kỹ năng cho người chơi,
+    * đặt lại MP về tối đa và gửi thông tin HP/MP/Vàng cho client.
+    *
+    * @param pl người chơi được xóa hồi chiêu kỹ năng
+    */
     public void releaseCooldownSkill(Player pl) {
         Message msg;
         try {
@@ -2251,6 +2641,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin thời gian hồi chiêu còn lại của tất cả kỹ năng
+    * của người chơi về client.
+    *
+    * @param pl người chơi cần gửi thông tin kỹ năng
+    */
     public void sendTimeSkill(Player pl) {
         Message msg;
         try {
@@ -2269,7 +2665,13 @@ public class Service {
 
         }
     }
-
+    
+    /**
+     * Thả vật phẩm xuống bản đồ và thông báo cho tất cả người chơi trong khu vực.
+     *
+     * @param zone khu vực (map) nơi vật phẩm được thả
+     * @param item đối tượng ItemMap đại diện cho vật phẩm trên bản đồ
+     */
     public void dropItemMap(Zone zone, ItemMap item) {
         Message msg;
         try {
@@ -2286,6 +2688,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin thả vật phẩm trên bản đồ chỉ đến một người chơi cụ thể.
+    *
+    * @param player người chơi nhận thông báo
+    * @param item   đối tượng ItemMap đại diện cho vật phẩm trên bản đồ
+    */
     public void dropItemMapForMe(Player player, ItemMap item) {
         Message msg;
         try {
@@ -2302,6 +2710,12 @@ public class Service {
         }
     }
 
+    /**
+    * Hiển thị đầy đủ thông tin thú cưng (Pet) của người chơi cho chính người đó.
+    * Thông tin bao gồm trang bị, chỉ số sức mạnh, tiềm năng, kỹ năng và trạng thái.
+    *
+    * @param pl người chơi sở hữu thú cưng cần hiển thị thông tin
+    */
     public void showInfoPet(Player pl) {
         if (pl != null && pl.pet != null) {
             Message msg;
@@ -2379,6 +2793,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin tốc độ di chuyển hiện tại của người chơi về client.
+    *
+    * @param pl     người chơi cần gửi thông tin tốc độ
+    * @param speed  giá trị tốc độ tùy chỉnh, nếu là -1 thì lấy tốc độ gốc từ nPoint của người chơi
+    */
     public void sendSpeedPlayer(Player pl, int speed) {
         Message msg;
         try {
@@ -2392,6 +2812,13 @@ public class Service {
         }
     }
 
+    /**
+    * Đặt lại vị trí của người chơi trong bản đồ và gửi thông báo đến tất cả người chơi khác trong cùng bản đồ.
+    *
+    * @param player người chơi cần thay đổi vị trí
+    * @param x      tọa độ X mới
+    * @param y      tọa độ Y mới
+    */
     public void setPos(Player player, int x, int y) {
         player.location.x = x;
         player.location.y = y;
@@ -2409,6 +2836,14 @@ public class Service {
         }
     }
 
+    /**
+    * Hiển thị menu thông tin cơ bản của một người chơi trong bản đồ
+    * (gồm ID, sức mạnh, cấp độ) cho người chơi đang thao tác.
+    * Nếu người chơi là Admin thì hiển thị thêm menu quản trị.
+    *
+    * @param player   người chơi đang mở menu
+    * @param playerId ID của người chơi mục tiêu trong bản đồ
+    */
     public void getPlayerMenu(Player player, int playerId) {
         Message msg;
         try {
@@ -2429,6 +2864,11 @@ public class Service {
         }
     }
 
+    /**
+    * Ẩn hộp thoại chờ (waiting dialog) trên giao diện của người chơi.
+    *
+    * @param pl người chơi cần ẩn hộp thoại chờ
+    */
     public void hideWaitDialog(Player pl) {
         Message msg;
         try {
@@ -2441,6 +2881,14 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi tin nhắn chat riêng giữa hai người chơi.
+    * Tin nhắn sẽ được hiển thị cho cả người gửi và người nhận.
+    *
+    * @param plChat    người chơi gửi tin nhắn
+    * @param plReceive người chơi nhận tin nhắn
+    * @param text      nội dung tin nhắn
+    */
     public void chatPrivate(Player plChat, Player plReceive, String text) {
         Message msg;
         try {
@@ -2462,6 +2910,20 @@ public class Service {
         }
     }
 
+    /**
+    * Thay đổi mật khẩu tài khoản của người chơi.
+    *
+    * Quy trình thực hiện:
+    * - Kiểm tra mật khẩu cũ có đúng không.
+    * - Kiểm tra mật khẩu mới có độ dài tối thiểu 5 ký tự.
+    * - So sánh mật khẩu mới với mật khẩu nhập lại để xác nhận.
+    * - Nếu hợp lệ thì cập nhật mật khẩu vào cơ sở dữ liệu và session.
+    *
+    * @param player   người chơi yêu cầu đổi mật khẩu
+    * @param oldPass  mật khẩu cũ
+    * @param newPass  mật khẩu mới
+    * @param rePass   mật khẩu nhập lại để xác nhận
+    */
     public void changePassword(Player player, String oldPass, String newPass, String rePass) {
         if (player.getSession().pp.equals(oldPass)) {
             if (newPass.length() >= 5) {
@@ -2486,6 +2948,13 @@ public class Service {
         }
     }
 
+    /**
+    * Chuyển session hiện tại sang giao diện tạo nhân vật mới.
+    *
+    * Thao tác này gửi một gói tin có mã lệnh 2 đến client để yêu cầu hiển thị màn hình tạo nhân vật.
+    *
+    * @param session phiên kết nối của người chơi
+    */
     public void switchToCreateChar(MySession session) {
         Message msg;
         try {
@@ -2497,6 +2966,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi danh sách các caption (chú thích) đến client của người chơi.
+    * Các caption sẽ được thay thế ký tự %1 thành tên hành tinh dựa trên giới tính của nhân vật.
+    *
+    * @param session phiên kết nối của người chơi
+    * @param gender  giới tính/hành tinh của nhân vật, dùng để tùy chỉnh caption
+    */
     public void sendCaption(MySession session, byte gender) {
         Message msg;
         try {
@@ -2513,6 +2989,11 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin cho client biết người chơi có thú cưng hay không.
+    *
+    * @param player người chơi cần kiểm tra và gửi trạng thái thú cưng
+    */
     public void sendHavePet(Player player) {
         Message msg;
         try {
@@ -2525,6 +3006,12 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông báo cho client biết thời gian chờ trước khi có thể đăng nhập.
+    *
+    * @param session     phiên kết nối của người chơi
+    * @param secondsWait số giây phải chờ trước khi đăng nhập
+    */
     public void sendWaitToLogin(MySession session, int secondsWait) {
         Message msg;
         try {
@@ -2537,6 +3024,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi một thông điệp đến client dựa trên dữ liệu từ file.
+    *
+    * @param session phiên kết nối của người chơi
+    * @param cmd     mã lệnh của gói tin
+    * @param path    đường dẫn đến file chứa dữ liệu cần gửi
+    */
     public void sendMessage(MySession session, int cmd, String path) {
         Message msg;
         try {
@@ -2549,11 +3043,22 @@ public class Service {
         }
     }
 
+    /**
+    * Tạo một vật phẩm trên bản đồ tại vị trí hiện tại của người chơi và thả nó xuống bản đồ.
+    *
+    * @param player người chơi nơi vật phẩm được tạo
+    * @param tempId ID mẫu của vật phẩm
+    */
     public void createItemMap(Player player, int tempId) {
         ItemMap itemMap = new ItemMap(player.zone, tempId, 1, player.location.x, player.location.y, player.id);
         dropItemMap(player.zone, itemMap);
     }
 
+    /**
+    * Gửi thông tin năng động (một giá trị cố định 100) đến client của người chơi.
+    *
+    * @param player người chơi nhận thông tin năng động
+    */
     public void sendNangDong(Player player) {
         Message msg;
         try {
@@ -2566,6 +3071,13 @@ public class Service {
         }
     }
 
+    /**
+    * Thiết lập loại client và các thông số màn hình của phiên kết nối dựa trên dữ liệu nhận được từ client.
+    * Phương thức cũng xác định phiên bản client và gửi liên kết IP về client.
+    *
+    * @param session phiên kết nối của người chơi
+    * @param msg     gói tin chứa thông tin client
+    */
     public void setClientType(MySession session, Message msg) {
         try {
             session.typeClient = (msg.reader().readByte());// client_type
@@ -2587,6 +3099,16 @@ public class Service {
         DataGame.sendLinkIP(session);
     }
 
+    /**
+    * Thả vật phẩm xuống bản đồ tại tọa độ xác định và gửi thông báo cho tất cả người chơi trong khu vực.
+    * Phương thức cũng sao chép các tùy chọn của vật phẩm gốc sang vật phẩm trên bản đồ.
+    *
+    * @param pl   người chơi thực hiện việc thả vật phẩm
+    * @param item vật phẩm cần thả
+    * @param map  bản đồ nơi vật phẩm được thả
+    * @param x    tọa độ X trên bản đồ
+    * @param y    tọa độ Y trên bản đồ
+    */
     public void DropVeTinh(Player pl, Item item, Zone map, int x, int y) {
         ItemMap itemMap = new ItemMap(map, item.template, item.quantity, x, y, pl.id);
         itemMap.options = item.itemOptions;
@@ -2611,6 +3133,13 @@ public class Service {
         }
     }
 
+    /**
+    * Gửi thông tin số tiền bị trộm cho người chơi.
+    * Thường dùng trong các tình huống boss ăn trộm tiền.
+    *
+    * @param pl         người chơi bị mất tiền
+    * @param stealMoney số tiền bị trộm
+    */
     public void stealMoney(Player pl, int stealMoney) {//danh cho boss an trom
         Message msg;
         try {
