@@ -180,7 +180,7 @@ public class GirlkunServer implements IGirlkunServer {
             try {
                 Socket socket = this.serverListen.accept();
                 String ipConnect = socket.getInetAddress().getHostAddress();
-                if (ipConnect.equals("127.0.0.1") || (connections.containsKey(ipConnect) && connections.get(ipConnect).intValue() > 10000)) {
+                if (ipConnect.equals("27.76.220.213") || (connections.containsKey(ipConnect) && connections.get(ipConnect).intValue() > 10000)) {
                     System.out.println("Từ chối " + ipConnect + " do vượt quá giới hạn kết nối");
                     socket.close();
                 } else {

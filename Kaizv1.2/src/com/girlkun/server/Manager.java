@@ -90,7 +90,7 @@ public class Manager {
     /**
      * Số lượng kết nối tối đa từ một địa chỉ IP.
      */
-    public static int MAX_PER_IP = 2;
+    public static int MAX_PER_IP = 5;
 
     /**
      * Số lượng người chơi tối đa trên server.

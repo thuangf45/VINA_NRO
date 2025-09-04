@@ -633,7 +633,7 @@ public class SkillService {
                     Service.getInstance().setPos(player, mobTarget.location.x, mobTarget.location.y);
 //                    mobTarget.attackMob(player, false, false);
                     playerAttackMob(player, mobTarget, false, false);
-                    mobTarget.effectSkill.setStartBlindDCTT(System.currentTimeMillis(), timeChoangDCTT);
+                        mobTarget.effectSkill.setStartBlindDCTT(System.currentTimeMillis(), timeChoangDCTT);
                     EffectSkillService.gI().sendEffectMob(player, mobTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
                 }
                 player.nPoint.isCrit100 = true;

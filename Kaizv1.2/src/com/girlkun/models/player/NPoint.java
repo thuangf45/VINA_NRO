@@ -699,7 +699,7 @@ public class NPoint {
     /**
      * Thiết lập các chỉ số cơ bản.
      */
-    private void setBasePoint() {
+    public void setBasePoint() {
         setHpMax();
         setHp();
         setMpMax();

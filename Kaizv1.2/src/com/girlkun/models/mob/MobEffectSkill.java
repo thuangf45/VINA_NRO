@@ -86,7 +86,7 @@ public class MobEffectSkill {
      * @param lastTimeStartStun when the stun effect started
      * @param timeStun duration of the stun effect in milliseconds
      */
-    public void setStun(long lastTimeStartStun, int timeStun) {
+    public void startStun(long lastTimeStartStun, int timeStun) {
         this.lastTimeStun = lastTimeStartStun;
         this.timeStun = timeStun;
         this.isStun = true;
@@ -126,7 +126,7 @@ public class MobEffectSkill {
      * @param lastTimeBlindDCTT when the blindness effect started
      * @param timeBlindDCTT duration of the blindness effect in milliseconds
      */
-    public void setBlindDCTT(long lastTimeBlindDCTT, int timeBlindDCTT) {
+    public void setStartBlindDCTT(long lastTimeBlindDCTT, int timeBlindDCTT) {
         this.isBlindDCTT = true;
         this.lastTimeBlindDCTT = lastTimeBlindDCTT;
         this.timeBlindDCTT = timeBlindDCTT;
@@ -146,7 +146,7 @@ public class MobEffectSkill {
      * @param lastTimeAnTroi when the binding effect started
      * @param timeAnTroi duration of the binding effect in milliseconds
      */
-    public void setAnTroi(long lastTimeAnTroi, int timeAnTroi) {
+    public void setTroi(long lastTimeAnTroi, int timeAnTroi) {
         this.lastTimeAnTroi = lastTimeAnTroi;
         this.timeAnTroi = timeAnTroi;
         this.isAnTroi = true;
