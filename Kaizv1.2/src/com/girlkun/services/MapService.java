@@ -22,10 +22,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Lớp MapService quản lý các chức năng liên quan đến bản đồ trong game.
+ * Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * Cung cấp các phương thức để xử lý bản đồ, khu vực, và di chuyển của người chơi.
+ * 
+ * @author Lucifer
+ */
 public class MapService {
 
+    /**
+     * Thể hiện duy nhất của lớp MapService (singleton pattern).
+     */
     private static MapService i;
 
+    /**
+     * Lấy thể hiện duy nhất của lớp MapService.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp MapService.
+     */
     public static MapService gI() {
         if (i == null) {
             i = new MapService();
@@ -33,6 +49,12 @@ public class MapService {
         return i;
     }
 
+    /**
+     * Tìm và trả về WayPoint mà người chơi đang đứng trong khu vực.
+     * 
+     * @param player Người chơi cần kiểm tra vị trí.
+     * @return WayPoint mà người chơi đang đứng, hoặc null nếu không tìm thấy.
+     */
     public WayPoint getWaypointPlayerIn(Player player) {
         for (WayPoint wp : player.zone.map.wayPoints) {
             if (player.location.x >= wp.minX && player.location.x <= wp.maxX && player.location.y >= wp.minY && player.location.y <= wp.maxY) {
@@ -43,8 +65,10 @@ public class MapService {
     }
 
     /**
-     * @param tileTypeFocus tile type: top, bot, left, right...
-     * @return [tileMapId][tileType]
+     * Đọc thông tin tile index theo loại tile từ file dữ liệu.
+     * 
+     * @param tileTypeFocus Loại tile cần tập trung (top, bot, left, right...).
+     * @return Mảng hai chiều chứa thông tin tile index theo tile type.
      */
     public int[][] readTileIndexTileType(int tileTypeFocus) {
         int[][] tileIndexTileType = null;
@@ -74,7 +98,12 @@ public class MapService {
         return tileIndexTileType;
     }
 
-    //tilemap for paint
+    /**
+     * Đọc dữ liệu tile map từ file để sử dụng cho việc vẽ bản đồ.
+     * 
+     * @param mapId ID của bản đồ cần đọc.
+     * @return Mảng hai chiều chứa thông tin tile map.
+     */
     public int[][] readTileMap(int mapId) {
         int[][] tileMap = null;
         try {
@@ -90,19 +119,19 @@ public class MapService {
             }
             dis.close();
         } catch (Exception e) {
-                  
         }
         return tileMap;
     }
 
-   public Zone getMapCanJoin(Player player, int mapId, int zoneId) {
-//        if (player.getSession() != null && player.isAdmin()) {
-//            if (zoneId == -1) {
-//                return getRandomZoneByMapID(mapId);
-//            } else {
-//                return getZoneByMapIDAndZoneID(mapId, zoneId);
-//            }
-//        }
+    /**
+     * Lấy khu vực mà người chơi có thể tham gia dựa trên ID bản đồ và ID khu vực.
+     * 
+     * @param player Người chơi cần kiểm tra.
+     * @param mapId ID của bản đồ.
+     * @param zoneId ID của khu vực (-1 để chọn ngẫu nhiên).
+     * @return Khu vực (Zone) mà người chơi có thể tham gia, hoặc null nếu không hợp lệ.
+     */
+    public Zone getMapCanJoin(Player player, int mapId, int zoneId) {
         if (isMapOffline(mapId)) {
             return getMapById(mapId).zones.get(0);
         }   
@@ -116,7 +145,6 @@ public class MapService {
                         return null;
                     }
                 }
-               
             }
             return player.clan.khiGas.getMapById(mapId);
         }
@@ -136,28 +164,25 @@ public class MapService {
                     }
                 }
             }
-            /**
-             * Qua map mới thì làm mới lại mob
-             */
             if (this.isMapDoanhTrai(mapId)) {
-            if (player.clan == null || player.clan.doanhTrai == null) {
-                return null;
-            }
-            if (this.isMapDoanhTrai(player.zone.map.mapId)) {
-                for (Mob mob : player.zone.mobs) {
-                    if (!mob.isDie()) {
-                        return null;
+                if (player.clan == null || player.clan.doanhTrai == null) {
+                    return null;
+                }
+                if (this.isMapDoanhTrai(player.zone.map.mapId)) {
+                    for (Mob mob : player.zone.mobs) {
+                        if (!mob.isDie()) {
+                            return null;
+                        }
+                    }
+                    for (Player boss : player.zone.getBosses()) {
+                        if (!boss.isDie()) {
+                            return null;
+                        }
                     }
                 }
-                for (Player boss : player.zone.getBosses()) {
-                    if (!boss.isDie()) {
-                        return null;
-                    }
-                }
+                return player.clan.doanhTrai.getMapById(mapId);
             }
-            return player.clan.doanhTrai.getMapById(mapId);
         }
-            }
         if (this.isMapBanDoKhoBau(mapId)) {
             if (player.clan == null || player.clan.BanDoKhoBau == null) {
                 return null;
@@ -174,40 +199,40 @@ public class MapService {
                     }
                 }
             }
-            /**
-             * Qua map mới thì làm mới lại mob
-             */
-//            if (player.clan.BanDoKhoBau.getListMap().indexOf(mapId) > player.clan.BanDoKhoBau.getCurrentIndexMap()) {
-//                player.clan.BanDoKhoBau.setCurrentIndexMap(player.clan.BanDoKhoBau.getListMap().indexOf(mapId));
-//                player.clan.BanDoKhoBau.init();
-//
-//            }
             return player.clan.BanDoKhoBau.getMapById(mapId);
         }
-
-        //**********************************************************************
-        if (zoneId == -1) { //vào khu bất kỳ
+        if (zoneId == -1) {
             return getZone(mapId);
         } else {
             return getZoneByMapIDAndZoneID(mapId, zoneId);
         }
     }
 
+    /**
+     * Lấy khu vực ngẫu nhiên trong bản đồ dựa trên ID bản đồ.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return Khu vực (Zone) ngẫu nhiên trong bản đồ, hoặc null nếu không tìm thấy.
+     */
     public Zone getZone(int mapId) {
         Map map = getMapById(mapId);
         if (map == null) {
             return null;
         }
-            
- //       int z = Util.nextInt(0, map.zones.size() - 1);
-       int z = 0;
+        int z = 0;
         while (map.zones.get(z).getNumOfPlayers() >= map.zones.get(z).maxPlayer) {
-            z = Util.nextInt(0, map.zones.size() - 1);
-         z++;
+            z++;
         }
         return map.zones.get(z);
     }
 
+    /**
+     * Lấy khu vực cụ thể dựa trên ID bản đồ và ID khu vực.
+     * 
+     * @param mapId ID của bản đồ.
+     * @param zoneId ID của khu vực.
+     * @return Khu vực (Zone) tương ứng, hoặc null nếu không tìm thấy.
+     */
     private Zone getZoneByMapIDAndZoneID(int mapId, int zoneId) {
         Zone zoneJoin = null;
         try {
@@ -221,6 +246,12 @@ public class MapService {
         return zoneJoin;
     }
 
+    /**
+     * Lấy bản đồ dựa trên ID bản đồ.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return Bản đồ (Map) tương ứng, hoặc null nếu không tìm thấy.
+     */
     public Map getMapById(int mapId) {
         for (Map map : Manager.MAPS) {
             if (map.mapId == mapId) {
@@ -230,13 +261,21 @@ public class MapService {
         return null;
     }
 
+    /**
+     * Lấy một bản đồ ngẫu nhiên trong khoảng ID từ 27 đến 29 cho Calich.
+     * 
+     * @return Bản đồ (Map) ngẫu nhiên.
+     */
     public Map getMapForCalich() {
         int mapId = Util.nextInt(27, 29);
         return MapService.gI().getMapById(mapId);
     }
 
     /**
-     * Trả về 1 map random cho boss
+     * Lấy một khu vực ngẫu nhiên trong bản đồ dựa trên ID bản đồ.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return Khu vực (Zone) ngẫu nhiên, hoặc null nếu không tìm thấy.
      */
     public Zone getMapWithRandZone(int mapId) {
         Map map = MapService.gI().getMapById(mapId);
@@ -246,11 +285,16 @@ public class MapService {
                 zone = map.zones.get(Util.nextInt(0, map.zones.size() - 1));
             }
         } catch (Exception e) {
-                  
         }
         return zone;
     }
 
+    /**
+     * Lấy tên hành tinh dựa trên ID hành tinh.
+     * 
+     * @param planetId ID của hành tinh.
+     * @return Tên hành tinh, hoặc chuỗi rỗng nếu không tìm thấy.
+     */
     public String getPlanetName(byte planetId) {
         switch (planetId) {
             case 0:
@@ -265,9 +309,12 @@ public class MapService {
     }
 
     /**
-     * lấy danh sách map cho capsule
+     * Lấy danh sách các khu vực mà người chơi có thể di chuyển bằng capsule.
+     * 
+     * @param pl Người chơi cần lấy danh sách capsule.
+     * @return Danh sách các khu vực (Zone) có thể di chuyển.
      */
-     public List<Zone> getMapCapsule(Player pl) {
+    public List<Zone> getMapCapsule(Player pl) {
         List<Zone> list = new ArrayList<>();
         if (pl.mapBeforeCapsule != null
                 && pl.mapBeforeCapsule.map.mapId != 21
@@ -291,10 +338,14 @@ public class MapService {
         addListMapCapsule(pl, list, getMapCanJoin(pl, 19, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 79, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 252, 0));
-        
         return list;
     }
 
+    /**
+     * Lấy danh sách các khu vực thuộc bản đồ Black Ball War.
+     * 
+     * @return Danh sách các khu vực (Zone) của Black Ball War.
+     */
     public List<Zone> getMapBlackBall() {
         List<Zone> list = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -303,6 +354,11 @@ public class MapService {
         return list;
     }
 
+    /**
+     * Lấy danh sách các khu vực thuộc bản đồ Ma Bư.
+     * 
+     * @return Danh sách các khu vực (Zone) của Ma Bư.
+     */
     public List<Zone> getMapMaBu() {
         List<Zone> list = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -311,6 +367,13 @@ public class MapService {
         return list;
     }
 
+    /**
+     * Thêm khu vực vào danh sách capsule nếu khu vực hợp lệ và không trùng lặp.
+     * 
+     * @param pl Người chơi.
+     * @param list Danh sách các khu vực (Zone).
+     * @param zone Khu vực cần thêm.
+     */
     private void addListMapCapsule(Player pl, List<Zone> list, Zone zone) {
         for (Zone z : list) {
             if (z != null && zone != null && z.map.mapId == zone.map.mapId) {
@@ -322,6 +385,11 @@ public class MapService {
         }
     }
 
+    /**
+     * Gửi thông tin di chuyển của người chơi tới tất cả người chơi trong bản đồ.
+     * 
+     * @param player Người chơi thực hiện di chuyển.
+     */
     public void sendPlayerMove(Player player) {
         Message msg;
         try {
@@ -336,6 +404,12 @@ public class MapService {
         }
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ offline không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ offline, ngược lại trả về false.
+     */
     public boolean isMapOffline(int mapId) {
         for (Map map : Manager.MAPS) {
             if (map.mapId == mapId) {
@@ -345,62 +419,135 @@ public class MapService {
         return false;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Black Ball War không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Black Ball War, ngược lại trả về false.
+     */
     public boolean isMapBlackBallWar(int mapId) {
         return mapId >= 85 && mapId <= 91;
     }
     
-       public boolean isMapKhiGas(int mapId) {
-        return mapId ==149 || mapId == 148 || mapId == 147 || mapId == 151 || mapId == 152;
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Khí Gas không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Khí Gas, ngược lại trả về false.
+     */
+    public boolean isMapKhiGas(int mapId) {
+        return mapId == 149 || mapId == 148 || mapId == 147 || mapId == 151 || mapId == 152;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Ma Bư không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Ma Bư, ngược lại trả về false.
+     */
     public boolean isMapMaBu(int mapId) {
         return mapId >= 114 && mapId <= 120;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ PVP không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ PVP, ngược lại trả về false.
+     */
     public boolean isMapPVP(int mapId) {
         return mapId == 112;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Cold không.
+     * 
+     * @param map Bản đồ cần kiểm tra.
+     * @return True nếu là bản đồ Cold, ngược lại trả về false.
+     */
     public boolean isMapCold(Map map) {
         int mapId = map.mapId;
         return mapId >= 105 && mapId <= 110;
-//        return mapId >= 0 && mapId <= 186;        
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Nhà không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Nhà, ngược lại trả về false.
+     */
     public boolean isMapNha(int mapId) {
         return mapId >= 21 && mapId <= 23;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Doanh Trại không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Doanh Trại, ngược lại trả về false.
+     */
     public boolean isMapDoanhTrai(int mapId) {
         return mapId >= 53 && mapId <= 62;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Hủy Diệt không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Hủy Diệt, ngược lại trả về false.
+     */
     public boolean isMapHuyDiet(int mapId) {
         return mapId >= 146 && mapId <= 148;
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Bản Đồ Kho Báu không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Bản Đồ Kho Báu, ngược lại trả về false.
+     */
     public boolean isMapBanDoKhoBau(int mapId) {
         return mapId >= 135 && mapId <= 138;
     }
+
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Ngục Tù không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Ngục Tù, ngược lại trả về false.
+     */
     public boolean isMapNgucTu(int mapId) {
         return mapId == 155;
     }
+
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Ngu Hành Sơn không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Ngu Hành Sơn, ngược lại trả về false.
+     */
     public boolean isnguhs(int mapId) {
         return mapId >= 122 && mapId <= 124;
     }
 
-//    147	Sa Mạc
-//148	Lâu đài Lychee
-//149	Thành phố Santa
-//150	Lôi Đài
-//151	Hành tinh bóng tối
-//152	Vùng đất băng giá
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ Tương Lai không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu là bản đồ Tương Lai, ngược lại trả về false.
+     */
     public boolean isMapTuongLai(int mapId) {
         return (mapId >= 92 && mapId <= 94)
                 || (mapId >= 96 && mapId <= 100)
                 || mapId == 102 || mapId == 103;
     }
 
+    /**
+     * Di chuyển người chơi đến một khu vực mới.
+     * 
+     * @param player Người chơi cần di chuyển.
+     * @param zoneJoin Khu vực đích đến.
+     */
     public void goToMap(Player player, Zone zoneJoin) {
         Zone oldZone = player.zone;
         if (oldZone != null) {
@@ -413,12 +560,24 @@ public class MapService {
         player.zone.addPlayer(player);
     }
 
+    /**
+     * Kiểm tra xem bản đồ có thuộc tập hợp kích hoạt không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu bản đồ thuộc tập hợp kích hoạt, ngược lại trả về false.
+     */
     public boolean isMapSetKichHoat(int mapId) {
         return (mapId >= 1 && mapId <= 3)
                 || (mapId == 8 || mapId == 9 || mapId == 11)
                 || (mapId >= 15 && mapId <= 17);
     }
 
+    /**
+     * Kiểm tra xem bản đồ có phải là bản đồ không có siêu quái không.
+     * 
+     * @param mapId ID của bản đồ.
+     * @return True nếu bản đồ không có siêu quái, ngược lại trả về false.
+     */
     public boolean isMapKhongCoSieuQuai(int mapId) {
         return !isMapSetKichHoat(mapId)
                 && mapId != 4 && mapId != 27 && mapId != 28
