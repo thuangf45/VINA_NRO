@@ -1492,11 +1492,12 @@ public class ItemService {
 
     /**
      * Tạo set trang bị hủy diệt Monkey và thêm vào túi người chơi.
-    * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
     public void setmonkey1(Player player) throws Exception {
+//        for (int i = 0 ; i < 12;i++){
         Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
         Item ao = ItemService.gI().otphd((short) 654);
         Item quan = ItemService.gI().otphd((short) 655);
@@ -1525,17 +1526,57 @@ public class ItemService {
             InventoryServiceNew.gI().addItemBag(player, giay);
             InventoryServiceNew.gI().addItemBag(player, nhan);
             InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+//    }
+    }
+
+    public void setgodhp1(Player player) throws Exception {
+//        for (int i = 0 ; i < 12;i++){
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 654);
+        Item quan = ItemService.gI().otphd((short) 655);
+        Item gang = ItemService.gI().otphd((short) 661);
+        Item giay = ItemService.gI().otphd((short) 662);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(135, 0));
+        quan.itemOptions.add(new Item.ItemOption(135, 0));
+        gang.itemOptions.add(new Item.ItemOption(135, 0));
+        giay.itemOptions.add(new Item.ItemOption(135, 0));
+        nhan.itemOptions.add(new Item.ItemOption(135, 0));
+        ao.itemOptions.add(new Item.ItemOption(138, 0));
+        quan.itemOptions.add(new Item.ItemOption(138, 0));
+        gang.itemOptions.add(new Item.ItemOption(138, 0));
+        giay.itemOptions.add(new Item.ItemOption(138, 0));
+        nhan.itemOptions.add(new Item.ItemOption(138, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
             Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
             InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
             InventoryServiceNew.gI().sendItemBags(player);
         } else {
             Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
         }
+        //    }
     }
 
     /**
      * Tạo set trang bị thần linh Taiyoken và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1568,7 +1609,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh Genki và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1601,7 +1642,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh Kamejoko và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1634,7 +1675,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh God Ki và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1667,7 +1708,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh God Dam và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1700,7 +1741,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh Summon và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1733,7 +1774,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh God Galick và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1766,7 +1807,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh Monkey và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1799,7 +1840,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thần linh God HP và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1832,7 +1873,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ Taiyoken và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1865,7 +1906,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ Genki và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1898,7 +1939,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ Kamejoko và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1931,7 +1972,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ God Ki và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1964,7 +2005,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ God Dam và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -1997,7 +2038,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ Summon và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -2030,7 +2071,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ God Galick và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -2063,7 +2104,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ Monkey và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -2096,7 +2137,7 @@ public class ItemService {
 
     /**
      * Tạo set trang bị thiên sứ God HP và thêm vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
      */
@@ -2129,7 +2170,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm kích hoạt với các tùy chọn cụ thể dựa trên itemId và skhId.
-     * 
+     *
      * @param itemId ID của vật phẩm.
      * @param skhId ID của set kích hoạt.
      * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
@@ -2241,8 +2282,9 @@ public class ItemService {
 
     /**
      * Trả về ID tùy chọn tương ứng với loại vật phẩm.
-     * 
-     * @param typeItem Loại vật phẩm (0: áo, 1: quần, 2: găng, 3: giày, default: nhẫn).
+     *
+     * @param typeItem Loại vật phẩm (0: áo, 1: quần, 2: găng, 3: giày, default:
+     * nhẫn).
      * @return int ID của tùy chọn.
      */
     public int optionItemSKH(int typeItem) {
@@ -2262,7 +2304,7 @@ public class ItemService {
 
     /**
      * Trả về giá trị tham số ngẫu nhiên cho tùy chọn vật phẩm kích hoạt.
-     * 
+     *
      * @param typeItem Loại vật phẩm.
      * @return int Giá trị tham số ngẫu nhiên.
      */
@@ -2281,7 +2323,7 @@ public class ItemService {
 
     /**
      * Trả về ID tùy chọn liên quan đến set kích hoạt.
-     * 
+     *
      * @param skhId ID của set kích hoạt.
      * @return int ID tùy chọn tương ứng.
      */
@@ -2312,7 +2354,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm hủy diệt với các tùy chọn cụ thể.
-     * 
+     *
      * @param itemId ID của vật phẩm.
      * @param dhdId ID của set hủy diệt.
      * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
@@ -2329,7 +2371,7 @@ public class ItemService {
 
     /**
      * Trả về ID tùy chọn liên quan đến set hủy diệt.
-     * 
+     *
      * @param skhId ID của set hủy diệt.
      * @return int ID tùy chọn tương ứng.
      */
@@ -2360,7 +2402,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm hủy diệt ngẫu nhiên dựa trên giới tính người chơi.
-     * 
+     *
      * @param itemId ID của vật phẩm.
      * @param gender Giới tính của người chơi (0: Trái Đất, 1: Namek, 2: Xayda).
      * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
@@ -2394,7 +2436,7 @@ public class ItemService {
 
     /**
      * Tạo cải trang sự kiện 20/11.
-     * 
+     *
      * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
      * @return Item Cải trang đã được tạo.
      */
@@ -2413,7 +2455,7 @@ public class ItemService {
 
     /**
      * Tạo phụ kiện bó hoa sự kiện 20/11.
-     * 
+     *
      * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
      * @return Item Phụ kiện đã được tạo.
      */
@@ -2434,7 +2476,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm vận bay sự kiện 20/11.
-     * 
+     *
      * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
      * @return Item Vận bay đã được tạo.
      */
@@ -2450,7 +2492,7 @@ public class ItemService {
 
     /**
      * Tạo đá bảo vệ.
-     * 
+     *
      * @return Item Đá bảo vệ đã được tạo.
      */
     public Item daBaoVe() {
@@ -2461,7 +2503,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm rác ngẫu nhiên.
-     * 
+     *
      * @return Item Vật phẩm rác đã được tạo.
      */
     public Item randomRac() {
@@ -2475,7 +2517,7 @@ public class ItemService {
 
     /**
      * Trả về ID tùy chọn cho vật phẩm rác.
-     * 
+     *
      * @param itemId ID của vật phẩm.
      * @return byte ID tùy chọn tương ứng.
      */
@@ -2498,7 +2540,7 @@ public class ItemService {
 
     /**
      * Mở hộp VIP và thêm vật phẩm ngẫu nhiên vào túi người chơi.
-     * 
+     *
      * @param player Người chơi.
      */
     public void openBoxVip(Player player) {
@@ -2528,7 +2570,7 @@ public class ItemService {
 
     /**
      * Giao bông để nhận vật phẩm.
-     * 
+     *
      * @param player Người chơi.
      * @param quantity Số lượng bông giao.
      */
@@ -2555,7 +2597,7 @@ public class ItemService {
 
     /**
      * Tạo phụ kiện World Cup.
-     * 
+     *
      * @param itemId ID của phụ kiện.
      * @return Item Phụ kiện World Cup đã được tạo.
      */
@@ -2583,7 +2625,7 @@ public class ItemService {
 
     /**
      * Tạo cải trang Gohan World Cup.
-     * 
+     *
      * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
      * @return Item Cải trang Gohan World Cup đã được tạo.
      */
@@ -2602,7 +2644,7 @@ public class ItemService {
 
     /**
      * Mở hộp đồ thiên sứ.
-     * 
+     *
      * @param player Người chơi.
      */
     public void openDTS(Player player) {
@@ -2638,7 +2680,7 @@ public class ItemService {
 
     /**
      * Tạo vật phẩm thiên sứ dựa trên giới tính và loại vật phẩm.
-     * 
+     *
      * @param itemId ID của vật phẩm.
      * @param gender Giới tính của người chơi (0: Trái Đất, 1: Namek, 2: Xayda).
      * @return Item Vật phẩm thiên sứ đã được tạo.
@@ -2695,7 +2737,7 @@ public class ItemService {
 
     /**
      * Lấy danh sách tùy chọn của vật phẩm từ cửa hàng.
-     * 
+     *
      * @param id ID của vật phẩm.
      * @return List<Item.ItemOption> Danh sách các tùy chọn của vật phẩm.
      */
