@@ -11,22 +11,42 @@ import com.girlkun.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Lớp RewardService quản lý các phần thưởng trong game, bao gồm vật phẩm rơi từ quái,
+ * khởi tạo chỉ số cho trang bị, và phần thưởng từ vòng quay may mắn.
+ * Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * 
+ * @author Lucifer
+ */
 public class RewardService {
 
-    //id option set kich hoat (tên set, hiệu ứng set, tỉ lệ, type tỉ lệ)
+    /**
+     * Mảng chứa thông tin các set kích hoạt cho từng giới tính và loại trang bị.
+     * Định dạng: {tên set, hiệu ứng set, tỉ lệ, loại tỉ lệ}
+     */
     private static final int[][][] ACTIVATION_SET = {
         {{129, 141, 1, 1000}, {127, 139, 1, 1000}, {128, 140, 1, 1000}}, //songoku - thien xin hang - kirin
         {{131, 143, 1, 1000}, {132, 144, 1, 1000}, {130, 142, 1, 1000}}, //oc tieu - pikkoro daimao - picolo
         {{135, 138, 1, 1000}, {133, 136, 1, 1000}, {134, 137, 1, 1000}} //kakarot - cadic - nappa
     };
-    
+
+    /**
+     * Thể hiện duy nhất của lớp RewardService (singleton pattern).
+     */
     private static RewardService I;
 
+    /**
+     * Constructor riêng để ngăn khởi tạo trực tiếp từ bên ngoài.
+     */
     private RewardService() {
-
     }
 
+    /**
+     * Lấy thể hiện duy nhất của lớp RewardService.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp RewardService.
+     */
     public static RewardService gI() {
         if (RewardService.I == null) {
             RewardService.I = new RewardService();
@@ -34,13 +54,27 @@ public class RewardService {
         return RewardService.I;
     }
 
-    //trả về list item quái die
+    /**
+     * Trả về danh sách các vật phẩm rơi khi quái chết.
+     * 
+     * @param player Người chơi tiêu diệt quái.
+     * @param mob Quái bị tiêu diệt.
+     * @param x Tọa độ x nơi vật phẩm rơi.
+     * @param yEnd Tọa độ y nơi vật phẩm rơi.
+     * @return Danh sách các vật phẩm rơi (ItemMap).
+     */
     public List<ItemMap> getRewardItemsz(Player player, Mob mob, int x, int yEnd) {
         List<ItemMap> list = new ArrayList<>();
         return list;
     }
 
-    //chỉ số cơ bản: hp, ki, hồi phục, sđ, crit
+    /**
+     * Khởi tạo chỉ số cơ bản cho trang bị dựa trên loại và ID mẫu.
+     * 
+     * @param tempId ID mẫu của trang bị.
+     * @param type Loại trang bị (0: áo, 1: quần, 2: găng, 3: giày, 4: rada).
+     * @param list Danh sách các tùy chọn (ItemOption) của trang bị.
+     */
     public void initBaseOptionClothes(int tempId, int type, List<Item.ItemOption> list) {
         int[][] option_param = {{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}};
         switch (type) {
@@ -167,7 +201,6 @@ public class RewardService {
                         break;
                     case 559: //áo thần xayda
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 800;
                         option_param[2][1] = 15;
                         break;
@@ -321,7 +354,6 @@ public class RewardService {
                     case 556: //quần thần trái đất
                         option_param[0][0] = 22; //hp
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 52;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 15;
@@ -329,7 +361,6 @@ public class RewardService {
                     case 558: //quần thần namếc
                         option_param[0][0] = 22; //hp
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 50;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 15;
@@ -337,7 +368,6 @@ public class RewardService {
                     case 560: //quần thần xayda
                         option_param[0][0] = 22; //hp
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 48;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 15;
@@ -457,19 +487,16 @@ public class RewardService {
                         break;
                     case 562: //găng thần trái đất
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 3700;
                         option_param[2][1] = 17;
                         break;
                     case 564: //găng thần namếc
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 3500;
                         option_param[2][1] = 17;
                         break;
                     case 566: //găng thần xayda
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 3800;
                         option_param[2][1] = 17;
                         break;
@@ -621,25 +648,22 @@ public class RewardService {
                         option_param[1][1] = 2800;
                         break;
                     case 563: //giày thần trái đất
-                        option_param[0][0] = 23;
+                        option_param[0][0] = 23; //ki
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 48;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 14;
                         break;
                     case 565: //giày thần namếc
-                        option_param[0][0] = 23;
+                        option_param[0][0] = 23; //ki
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 48;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 14;
                         break;
                     case 567: //giày thần xayda
-                        option_param[0][0] = 23;
+                        option_param[0][0] = 23; //ki
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 46;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 14;
@@ -687,7 +711,6 @@ public class RewardService {
                         break;
                     case 561: //nhẫn thần linh
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-
                         option_param[0][1] = 15;
                         option_param[2][1] = 18;
                         break;
@@ -704,6 +727,11 @@ public class RewardService {
         }
     }
 
+    /**
+     * Khởi tạo tùy chọn sao pha lê cho vật phẩm.
+     * 
+     * @param item Vật phẩm cần thêm tùy chọn sao pha lê.
+     */
     public void initBaseOptionSaoPhaLe(Item item) {
         int optionId = -1;
         int param = 5;
@@ -737,34 +765,55 @@ public class RewardService {
         }
     }
 
-    //sao pha lê
-     public void initStarOption(Item item, RatioStar[] ratioStars) {
+    /**
+     * Thêm tùy chọn sao pha lê ngẫu nhiên cho vật phẩm dựa trên tỉ lệ.
+     * 
+     * @param item Vật phẩm cần thêm sao pha lê.
+     * @param ratioStars Mảng chứa thông tin tỉ lệ và số sao.
+     */
+    public void initStarOption(Item item, RatioStar[] ratioStars) {
         RatioStar ratioStar = ratioStars[Util.nextInt(0, ratioStars.length - 1)];
         if (Util.isTrue(ratioStar.ratio, ratioStar.typeRatio)) {
             item.itemOptions.add(new Item.ItemOption(107, ratioStar.numStar));
         }
     }
 
-    //hạn sử dụng
+    /**
+     * Khởi tạo tùy chọn hạn sử dụng cho vật phẩm (chưa được triển khai).
+     * 
+     * @param item Vật phẩm cần thêm tùy chọn hạn sử dụng.
+     */
     private void initExpiryDateOption(ItemMap item) {
-
     }
 
-    //vật phẩm không thể giao dịch
+    /**
+     * Khởi tạo tùy chọn không thể giao dịch cho vật phẩm.
+     * 
+     * @param item Vật phẩm cần thêm tùy chọn không thể giao dịch.
+     */
     private void initNotTradeOption(ItemMap item) {
-        switch(item.itemTemplate.id){
+        switch (item.itemTemplate.id) {
             case 2009:
                 item.options.add(new Item.ItemOption(30, 0));
                 break;
         }
     }
 
-    //vật phẩm ký gửi
+    /**
+     * Khởi tạo tùy chọn ký gửi cho vật phẩm (chưa được triển khai).
+     * 
+     * @param item Vật phẩm cần thêm tùy chọn ký gửi.
+     */
     private void initDepositOption(ItemMap item) {
-
     }
 
-    //set kích hoạt
+    /**
+     * Thêm tùy chọn kích hoạt set cho trang bị dựa trên giới tính và loại.
+     * 
+     * @param gender Giới tính của người chơi (0: Trái Đất, 1: Namek, 2: Xayda).
+     * @param type Loại trang bị (0-4: áo, quần, găng, giày, rada).
+     * @param list Danh sách các tùy chọn (ItemOption) của trang bị.
+     */
     public void initActivationOption(int gender, int type, List<Item.ItemOption> list) {
         if (type <= 4) {
             int[] idOption = ACTIVATION_SET[gender][Util.nextInt(0, 2)];
@@ -774,6 +823,12 @@ public class RewardService {
         }
     }
 
+    /**
+     * Lấy số sao tối đa của vật phẩm phần thưởng.
+     * 
+     * @param itemMap Vật phẩm cần kiểm tra.
+     * @return Số sao tối đa của vật phẩm.
+     */
     private byte getMaxStarOfItemReward(ItemMap itemMap) {
         switch (itemMap.itemTemplate.id) {
             case 232:
@@ -802,7 +857,6 @@ public class RewardService {
             case 265:
             case 276:
             case 277:
-            // đồ thần
             case 555:
             case 556:
             case 562:
@@ -822,7 +876,13 @@ public class RewardService {
         }
     }
 
-    //-------------------------------------------------------------------------- Item reward lucky round
+    /**
+     * Trả về danh sách vật phẩm phần thưởng từ vòng quay may mắn.
+     * 
+     * @param player Người chơi nhận phần thưởng.
+     * @param num Số lượng vật phẩm cần tạo.
+     * @return Danh sách các vật phẩm phần thưởng.
+     */
     public List<Item> getListItemLuckyRound(Player player, int num) {
         List<Item> list = new ArrayList<>();
         for (int i = 0; i < num; i++) {
@@ -841,7 +901,7 @@ public class RewardService {
                     }
                     list.add(it);
                 } else {
-                    Item it = ItemService.gI().createNewItem((short) 189); //vang
+                    Item it = ItemService.gI().createNewItem((short) 189); //vàng
                     it.quantity = Util.nextInt(5, 50) * 1000;
                     list.add(it);
                 }
@@ -853,8 +913,10 @@ public class RewardService {
         return list;
     }
 
+    /**
+     * Lớp nội bộ lưu trữ thông tin tỉ lệ sao pha lê.
+     */
     public static class RatioStar {
-
         public byte numStar;
         public int ratio;
         public int typeRatio;
@@ -865,5 +927,4 @@ public class RewardService {
             this.typeRatio = typeRatio;
         }
     }
-
 }
