@@ -12,19 +12,37 @@ import com.girlkun.utils.Logger;
 import com.girlkun.utils.Util;
 import java.io.IOException;
 
-
+/**
+ * Lớp FriendAndEnemyService quản lý các chức năng liên quan đến bạn bè và kẻ thù trong game, bao gồm thêm bạn, xóa bạn,
+ * thêm kẻ thù, báo thù, và dịch chuyển tới người chơi khác. Lớp này sử dụng mô hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ * 
+ * @author Lucifer
+ */
 public class FriendAndEnemyService {
     
+    // Các hằng số đại diện cho hành động với danh sách bạn bè
+    /** Hằng số biểu thị mở danh sách bạn bè */
     private static final byte OPEN_LIST = 0;
-    
+    /** Hằng số biểu thị thêm bạn */
     private static final byte MAKE_FRIEND = 1;
+    /** Hằng số biểu thị xóa bạn */
     private static final byte REMOVE_FRIEND = 2;
     
+    // Các hằng số đại diện cho hành động với danh sách kẻ thù
+    /** Hằng số biểu thị báo thù */
     private static final byte REVENGE = 1;
+    /** Hằng số biểu thị xóa kẻ thù */
     private static final byte REMOVE_ENEMY = 2;
     
+    /** Thể hiện duy nhất của lớp FriendAndEnemyService (singleton pattern) */
     private static FriendAndEnemyService i;
     
+    /**
+     * Lấy thể hiện duy nhất của lớp FriendAndEnemyService.
+     * Nếu chưa có, tạo mới một thể hiện.
+     * 
+     * @return Thể hiện của lớp FriendAndEnemyService.
+     */
     public static FriendAndEnemyService gI() {
         if (i == null) {
             i = new FriendAndEnemyService();
@@ -32,6 +50,12 @@ public class FriendAndEnemyService {
         return i;
     }
     
+    /**
+     * Xử lý các hành động liên quan đến danh sách bạn bè của người chơi.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param msg Thông điệp chứa thông tin hành động.
+     */
     public void controllerFriend(Player player, Message msg) {
         try {
             byte action = msg.reader().readByte();
@@ -47,10 +71,16 @@ public class FriendAndEnemyService {
                     break;
             }
         } catch (IOException ex) {
-            
+            // Bỏ qua lỗi để tránh gián đoạn xử lý
         }
     }
     
+    /**
+     * Xử lý các hành động liên quan đến danh sách kẻ thù của người chơi.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param msg Thông điệp chứa thông tin hành động.
+     */
     public void controllerEnemy(Player player, Message msg) {
         try {
             byte action = msg.reader().readByte();
@@ -82,10 +112,15 @@ public class FriendAndEnemyService {
                     break;
             }
         } catch (IOException ex) {
-             
+            // Bỏ qua lỗi để tránh gián đoạn xử lý
         }
     }
     
+    /**
+     * Cập nhật thông tin bạn bè của người chơi (trạng thái online, sức mạnh, trang bị).
+     * 
+     * @param player Người chơi cần cập nhật danh sách bạn bè.
+     */
     private void reloadFriend(Player player) {
         for (Friend f : player.friends) {
             Player pl = null;
@@ -96,9 +131,8 @@ public class FriendAndEnemyService {
                     f.body = pl.getBody();
                     f.leg = pl.getLeg();
                     f.bag = (byte) pl.getFlagBag();
-                } catch (Exception e)
-                {
-                     
+                } catch (Exception e) {
+                    // Bỏ qua lỗi để tránh gián đoạn cập nhật
                 }
                 f.online = true;
             } else {
@@ -107,6 +141,11 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Cập nhật thông tin kẻ thù của người chơi (trạng thái online, sức mạnh, trang bị).
+     * 
+     * @param player Người chơi cần cập nhật danh sách kẻ thù.
+     */
     private void reloadEnemy(Player player) {
         for (Enemy e : player.enemies) {
             Player pl = null;
@@ -117,10 +156,8 @@ public class FriendAndEnemyService {
                     e.body = pl.getBody();
                     e.leg = pl.getLeg();
                     e.bag = (byte) pl.getFlagBag();
-                } 
-                catch (Exception ex) 
-                {
-                     
+                } catch (Exception ex) {
+                    // Bỏ qua lỗi để tránh gián đoạn cập nhật
                 }
                 e.online = true;
             } else {
@@ -129,6 +166,11 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Mở danh sách bạn bè và gửi thông tin tới người chơi.
+     * 
+     * @param player Người chơi cần xem danh sách bạn bè.
+     */
     private void openListFriend(Player player) {
         reloadFriend(player);
         Message msg;
@@ -154,6 +196,11 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Mở danh sách kẻ thù và gửi thông tin tới người chơi.
+     * 
+     * @param player Người chơi cần xem danh sách kẻ thù.
+     */
     private void openListEnemy(Player player) {
         reloadEnemy(player);
         Message msg;
@@ -164,7 +211,7 @@ public class FriendAndEnemyService {
             for (Enemy e : player.enemies) {
                 msg.writer().writeInt(e.id);
                 msg.writer().writeShort(e.head);
-                 msg.writer().writeShort(-1);
+                msg.writer().writeShort(-1);
                 msg.writer().writeShort(e.body);
                 msg.writer().writeShort(e.leg);
                 msg.writer().writeShort(e.bag);
@@ -179,6 +226,12 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Thêm người chơi khác vào danh sách bạn bè.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param playerId ID của người chơi được thêm làm bạn.
+     */
     private void makeFriend(Player player, int playerId) {
         boolean madeFriend = false;
         for (Friend friend : player.friends) {
@@ -202,6 +255,12 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Xóa người chơi khỏi danh sách bạn bè.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param playerId ID của người chơi bị xóa khỏi danh sách bạn.
+     */
     private void removeFriend(Player player, int playerId) {
         for (int i = 0; i < player.friends.size(); i++) {
             if (player.friends.get(i).id == playerId) {
@@ -214,9 +273,8 @@ public class FriendAndEnemyService {
                     msg.writer().writeInt((int) player.friends.get(i).id);
                     player.sendMessage(msg);
                     msg.cleanup();
-                } catch (Exception e) 
-                {
-                     
+                } catch (Exception e) {
+                    // Bỏ qua lỗi để tránh gián đoạn xử lý
                 }
                 player.friends.remove(i);
                 break;
@@ -224,6 +282,12 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Xóa người chơi khỏi danh sách kẻ thù.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param playerId ID của người chơi bị xóa khỏi danh sách kẻ thù.
+     */
     private void removeEnemy(Player player, int playerId) {
         for (int i = 0; i < player.enemies.size(); i++) {
             if (player.enemies.get(i).id == playerId) {
@@ -234,6 +298,12 @@ public class FriendAndEnemyService {
         openListEnemy(player);
     }
     
+    /**
+     * Gửi tin nhắn riêng tư từ một người chơi tới người chơi khác.
+     * 
+     * @param player Người chơi gửi tin nhắn.
+     * @param msg Thông điệp chứa thông tin người nhận và nội dung tin nhắn.
+     */
     public void chatPrivate(Player player, Message msg) {
         if (Util.canDoWithTime(player.iDMark.getLastTimeChatPrivate(), 5000)) {
             player.iDMark.setLastTimeChatPrivate(System.currentTimeMillis());
@@ -245,11 +315,17 @@ public class FriendAndEnemyService {
                     Service.gI().chatPrivate(player, pl, text);
                 }
             } catch (Exception e) {
-                  
-           }
+                // Bỏ qua lỗi để tránh gián đoạn xử lý
+            }
         }
     }
     
+    /**
+     * Chấp nhận kết bạn với một người chơi khác.
+     * 
+     * @param player Người chơi chấp nhận kết bạn.
+     * @param playerId ID của người chơi được thêm vào danh sách bạn.
+     */
     public void acceptMakeFriend(Player player, int playerId) {
         Player pl = Client.gI().getPlayer(playerId);
         if (pl != null) {
@@ -270,6 +346,12 @@ public class FriendAndEnemyService {
         }
     }
     
+    /**
+     * Dịch chuyển tới vị trí của người chơi khác bằng kỹ năng Yardrat.
+     * 
+     * @param player Người chơi thực hiện dịch chuyển.
+     * @param msg Thông điệp chứa ID của người chơi đích.
+     */
     public void goToPlayerWithYardrat(Player player, Message msg) {
         try {
             Player pl = Client.gI().getPlayer(msg.reader().readInt());
@@ -289,10 +371,16 @@ public class FriendAndEnemyService {
                 }
             }
         } catch (IOException ex) {
-                 
+            // Bỏ qua lỗi để tránh gián đoạn xử lý
         }
     }
     
+    /**
+     * Thêm người chơi khác vào danh sách kẻ thù.
+     * 
+     * @param player Người chơi thực hiện hành động.
+     * @param enemy Người chơi được thêm vào danh sách kẻ thù.
+     */
     public void addEnemy(Player player, Player enemy) {
         boolean hadEnemy = false;
         for (Enemy ene : player.enemies) {
