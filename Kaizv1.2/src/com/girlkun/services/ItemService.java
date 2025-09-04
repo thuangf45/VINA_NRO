@@ -15,18 +15,39 @@ import com.girlkun.models.item.Item.ItemOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * Lớp ItemService xử lý các logic liên quan đến vật phẩm, bao gồm tạo, sao
+ * chép, kiểm tra và quản lý các thuộc tính của vật phẩm. Lớp này sử dụng mô
+ * hình Singleton để đảm bảo chỉ có một thể hiện duy nhất.
+ *
+ * @author Lucifer
+ */
 public class ItemService {
 
+    /**
+     * Thể hiện duy nhất của lớp ItemService (singleton pattern)
+     */
     private static ItemService i;
 
+    /**
+     * Lấy thể hiện duy nhất của lớp ItemService. Nếu chưa có, tạo mới một thể
+     * hiện.
+     *
+     * @return Thể hiện của lớp ItemService.
+     */
     public static ItemService gI() {
         if (i == null) {
             i = new ItemService();
         }
         return i;
     }
-    
+
+    /**
+     * Tìm ID của vật phẩm dựa trên ID biểu tượng (icon).
+     *
+     * @param IconID ID biểu tượng của vật phẩm.
+     * @return ID của vật phẩm hoặc -1 nếu không tìm thấy.
+     */
     public short getItemIdByIcon(short IconID) {
         for (int i = 0; i < Manager.ITEM_TEMPLATES.size(); i++) {
             if (Manager.ITEM_TEMPLATES.get(i).iconID == IconID) {
@@ -35,250 +56,268 @@ public class ItemService {
         }
         return -1;
     }
+
+    /**
+     * Tạo một vật phẩm rỗng (không có thuộc tính cụ thể).
+     *
+     * @return Vật phẩm rỗng.
+     */
     public Item createItemNull() {
         Item item = new Item();
         return item;
     }
 
+    /**
+     * Xóa và thêm tùy chọn mới vào danh sách tùy chọn của vật phẩm dựa trên ID
+     * cần xóa.
+     *
+     * @param itemOptions Danh sách các tùy chọn của vật phẩm.
+     * @param removeId ID của tùy chọn cần xóa.
+     */
     public void removeAndAddOptionTemplate(List<Item.ItemOption> itemOptions, int removeId) {
-    int id = 0;
-    int param = 0;
-    int[] rd203 = new int[]{50, 77, 103};
-    int[] rd212 = new int[]{5, 14, 94, 108, 97};
-    int random203 = new Random().nextInt(rd203.length);
-    int random212 = new Random().nextInt(rd212.length);
+        int id = 0;
+        int param = 0;
+        int[] rd203 = new int[]{50, 77, 103};
+        int[] rd212 = new int[]{5, 14, 94, 108, 97};
+        int random203 = new Random().nextInt(rd203.length);
+        int random212 = new Random().nextInt(rd212.length);
 
-    boolean shouldExecute = false;
+        boolean shouldExecute = false;
 
-    switch (removeId) {
-        case 194:
-            id = 50;
-            param = Util.nextInt(10, 20);
-            shouldExecute = true;
-            break;
-        case 195:
-            id = 77;
-            param = Util.nextInt(10, 20);
-            shouldExecute = true;
-            break;
-        case 196:
-            id = 103;
-            param = Util.nextInt(10, 20);
-            shouldExecute = true;
-            break;
-        case 197:
-            id = 50;
-            param = Util.nextInt(25, 30);
-            shouldExecute = true;
-            break;
-        case 198:
-            id = 77;
-            param = Util.nextInt(25, 30);
-            shouldExecute = true;
-            break;
-        case 199:
-            id = 103;
-            param = Util.nextInt(25, 30);
-            shouldExecute = true;
-            break;
-        case 200:
-            id = 50;
-            param = Util.nextInt(1, 15);
-            shouldExecute = true;
-            break;
-        case 201:
-            id = 77;
-            param = Util.nextInt(1, 15);
-            shouldExecute = true;
-            break;
-        case 202:
-            id = 103;
-            param = Util.nextInt(1, 15);
-            shouldExecute = true;
-            break;
-        case 203:
-            id = rd203[random203];
-            param = Util.nextInt(1, 6);
-            shouldExecute = true;
-            break;
-        case 204:
-            id = 50;
-            param = Util.nextInt(15, 30);
-            shouldExecute = true;
-            break;
-        case 205:
-            id = 77;
-            param = Util.nextInt(15, 30);
-            shouldExecute = true;
-            break;
-        case 206:
-            id = 103;
-            param = Util.nextInt(15, 30);
-            shouldExecute = true;
-            break;
-        case 212:
-            id = rd212[random212];;
-            param = Util.nextInt(1, 15);
-            shouldExecute = true;
-            break;
-        case 213:
-            id = 50;
-            param = Util.nextInt(1, 10);
-            shouldExecute = true;
-            break;
-        case 214:
-            id = 77;
-            param = Util.nextInt(1, 10);
-            shouldExecute = true;
-            break;
-        case 215:
-            id = 103;
-            param = Util.nextInt(1, 10);
-            shouldExecute = true;
-            break;
-        case 216:
-            id = 5;
-            param = Util.nextInt(50, 80);
-            shouldExecute = true;
-            break;
-        case 221:
-            id = 218;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break; 
-        case 222:
-            id = 219;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break;    
-        case 223:
-            id = 220;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break;   
-        case 225:
-            id = 224;
-            param = Util.nextInt(1, 10);
-            shouldExecute = true;
-            break; 
-        case 226:
-            id = 50;
-            param = Util.nextInt(5, 15);
-            shouldExecute = true;
-            break;   
-        case 227:
-            id = 77;
-            param = Util.nextInt(5, 15);
-            shouldExecute = true;
-            break; 
-        case 228:
-            id = 103;
-            param = Util.nextInt(5, 15);
-            shouldExecute = true;
-            break;    
-        case 229:
-            id = 218;
-            param = Util.nextInt(5, 30);
-            shouldExecute = true;
-            break; 
-        case 230:
-            id = 219;
-            param = Util.nextInt(5, 30);
-            shouldExecute = true;
-            break;    
-        case 231:
-            id = 220;
-            param = Util.nextInt(5, 30);
-            shouldExecute = true;
-            break;  
-        case 232:
-            id = 50;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break;   
-        case 233:
-            id = 77;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break; 
-        case 234:
-            id = 103;
-            param = Util.nextInt(5, 20);
-            shouldExecute = true;
-            break;  
-        case 235:
-            id = 50;
-            param = Util.nextInt(15, 25);
-            shouldExecute = true;
-            break;   
-        case 236:
-            id = 77;
-            param = Util.nextInt(15, 25);
-            shouldExecute = true;
-            break; 
-        case 237:
-            id = 103;
-            param = Util.nextInt(15, 25);
-            shouldExecute = true;
-            break;      
-        default:
-            // Nếu không khớp với các trường hợp trên, không thực hiện thay đổi
-            break;
-    }
-
-    if (shouldExecute && itemOptions.stream().anyMatch(io -> io.optionTemplate.id == removeId)) {
-        itemOptions.removeIf(io -> io.optionTemplate.id == removeId); // Xóa optionTemplate có id cần xóa
-        itemOptions.add(new ItemOption(new Item.ItemOption(id, param))); // Thêm optionTemplate mới có id vào danh sách
-    }
-}
-
-
-public Item createItemFromItemShop(ItemShop itemShop) {
-    if ("BILL".equals(itemShop.tabShop.shop.tagName)) {
-        Item item = new Item();
-        item.template = itemShop.temp;
-        item.quantity = 1;
-        item.content = item.getContent();
-        item.info = item.getInfo();
-
-        for (Item.ItemOption io : itemShop.options) {
-            item.itemOptions.add(new Item.ItemOption(io));
+        switch (removeId) {
+            case 194:
+                id = 50;
+                param = Util.nextInt(10, 20);
+                shouldExecute = true;
+                break;
+            case 195:
+                id = 77;
+                param = Util.nextInt(10, 20);
+                shouldExecute = true;
+                break;
+            case 196:
+                id = 103;
+                param = Util.nextInt(10, 20);
+                shouldExecute = true;
+                break;
+            case 197:
+                id = 50;
+                param = Util.nextInt(25, 30);
+                shouldExecute = true;
+                break;
+            case 198:
+                id = 77;
+                param = Util.nextInt(25, 30);
+                shouldExecute = true;
+                break;
+            case 199:
+                id = 103;
+                param = Util.nextInt(25, 30);
+                shouldExecute = true;
+                break;
+            case 200:
+                id = 50;
+                param = Util.nextInt(1, 15);
+                shouldExecute = true;
+                break;
+            case 201:
+                id = 77;
+                param = Util.nextInt(1, 15);
+                shouldExecute = true;
+                break;
+            case 202:
+                id = 103;
+                param = Util.nextInt(1, 15);
+                shouldExecute = true;
+                break;
+            case 203:
+                id = rd203[random203];
+                param = Util.nextInt(1, 6);
+                shouldExecute = true;
+                break;
+            case 204:
+                id = 50;
+                param = Util.nextInt(15, 30);
+                shouldExecute = true;
+                break;
+            case 205:
+                id = 77;
+                param = Util.nextInt(15, 30);
+                shouldExecute = true;
+                break;
+            case 206:
+                id = 103;
+                param = Util.nextInt(15, 30);
+                shouldExecute = true;
+                break;
+            case 212:
+                id = rd212[random212];
+                param = Util.nextInt(1, 15);
+                shouldExecute = true;
+                break;
+            case 213:
+                id = 50;
+                param = Util.nextInt(1, 10);
+                shouldExecute = true;
+                break;
+            case 214:
+                id = 77;
+                param = Util.nextInt(1, 10);
+                shouldExecute = true;
+                break;
+            case 215:
+                id = 103;
+                param = Util.nextInt(1, 10);
+                shouldExecute = true;
+                break;
+            case 216:
+                id = 5;
+                param = Util.nextInt(50, 80);
+                shouldExecute = true;
+                break;
+            case 221:
+                id = 218;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 222:
+                id = 219;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 223:
+                id = 220;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 225:
+                id = 224;
+                param = Util.nextInt(1, 10);
+                shouldExecute = true;
+                break;
+            case 226:
+                id = 50;
+                param = Util.nextInt(5, 15);
+                shouldExecute = true;
+                break;
+            case 227:
+                id = 77;
+                param = Util.nextInt(5, 15);
+                shouldExecute = true;
+                break;
+            case 228:
+                id = 103;
+                param = Util.nextInt(5, 15);
+                shouldExecute = true;
+                break;
+            case 229:
+                id = 218;
+                param = Util.nextInt(5, 30);
+                shouldExecute = true;
+                break;
+            case 230:
+                id = 219;
+                param = Util.nextInt(5, 30);
+                shouldExecute = true;
+                break;
+            case 231:
+                id = 220;
+                param = Util.nextInt(5, 30);
+                shouldExecute = true;
+                break;
+            case 232:
+                id = 50;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 233:
+                id = 77;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 234:
+                id = 103;
+                param = Util.nextInt(5, 20);
+                shouldExecute = true;
+                break;
+            case 235:
+                id = 50;
+                param = Util.nextInt(15, 25);
+                shouldExecute = true;
+                break;
+            case 236:
+                id = 77;
+                param = Util.nextInt(15, 25);
+                shouldExecute = true;
+                break;
+            case 237:
+                id = 103;
+                param = Util.nextInt(15, 25);
+                shouldExecute = true;
+                break;
+            default:
+                break;
         }
 
-        item.itemOptions.forEach(c -> {
-            if (c.optionTemplate.id != 21 && c.optionTemplate.id != 30) {
-                if (Util.nextInt(0, 500) < 300) {
-                    c.param = c.param + ((c.param * Util.nextInt(1, 5)) / 100);
-                } else if (Util.nextInt(0, 500) < 450) {
-                    c.param = c.param + ((c.param * Util.nextInt(1, 10)) / 100);
-                } else {
-                    c.param = c.param + ((c.param * Util.nextInt(1, 15)) / 100);
-                }
+        if (shouldExecute && itemOptions.stream().anyMatch(io -> io.optionTemplate.id == removeId)) {
+            itemOptions.removeIf(io -> io.optionTemplate.id == removeId);
+            itemOptions.add(new Item.ItemOption(id, param));
+        }
+    }
+
+    /**
+     * Tạo vật phẩm từ ItemShop, có xử lý đặc biệt cho tab "BILL".
+     *
+     * @param itemShop Đối tượng ItemShop chứa thông tin vật phẩm.
+     * @return Vật phẩm được tạo.
+     */
+    public Item createItemFromItemShop(ItemShop itemShop) {
+        if ("BILL".equals(itemShop.tabShop.shop.tagName)) {
+            Item item = new Item();
+            item.template = itemShop.temp;
+            item.quantity = 1;
+            item.content = item.getContent();
+            item.info = item.getInfo();
+
+            for (Item.ItemOption io : itemShop.options) {
+                item.itemOptions.add(new Item.ItemOption(io));
             }
-        });
 
-        return item;
-    } else {
-        Item item = new Item();
-        item.template = itemShop.temp;
-        item.quantity = 1;
-        item.content = item.getContent();
-        item.info = item.getInfo();
+            item.itemOptions.forEach(c -> {
+                if (c.optionTemplate.id != 21 && c.optionTemplate.id != 30) {
+                    if (Util.nextInt(0, 500) < 300) {
+                        c.param = c.param + ((c.param * Util.nextInt(1, 5)) / 100);
+                    } else if (Util.nextInt(0, 500) < 450) {
+                        c.param = c.param + ((c.param * Util.nextInt(1, 10)) / 100);
+                    } else {
+                        c.param = c.param + ((c.param * Util.nextInt(1, 15)) / 100);
+                    }
+                }
+            });
 
-        for (Item.ItemOption io : itemShop.options) {
-            item.itemOptions.add(new Item.ItemOption(io));
-        
-        
-        removeAndAddOptionTemplate(item.itemOptions, new Item.ItemOption(io).optionTemplate.id);
-        
+            return item;
+        } else {
+            Item item = new Item();
+            item.template = itemShop.temp;
+            item.quantity = 1;
+            item.content = item.getContent();
+            item.info = item.getInfo();
+
+            for (Item.ItemOption io : itemShop.options) {
+                item.itemOptions.add(new Item.ItemOption(io));
+                removeAndAddOptionTemplate(item.itemOptions, io.optionTemplate.id);
+            }
+
+            return item;
         }
-
-        return item;
     }
-}
 
-
-
+    /**
+     * Sao chép một vật phẩm, bao gồm tất cả thuộc tính và tùy chọn.
+     *
+     * @param item Vật phẩm cần sao chép.
+     * @return Vật phẩm được sao chép.
+     */
     public Item copyItem(Item item) {
         Item it = new Item();
         it.itemOptions = new ArrayList<>();
@@ -293,78 +332,35 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return it;
     }
 
+    /**
+     * Tạo vật phẩm mới với ID mẫu và số lượng mặc định là 1.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @return Vật phẩm mới.
+     */
     public Item createNewItem(short tempId) {
         return createNewItem(tempId, 1);
     }
+
     public Item otptl(short tempId) {
         return otptl(tempId, 1);
     }
+
     public Item otpts(short tempId) {
         return otpts(tempId, 1);
     }
+
     public Item otphd(short tempId) {
         return otphd(tempId, 1);
     }
-    public Item otptl(short tempId, int quantity) 
-    {
-        Item item = new Item();
-        item.template = getTemplate(tempId);
-        item.quantity = quantity;
-        item.createTime = System.currentTimeMillis();
-        if (item.template.type== 0){
-            item.itemOptions.add(new ItemOption(21,16));
-            item.itemOptions.add(new ItemOption(47, Util.nextInt(2000,2500)));
-        }
-        if (item.template.type== 1){
-            item.itemOptions.add(new ItemOption(21,16));
-            item.itemOptions.add(new ItemOption(22, Util.nextInt(45,65)));
-        }
-        if (item.template.type== 2){
-            item.itemOptions.add(new ItemOption(21,16));
-            item.itemOptions.add(new ItemOption(0, Util.nextInt(5000,5750)));
-        }
-        if (item.template.type== 3){
-            item.itemOptions.add(new ItemOption(21,16));
-            item.itemOptions.add(new ItemOption(23, Util.nextInt(45,46)));
-        }
-        if (item.template.type== 4){
-            item.itemOptions.add(new ItemOption(21,16));
-            item.itemOptions.add(new ItemOption(14, Util.nextInt(15,18)));
-        }
-        item.content = item.getContent();
-        item.info = item.getInfo();
-        return item;
-    }
-    public Item otphd(short tempId, int quantity) 
-    {
-        Item item = new Item();
-        item.template = getTemplate(tempId);
-        item.quantity = quantity;
-        item.createTime = System.currentTimeMillis();
-        if (item.template.type== 0){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(47, Util.nextInt(2000,2500)));
-        }
-        if (item.template.type== 1){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(22, Util.nextInt(95,110)));
-        }
-        if (item.template.type== 2){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(0, Util.nextInt(9500,11000)));
-        }
-        if (item.template.type== 3){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(23, Util.nextInt(95,110)));
-        }
-        if (item.template.type== 4){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(14, Util.nextInt(18,22)));
-        }
-        item.content = item.getContent();
-        item.info = item.getInfo();
-        return item;
-    }
+
+    /**
+     * Tạo vật phẩm mới với ID mẫu và số lượng chỉ định.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm mới.
+     */
     public Item createNewItem(short tempId, int quantity) {
         Item item = new Item();
         item.template = getTemplate(tempId);
@@ -375,38 +371,125 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         item.info = item.getInfo();
         return item;
     }
-    
-    public Item otpts(short tempId, int quantity) 
-        {
+
+    /**
+     * Tạo vật phẩm thiên sứ với các tùy chọn đặc biệt theo loại vật phẩm.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm thiên sứ.
+     */
+    public Item otpts(short tempId, int quantity) {
         Item item = new Item();
         item.template = getTemplate(tempId);
         item.quantity = quantity;
         item.createTime = System.currentTimeMillis();
-        if (item.template.type== 0){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(47, Util.nextInt(2000,2500)));
+        if (item.template.type == 0) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(2000, 2500)));
         }
-        if (item.template.type== 1){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(22, Util.nextInt(150,200)));
+        if (item.template.type == 1) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(150, 200)));
         }
-        if (item.template.type== 2){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(0, Util.nextInt(13000,18000)));
+        if (item.template.type == 2) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(13000, 18000)));
         }
-        if (item.template.type== 3){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(23, Util.nextInt(150,200)));
+        if (item.template.type == 3) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(23, Util.nextInt(150, 200)));
         }
-        if (item.template.type== 4){
-            item.itemOptions.add(new ItemOption(21,80));
-            item.itemOptions.add(new ItemOption(14, Util.nextInt(20,25)));
+        if (item.template.type == 4) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(20, 25)));
         }
         item.content = item.getContent();
         item.info = item.getInfo();
         return item;
     }
 
+    /**
+     * Tạo vật phẩm hủy diệt với các tùy chọn đặc biệt theo loại vật phẩm.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm hủy diệt.
+     */
+    public Item otphd(short tempId, int quantity) {
+        Item item = new Item();
+        item.template = getTemplate(tempId);
+        item.quantity = quantity;
+        item.createTime = System.currentTimeMillis();
+        if (item.template.type == 0) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(2000, 2500)));
+        }
+        if (item.template.type == 1) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(95, 110)));
+        }
+        if (item.template.type == 2) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(9500, 11000)));
+        }
+        if (item.template.type == 3) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(23, Util.nextInt(95, 110)));
+        }
+        if (item.template.type == 4) {
+            item.itemOptions.add(new Item.ItemOption(21, 80));
+            item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(18, 22)));
+        }
+        item.content = item.getContent();
+        item.info = item.getInfo();
+        return item;
+    }
+
+    /**
+     * Tạo vật phẩm thần linh với các tùy chọn đặc biệt theo loại vật phẩm.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm thần linh.
+     */
+    public Item otptl(short tempId, int quantity) {
+        Item item = new Item();
+        item.template = getTemplate(tempId);
+        item.quantity = quantity;
+        item.createTime = System.currentTimeMillis();
+        if (item.template.type == 0) {
+            item.itemOptions.add(new Item.ItemOption(21, 16));
+            item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(2000, 2500)));
+        }
+        if (item.template.type == 1) {
+            item.itemOptions.add(new Item.ItemOption(21, 16));
+            item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(45, 65)));
+        }
+        if (item.template.type == 2) {
+            item.itemOptions.add(new Item.ItemOption(21, 16));
+            item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(5000, 5750)));
+        }
+        if (item.template.type == 3) {
+            item.itemOptions.add(new Item.ItemOption(21, 16));
+            item.itemOptions.add(new Item.ItemOption(23, Util.nextInt(45, 46)));
+        }
+        if (item.template.type == 4) {
+            item.itemOptions.add(new Item.ItemOption(21, 16));
+            item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(15, 18)));
+        }
+        item.content = item.getContent();
+        item.info = item.getInfo();
+        return item;
+    }
+
+    /**
+     * Tạo vật phẩm kích hoạt với số lượng chỉ định.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm kích hoạt.
+     */
     public Item createItemSetKichHoat(int tempId, int quantity) {
         Item item = new Item();
         item.template = getTemplate(tempId);
@@ -418,6 +501,13 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return item;
     }
 
+    /**
+     * Tạo vật phẩm hủy diệt với số lượng chỉ định.
+     *
+     * @param tempId ID mẫu của vật phẩm.
+     * @param quantity Số lượng vật phẩm.
+     * @return Vật phẩm hủy diệt.
+     */
     public Item createItemDoHuyDiet(int tempId, int quantity) {
         Item item = new Item();
         item.template = getTemplate(tempId);
@@ -429,24 +519,54 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return item;
     }
 
+    /**
+     * Tạo vật phẩm từ ItemMap.
+     *
+     * @param itemMap Đối tượng ItemMap chứa thông tin vật phẩm.
+     * @return Vật phẩm được tạo.
+     */
     public Item createItemFromItemMap(ItemMap itemMap) {
         Item item = createNewItem(itemMap.itemTemplate.id, itemMap.quantity);
         item.itemOptions = itemMap.options;
         return item;
     }
 
+    /**
+     * Lấy mẫu tùy chọn vật phẩm từ ID.
+     *
+     * @param id ID của mẫu tùy chọn.
+     * @return Mẫu tùy chọn vật phẩm.
+     */
     public ItemOptionTemplate getItemOptionTemplate(int id) {
         return Manager.ITEM_OPTION_TEMPLATES.get(id);
     }
 
+    /**
+     * Lấy mẫu vật phẩm từ ID.
+     *
+     * @param id ID của mẫu vật phẩm.
+     * @return Mẫu vật phẩm.
+     */
     public Template.ItemTemplate getTemplate(int id) {
         return Manager.ITEM_TEMPLATES.get(id);
     }
 
+    /**
+     * Kiểm tra xem vật phẩm có phải là vật phẩm kích hoạt hay không.
+     *
+     * @param item Vật phẩm cần kiểm tra.
+     * @return true nếu là vật phẩm kích hoạt, false nếu không.
+     */
     public boolean isItemActivation(Item item) {
         return false;
     }
 
+    /**
+     * Lấy phần trăm luyện tập của giáp.
+     *
+     * @param item Vật phẩm cần kiểm tra.
+     * @return Phần trăm luyện tập của giáp.
+     */
     public int getPercentTrainArmor(Item item) {
         if (item != null) {
             switch (item.template.id) {
@@ -467,6 +587,12 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Kiểm tra xem vật phẩm có phải là giáp luyện tập hay không.
+     *
+     * @param item Vật phẩm cần kiểm tra.
+     * @return true nếu là giáp luyện tập, false nếu không.
+     */
     public boolean isTrainArmor(Item item) {
         if (item != null) {
             switch (item.template.id) {
@@ -485,6 +611,12 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Kiểm tra xem vật phẩm có hết hạn sử dụng hay không.
+     *
+     * @param item Vật phẩm cần kiểm tra.
+     * @return true nếu vật phẩm hết hạn, false nếu không.
+     */
     public boolean isOutOfDateTime(Item item) {
         if (item != null) {
             for (Item.ItemOption io : item.itemOptions) {
@@ -504,14 +636,24 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return false;
     }
 
+    /**
+     * Mở vật phẩm kích hoạt set (SKH) và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @param itemUseId ID của vật phẩm sử dụng.
+     * @param select Loại vật phẩm được chọn (0-4).
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
     public void OpenSKH(Player player, int itemUseId, int select) throws Exception {
-        if (select < 0 || select > 4) return;
+        if (select < 0 || select > 4) {
+            return;
+        }
         Item itemUse = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, itemUseId);
         int[][] items = {{0, 6, 21, 27, 12}, {1, 7, 22, 28, 12}, {2, 8, 23, 29, 12}};
         int[][] options = {{128, 129, 127}, {130, 131, 132}, {133, 135, 134}};
-        int skhv1 = 25;// ti le
-        int skhv2 = 35;//ti le
-        int skhc = 40;//ti le
+        int skhv1 = 25; // Tỷ lệ
+        int skhv2 = 35; // Tỷ lệ
+        int skhc = 40;  // Tỷ lệ
         int skhId = -1;
 
         int rd = Util.nextInt(1, 100);
@@ -545,8 +687,16 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Chọn ngẫu nhiên ID của set kích hoạt dựa trên giới tính.
+     *
+     * @param gender Giới tính của nhân vật (0, 1, 2, hoặc 3).
+     * @return ID của set kích hoạt.
+     */
     public int randomSKHId(byte gender) {
-        if (gender == 3) gender = 2;
+        if (gender == 3) {
+            gender = 2;
+        }
         int[][] options = {{128, 129, 127}, {130, 131, 132}, {133, 135, 134}};
         int skhv1 = 25;
         int skhv2 = 35;
@@ -563,22 +713,32 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return options[gender][skhId];
     }
 
+    /**
+     * Mở vật phẩm hủy diệt (DHD) và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @param itemUseId ID của vật phẩm sử dụng.
+     * @param select Loại vật phẩm được chọn (0-4).
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
     public void OpenDHD(Player player, int itemUseId, int select) throws Exception {
-        if (select < 0 || select > 4) return;
+        if (select < 0 || select > 4) {
+            return;
+        }
         Item itemUse = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, itemUseId);
         int gender = -1;
         switch (itemUseId) {
-            case 2003: //td
+            case 2003: // Trái Đất
                 gender = 0;
                 break;
-            case 2004: //xd
+            case 2004: // Xayda
                 gender = 2;
                 break;
-            case 2005: //nm
+            case 2005: // Namek
                 gender = 1;
                 break;
         }
-        int[][] items = {{650, 651, 657, 658, 656}, {652, 653, 659, 660, 656}, {654, 655, 661, 662, 656}}; //td, namec,xd
+        int[][] items = {{650, 651, 657, 658, 656}, {652, 653, 659, 660, 656}, {654, 655, 661, 662, 656}}; // Trái Đất, Namek, Xayda
         Item item = randomCS_DHD(items[gender][select], gender);
 
         if (item != null && InventoryServiceNew.gI().getCountEmptyBag(player) > 0) {
@@ -592,6 +752,12 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Mở vật phẩm 736 và thêm phần thưởng ngẫu nhiên vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @param itemUse Vật phẩm sử dụng.
+     */
     public void OpenItem736(Player player, Item itemUse) {
         try {
             if (InventoryServiceNew.gI().getCountEmptyBag(player) <= 1) {
@@ -632,1324 +798,1342 @@ public Item createItemFromItemShop(ItemShop itemShop) {
             Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name);
             CombineServiceNew.gI().sendEffectOpenItem(player, icon[0], icon[1]);
         } catch (Exception e) {
-            
-            
+            // Xử lý ngoại lệ
         }
-    }
-    
-    public void settaiyoken(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(127,0));
-        quan.itemOptions.add(new Item.ItemOption(127,0));
-        gang.itemOptions.add(new Item.ItemOption(127,0));
-        giay.itemOptions.add(new Item.ItemOption(127,0));
-        nhan.itemOptions.add(new Item.ItemOption(127,0));
-        ao.itemOptions.add(new Item.ItemOption(139,0));
-        quan.itemOptions.add(new Item.ItemOption(139,0));
-        gang.itemOptions.add(new Item.ItemOption(139,0));
-        giay.itemOptions.add(new Item.ItemOption(139,0));
-        nhan.itemOptions.add(new Item.ItemOption(139,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setgenki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(128,0));
-        quan.itemOptions.add(new Item.ItemOption(128,0));
-        gang.itemOptions.add(new Item.ItemOption(128,0));
-        giay.itemOptions.add(new Item.ItemOption(128,0));
-        nhan.itemOptions.add(new Item.ItemOption(128,0));
-        ao.itemOptions.add(new Item.ItemOption(140,0));
-        quan.itemOptions.add(new Item.ItemOption(140,0));
-        gang.itemOptions.add(new Item.ItemOption(140,0));
-        giay.itemOptions.add(new Item.ItemOption(140,0));
-        nhan.itemOptions.add(new Item.ItemOption(140,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void setkamejoko(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(129,0));
-        quan.itemOptions.add(new Item.ItemOption(129,0));
-        gang.itemOptions.add(new Item.ItemOption(129,0));
-        giay.itemOptions.add(new Item.ItemOption(129,0));
-        nhan.itemOptions.add(new Item.ItemOption(129,0));
-        ao.itemOptions.add(new Item.ItemOption(141,0));
-        quan.itemOptions.add(new Item.ItemOption(141,0));
-        gang.itemOptions.add(new Item.ItemOption(141,0));
-        giay.itemOptions.add(new Item.ItemOption(141,0));
-        nhan.itemOptions.add(new Item.ItemOption(141,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setgodki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(130,0));
-        quan.itemOptions.add(new Item.ItemOption(130,0));
-        gang.itemOptions.add(new Item.ItemOption(130,0));
-        giay.itemOptions.add(new Item.ItemOption(130,0));
-        nhan.itemOptions.add(new Item.ItemOption(130,0));
-        ao.itemOptions.add(new Item.ItemOption(142,0));
-        quan.itemOptions.add(new Item.ItemOption(142,0));
-        gang.itemOptions.add(new Item.ItemOption(142,0));
-        giay.itemOptions.add(new Item.ItemOption(142,0));
-        nhan.itemOptions.add(new Item.ItemOption(142,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setgoddam(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(131,0));
-        quan.itemOptions.add(new Item.ItemOption(131,0));
-        gang.itemOptions.add(new Item.ItemOption(131,0));
-        giay.itemOptions.add(new Item.ItemOption(131,0));
-        nhan.itemOptions.add(new Item.ItemOption(131,0));
-        ao.itemOptions.add(new Item.ItemOption(143,0));
-        quan.itemOptions.add(new Item.ItemOption(143,0));
-        gang.itemOptions.add(new Item.ItemOption(143,0));
-        giay.itemOptions.add(new Item.ItemOption(143,0));
-        nhan.itemOptions.add(new Item.ItemOption(143,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setsummon(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(132,0));
-        quan.itemOptions.add(new Item.ItemOption(132,0));
-        gang.itemOptions.add(new Item.ItemOption(132,0));
-        giay.itemOptions.add(new Item.ItemOption(132,0));
-        nhan.itemOptions.add(new Item.ItemOption(132,0));
-        ao.itemOptions.add(new Item.ItemOption(144,0));
-        quan.itemOptions.add(new Item.ItemOption(144,0));
-        gang.itemOptions.add(new Item.ItemOption(144,0));
-        giay.itemOptions.add(new Item.ItemOption(144,0));
-        nhan.itemOptions.add(new Item.ItemOption(144,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void setgodgalick(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);
-        ao.itemOptions.add(new Item.ItemOption(133,0));
-        quan.itemOptions.add(new Item.ItemOption(133,0));
-        gang.itemOptions.add(new Item.ItemOption(133,0));
-        giay.itemOptions.add(new Item.ItemOption(133,0));
-        nhan.itemOptions.add(new Item.ItemOption(133,0));
-        ao.itemOptions.add(new Item.ItemOption(136,0));
-        quan.itemOptions.add(new Item.ItemOption(136,0));
-        gang.itemOptions.add(new Item.ItemOption(136,0));
-        giay.itemOptions.add(new Item.ItemOption(136,0));
-        nhan.itemOptions.add(new Item.ItemOption(136,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setmonkey(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);
-        ao.itemOptions.add(new Item.ItemOption(134,0));
-        quan.itemOptions.add(new Item.ItemOption(134,0));
-        gang.itemOptions.add(new Item.ItemOption(134,0));
-        giay.itemOptions.add(new Item.ItemOption(134,0));
-        nhan.itemOptions.add(new Item.ItemOption(134,0));
-        ao.itemOptions.add(new Item.ItemOption(137,0));
-        quan.itemOptions.add(new Item.ItemOption(137,0));
-        gang.itemOptions.add(new Item.ItemOption(137,0));
-        giay.itemOptions.add(new Item.ItemOption(137,0));
-        nhan.itemOptions.add(new Item.ItemOption(137,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-            
-    public void setgodhp(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);
-        ao.itemOptions.add(new Item.ItemOption(135,0));
-        quan.itemOptions.add(new Item.ItemOption(135,0));
-        gang.itemOptions.add(new Item.ItemOption(135,0));
-        giay.itemOptions.add(new Item.ItemOption(135,0));
-        nhan.itemOptions.add(new Item.ItemOption(135,0));
-        ao.itemOptions.add(new Item.ItemOption(138,0));
-        quan.itemOptions.add(new Item.ItemOption(138,0));
-        gang.itemOptions.add(new Item.ItemOption(138,0));
-        giay.itemOptions.add(new Item.ItemOption(138,0));
-        nhan.itemOptions.add(new Item.ItemOption(138,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-      public void set1taiyoken(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)650);
-        Item quan = ItemService.gI().otphd((short)651);
-        Item gang = ItemService.gI().otphd((short)657);
-        Item giay = ItemService.gI().otphd((short)658);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(127,0));
-        quan.itemOptions.add(new Item.ItemOption(127,0));
-        gang.itemOptions.add(new Item.ItemOption(127,0));
-        giay.itemOptions.add(new Item.ItemOption(127,0));
-        nhan.itemOptions.add(new Item.ItemOption(127,0));
-        ao.itemOptions.add(new Item.ItemOption(139,0));
-        quan.itemOptions.add(new Item.ItemOption(139,0));
-        gang.itemOptions.add(new Item.ItemOption(139,0));
-        giay.itemOptions.add(new Item.ItemOption(139,0));
-        nhan.itemOptions.add(new Item.ItemOption(139,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set1genki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)650);
-        Item quan = ItemService.gI().otphd((short)651);
-        Item gang = ItemService.gI().otphd((short)657);
-        Item giay = ItemService.gI().otphd((short)658);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(128,0));
-        quan.itemOptions.add(new Item.ItemOption(128,0));
-        gang.itemOptions.add(new Item.ItemOption(128,0));
-        giay.itemOptions.add(new Item.ItemOption(128,0));
-        nhan.itemOptions.add(new Item.ItemOption(128,0));
-        ao.itemOptions.add(new Item.ItemOption(140,0));
-        quan.itemOptions.add(new Item.ItemOption(140,0));
-        gang.itemOptions.add(new Item.ItemOption(140,0));
-        giay.itemOptions.add(new Item.ItemOption(140,0));
-        nhan.itemOptions.add(new Item.ItemOption(140,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void set1kamejoko(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)650);
-        Item quan = ItemService.gI().otphd((short)651);
-        Item gang = ItemService.gI().otphd((short)657);
-        Item giay = ItemService.gI().otphd((short)658);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(129,0));
-        quan.itemOptions.add(new Item.ItemOption(129,0));
-        gang.itemOptions.add(new Item.ItemOption(129,0));
-        giay.itemOptions.add(new Item.ItemOption(129,0));
-        nhan.itemOptions.add(new Item.ItemOption(129,0));
-        ao.itemOptions.add(new Item.ItemOption(141,0));
-        quan.itemOptions.add(new Item.ItemOption(141,0));
-        gang.itemOptions.add(new Item.ItemOption(141,0));
-        giay.itemOptions.add(new Item.ItemOption(141,0));
-        nhan.itemOptions.add(new Item.ItemOption(141,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void set2godki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)652);
-        Item quan = ItemService.gI().otphd((short)653);
-        Item gang = ItemService.gI().otphd((short)659);
-        Item giay = ItemService.gI().otphd((short)660);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(130,0));
-        quan.itemOptions.add(new Item.ItemOption(130,0));
-        gang.itemOptions.add(new Item.ItemOption(130,0));
-        giay.itemOptions.add(new Item.ItemOption(130,0));
-        nhan.itemOptions.add(new Item.ItemOption(130,0));
-        ao.itemOptions.add(new Item.ItemOption(142,0));
-        quan.itemOptions.add(new Item.ItemOption(142,0));
-        gang.itemOptions.add(new Item.ItemOption(142,0));
-        giay.itemOptions.add(new Item.ItemOption(142,0));
-        nhan.itemOptions.add(new Item.ItemOption(142,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set1goddam(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)652);
-        Item quan = ItemService.gI().otphd((short)653);
-        Item gang = ItemService.gI().otphd((short)659);
-        Item giay = ItemService.gI().otphd((short)660);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(131,0));
-        quan.itemOptions.add(new Item.ItemOption(131,0));
-        gang.itemOptions.add(new Item.ItemOption(131,0));
-        giay.itemOptions.add(new Item.ItemOption(131,0));
-        nhan.itemOptions.add(new Item.ItemOption(131,0));
-        ao.itemOptions.add(new Item.ItemOption(143,0));
-        quan.itemOptions.add(new Item.ItemOption(143,0));
-        gang.itemOptions.add(new Item.ItemOption(143,0));
-        giay.itemOptions.add(new Item.ItemOption(143,0));
-        nhan.itemOptions.add(new Item.ItemOption(143,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set1summon(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)652);
-        Item quan = ItemService.gI().otphd((short)653);
-        Item gang = ItemService.gI().otphd((short)659);
-        Item giay = ItemService.gI().otphd((short)660);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(132,0));
-        quan.itemOptions.add(new Item.ItemOption(132,0));
-        gang.itemOptions.add(new Item.ItemOption(132,0));
-        giay.itemOptions.add(new Item.ItemOption(132,0));
-        nhan.itemOptions.add(new Item.ItemOption(132,0));
-        ao.itemOptions.add(new Item.ItemOption(144,0));
-        quan.itemOptions.add(new Item.ItemOption(144,0));
-        gang.itemOptions.add(new Item.ItemOption(144,0));
-        giay.itemOptions.add(new Item.ItemOption(144,0));
-        nhan.itemOptions.add(new Item.ItemOption(144,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void set1godgalick(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)654);
-        Item quan = ItemService.gI().otphd((short)655);
-        Item gang = ItemService.gI().otphd((short)661);
-        Item giay = ItemService.gI().otphd((short)662);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(133,0));
-        quan.itemOptions.add(new Item.ItemOption(133,0));
-        gang.itemOptions.add(new Item.ItemOption(133,0));
-        giay.itemOptions.add(new Item.ItemOption(133,0));
-        nhan.itemOptions.add(new Item.ItemOption(133,0));
-        ao.itemOptions.add(new Item.ItemOption(136,0));
-        quan.itemOptions.add(new Item.ItemOption(136,0));
-        gang.itemOptions.add(new Item.ItemOption(136,0));
-        giay.itemOptions.add(new Item.ItemOption(136,0));
-        nhan.itemOptions.add(new Item.ItemOption(136,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setmonkey1(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)654);
-        Item quan = ItemService.gI().otphd((short)655);
-        Item gang = ItemService.gI().otphd((short)661);
-        Item giay = ItemService.gI().otphd((short)662);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(134,0));
-        quan.itemOptions.add(new Item.ItemOption(134,0));
-        gang.itemOptions.add(new Item.ItemOption(134,0));
-        giay.itemOptions.add(new Item.ItemOption(134,0));
-        nhan.itemOptions.add(new Item.ItemOption(134,0));
-        ao.itemOptions.add(new Item.ItemOption(137,0));
-        quan.itemOptions.add(new Item.ItemOption(137,0));
-        gang.itemOptions.add(new Item.ItemOption(137,0));
-        giay.itemOptions.add(new Item.ItemOption(137,0));
-        nhan.itemOptions.add(new Item.ItemOption(137,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-            
-    public void setgodhp1(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
-        Item ao = ItemService.gI().otphd((short)654);
-        Item quan = ItemService.gI().otphd((short)655);
-        Item gang = ItemService.gI().otphd((short)661);
-        Item giay = ItemService.gI().otphd((short)662);
-        Item nhan = ItemService.gI().otphd((short)656);
-        ao.itemOptions.add(new Item.ItemOption(135,0));
-        quan.itemOptions.add(new Item.ItemOption(135,0));
-        gang.itemOptions.add(new Item.ItemOption(135,0));
-        giay.itemOptions.add(new Item.ItemOption(135,0));
-        nhan.itemOptions.add(new Item.ItemOption(135,0));
-        ao.itemOptions.add(new Item.ItemOption(138,0));
-        quan.itemOptions.add(new Item.ItemOption(138,0));
-        gang.itemOptions.add(new Item.ItemOption(138,0));
-        giay.itemOptions.add(new Item.ItemOption(138,0));
-        nhan.itemOptions.add(new Item.ItemOption(138,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-      public void set14taiyoken(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)555);
-        Item quan = ItemService.gI().otptl((short)556);
-        Item gang = ItemService.gI().otptl((short)562);
-        Item giay = ItemService.gI().otptl((short)563);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(127,0));
-//        quan.itemOptions.add(new Item.ItemOption(127,0));
-//        gang.itemOptions.add(new Item.ItemOption(127,0));
-//        giay.itemOptions.add(new Item.ItemOption(127,0));
-//        nhan.itemOptions.add(new Item.ItemOption(127,0));
-//        ao.itemOptions.add(new Item.ItemOption(139,0));
-//        quan.itemOptions.add(new Item.ItemOption(139,0));
-//        gang.itemOptions.add(new Item.ItemOption(139,0));
-//        giay.itemOptions.add(new Item.ItemOption(139,0));
-//        nhan.itemOptions.add(new Item.ItemOption(139,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set14genki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)555);
-        Item quan = ItemService.gI().otptl((short)556);
-        Item gang = ItemService.gI().otptl((short)562);
-        Item giay = ItemService.gI().otptl((short)563);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(128,0));
-//        quan.itemOptions.add(new Item.ItemOption(128,0));
-//        gang.itemOptions.add(new Item.ItemOption(128,0));
-//        giay.itemOptions.add(new Item.ItemOption(128,0));
-//        nhan.itemOptions.add(new Item.ItemOption(128,0));
-//        ao.itemOptions.add(new Item.ItemOption(140,0));
-//        quan.itemOptions.add(new Item.ItemOption(140,0));
-//        gang.itemOptions.add(new Item.ItemOption(140,0));
-//        giay.itemOptions.add(new Item.ItemOption(140,0));
-//        nhan.itemOptions.add(new Item.ItemOption(140,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void set14kamejoko(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)555);
-        Item quan = ItemService.gI().otptl((short)556);
-        Item gang = ItemService.gI().otptl((short)562);
-        Item giay = ItemService.gI().otptl((short)563);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(129,0));
-//        quan.itemOptions.add(new Item.ItemOption(129,0));
-//        gang.itemOptions.add(new Item.ItemOption(129,0));
-//        giay.itemOptions.add(new Item.ItemOption(129,0));
-//        nhan.itemOptions.add(new Item.ItemOption(129,0));
-//        ao.itemOptions.add(new Item.ItemOption(141,0));
-//        quan.itemOptions.add(new Item.ItemOption(141,0));
-//        gang.itemOptions.add(new Item.ItemOption(141,0));
-//        giay.itemOptions.add(new Item.ItemOption(141,0));
-//        nhan.itemOptions.add(new Item.ItemOption(141,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void set14godki(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)557);
-        Item quan = ItemService.gI().otptl((short)558);
-        Item gang = ItemService.gI().otptl((short)564);
-        Item giay = ItemService.gI().otptl((short)565);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(130,0));
-//        quan.itemOptions.add(new Item.ItemOption(130,0));
-//        gang.itemOptions.add(new Item.ItemOption(130,0));
-//        giay.itemOptions.add(new Item.ItemOption(130,0));
-//        nhan.itemOptions.add(new Item.ItemOption(130,0));
-//        ao.itemOptions.add(new Item.ItemOption(142,0));
-//        quan.itemOptions.add(new Item.ItemOption(142,0));
-//        gang.itemOptions.add(new Item.ItemOption(142,0));
-//        giay.itemOptions.add(new Item.ItemOption(142,0));
-//        nhan.itemOptions.add(new Item.ItemOption(142,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set14goddam(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)557);
-        Item quan = ItemService.gI().otptl((short)558);
-        Item gang = ItemService.gI().otptl((short)564);
-        Item giay = ItemService.gI().otptl((short)565);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(131,0));
-//        quan.itemOptions.add(new Item.ItemOption(131,0));
-//        gang.itemOptions.add(new Item.ItemOption(131,0));
-//        giay.itemOptions.add(new Item.ItemOption(131,0));
-//        nhan.itemOptions.add(new Item.ItemOption(131,0));
-//        ao.itemOptions.add(new Item.ItemOption(143,0));
-//        quan.itemOptions.add(new Item.ItemOption(143,0));
-//        gang.itemOptions.add(new Item.ItemOption(143,0));
-//        giay.itemOptions.add(new Item.ItemOption(143,0));
-//        nhan.itemOptions.add(new Item.ItemOption(143,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void set14summon(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)557);
-        Item quan = ItemService.gI().otptl((short)558);
-        Item gang = ItemService.gI().otptl((short)564);
-        Item giay = ItemService.gI().otptl((short)565);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(132,0));
-//        quan.itemOptions.add(new Item.ItemOption(132,0));
-//        gang.itemOptions.add(new Item.ItemOption(132,0));
-//        giay.itemOptions.add(new Item.ItemOption(132,0));
-//        nhan.itemOptions.add(new Item.ItemOption(132,0));
-//        ao.itemOptions.add(new Item.ItemOption(144,0));
-//        quan.itemOptions.add(new Item.ItemOption(144,0));
-//        gang.itemOptions.add(new Item.ItemOption(144,0));
-//        giay.itemOptions.add(new Item.ItemOption(144,0));
-//        nhan.itemOptions.add(new Item.ItemOption(144,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void set14godgalick(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)559);
-        Item quan = ItemService.gI().otptl((short)560);
-        Item gang = ItemService.gI().otptl((short)566);
-        Item giay = ItemService.gI().otptl((short)567);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(133,0));
-//        quan.itemOptions.add(new Item.ItemOption(133,0));
-//        gang.itemOptions.add(new Item.ItemOption(133,0));
-//        giay.itemOptions.add(new Item.ItemOption(133,0));
-//        nhan.itemOptions.add(new Item.ItemOption(133,0));
-//        ao.itemOptions.add(new Item.ItemOption(136,0));
-//        quan.itemOptions.add(new Item.ItemOption(136,0));
-//        gang.itemOptions.add(new Item.ItemOption(136,0));
-//        giay.itemOptions.add(new Item.ItemOption(136,0));
-//        nhan.itemOptions.add(new Item.ItemOption(136,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setmonkey14(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)559);
-        Item quan = ItemService.gI().otptl((short)560);
-        Item gang = ItemService.gI().otptl((short)566);
-        Item giay = ItemService.gI().otptl((short)567);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(134,0));
-//        quan.itemOptions.add(new Item.ItemOption(134,0));
-//        gang.itemOptions.add(new Item.ItemOption(134,0));
-//        giay.itemOptions.add(new Item.ItemOption(134,0));
-//        nhan.itemOptions.add(new Item.ItemOption(134,0));
-//        ao.itemOptions.add(new Item.ItemOption(137,0));
-//        quan.itemOptions.add(new Item.ItemOption(137,0));
-//        gang.itemOptions.add(new Item.ItemOption(137,0));
-//        giay.itemOptions.add(new Item.ItemOption(137,0));
-//        nhan.itemOptions.add(new Item.ItemOption(137,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-            
-    public void setgodhp14(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
-        Item ao = ItemService.gI().otptl((short)559);
-        Item quan = ItemService.gI().otptl((short)560);
-        Item gang = ItemService.gI().otptl((short)566);
-        Item giay = ItemService.gI().otptl((short)567);
-        Item nhan = ItemService.gI().otptl((short)561);
-//        ao.itemOptions.add(new Item.ItemOption(135,0));
-//        quan.itemOptions.add(new Item.ItemOption(135,0));
-//        gang.itemOptions.add(new Item.ItemOption(135,0));
-//        giay.itemOptions.add(new Item.ItemOption(135,0));
-//        nhan.itemOptions.add(new Item.ItemOption(135,0));
-//        ao.itemOptions.add(new Item.ItemOption(138,0));
-//        quan.itemOptions.add(new Item.ItemOption(138,0));
-//        gang.itemOptions.add(new Item.ItemOption(138,0));
-//        giay.itemOptions.add(new Item.ItemOption(138,0));
-//        nhan.itemOptions.add(new Item.ItemOption(138,0));
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt  ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-      public void settaiyoken19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setgenki19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void setkamejoko19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1048);
-        Item quan = ItemService.gI().otpts((short)1051);
-        Item gang = ItemService.gI().otpts((short)1054);
-        Item giay = ItemService.gI().otpts((short)1057);
-        Item nhan = ItemService.gI().otpts((short)1060);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setgodki19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setgoddam19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-    public void setsummon19(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1049);
-        Item quan = ItemService.gI().otpts((short)1052);
-        Item gang = ItemService.gI().otpts((short)1055);
-        Item giay = ItemService.gI().otpts((short)1058);
-        Item nhan = ItemService.gI().otpts((short)1061);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-    
-        public void setgodgalick16(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-        
-    public void setmonkey16(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
-    }
-            
-    public void setgodhp16(Player player) throws Exception {
-//        for (int i = 0 ; i < 12;i++){
-        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
-        Item ao = ItemService.gI().otpts((short)1050);
-        Item quan = ItemService.gI().otpts((short)1053);
-        Item gang = ItemService.gI().otpts((short)1056);
-        Item giay = ItemService.gI().otpts((short)1059);
-        Item nhan = ItemService.gI().otpts((short)1062);  
-        ao.itemOptions.add(new Item.ItemOption(30,0));
-        quan.itemOptions.add(new Item.ItemOption(30,0));
-        gang.itemOptions.add(new Item.ItemOption(30,0));
-        giay.itemOptions.add(new Item.ItemOption(30,0));
-        nhan.itemOptions.add(new Item.ItemOption(30,0));
-        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
-            InventoryServiceNew.gI().addItemBag(player, ao);
-            InventoryServiceNew.gI().addItemBag(player, quan);
-            InventoryServiceNew.gI().addItemBag(player, gang);
-            InventoryServiceNew.gI().addItemBag(player, giay);
-            InventoryServiceNew.gI().addItemBag(player, nhan);
-            InventoryServiceNew.gI().sendItemBags(player);
-            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ ");
-            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
-            InventoryServiceNew.gI().sendItemBags(player);
-        } else {
-            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
-        }
-//    }
     }
 
+    /**
+     * Tạo set trang bị thiên sứ Taiyoken và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void settaiyoken(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(127, 0));
+        quan.itemOptions.add(new Item.ItemOption(127, 0));
+        gang.itemOptions.add(new Item.ItemOption(127, 0));
+        giay.itemOptions.add(new Item.ItemOption(127, 0));
+        nhan.itemOptions.add(new Item.ItemOption(127, 0));
+        ao.itemOptions.add(new Item.ItemOption(139, 0));
+        quan.itemOptions.add(new Item.ItemOption(139, 0));
+        gang.itemOptions.add(new Item.ItemOption(139, 0));
+        giay.itemOptions.add(new Item.ItemOption(139, 0));
+        nhan.itemOptions.add(new Item.ItemOption(139, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Genki và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgenki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(128, 0));
+        quan.itemOptions.add(new Item.ItemOption(128, 0));
+        gang.itemOptions.add(new Item.ItemOption(128, 0));
+        giay.itemOptions.add(new Item.ItemOption(128, 0));
+        nhan.itemOptions.add(new Item.ItemOption(128, 0));
+        ao.itemOptions.add(new Item.ItemOption(140, 0));
+        quan.itemOptions.add(new Item.ItemOption(140, 0));
+        gang.itemOptions.add(new Item.ItemOption(140, 0));
+        giay.itemOptions.add(new Item.ItemOption(140, 0));
+        nhan.itemOptions.add(new Item.ItemOption(140, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Kamejoko và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setkamejoko(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(129, 0));
+        quan.itemOptions.add(new Item.ItemOption(129, 0));
+        gang.itemOptions.add(new Item.ItemOption(129, 0));
+        giay.itemOptions.add(new Item.ItemOption(129, 0));
+        nhan.itemOptions.add(new Item.ItemOption(129, 0));
+        ao.itemOptions.add(new Item.ItemOption(141, 0));
+        quan.itemOptions.add(new Item.ItemOption(141, 0));
+        gang.itemOptions.add(new Item.ItemOption(141, 0));
+        giay.itemOptions.add(new Item.ItemOption(141, 0));
+        nhan.itemOptions.add(new Item.ItemOption(141, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Ki và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(130, 0));
+        quan.itemOptions.add(new Item.ItemOption(130, 0));
+        gang.itemOptions.add(new Item.ItemOption(130, 0));
+        giay.itemOptions.add(new Item.ItemOption(130, 0));
+        nhan.itemOptions.add(new Item.ItemOption(130, 0));
+        ao.itemOptions.add(new Item.ItemOption(142, 0));
+        quan.itemOptions.add(new Item.ItemOption(142, 0));
+        gang.itemOptions.add(new Item.ItemOption(142, 0));
+        giay.itemOptions.add(new Item.ItemOption(142, 0));
+        nhan.itemOptions.add(new Item.ItemOption(142, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Dam và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgoddam(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(131, 0));
+        quan.itemOptions.add(new Item.ItemOption(131, 0));
+        gang.itemOptions.add(new Item.ItemOption(131, 0));
+        giay.itemOptions.add(new Item.ItemOption(131, 0));
+        nhan.itemOptions.add(new Item.ItemOption(131, 0));
+        ao.itemOptions.add(new Item.ItemOption(143, 0));
+        quan.itemOptions.add(new Item.ItemOption(143, 0));
+        gang.itemOptions.add(new Item.ItemOption(143, 0));
+        giay.itemOptions.add(new Item.ItemOption(143, 0));
+        nhan.itemOptions.add(new Item.ItemOption(143, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Summon và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setsummon(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(132, 0));
+        quan.itemOptions.add(new Item.ItemOption(132, 0));
+        gang.itemOptions.add(new Item.ItemOption(132, 0));
+        giay.itemOptions.add(new Item.ItemOption(132, 0));
+        nhan.itemOptions.add(new Item.ItemOption(132, 0));
+        ao.itemOptions.add(new Item.ItemOption(144, 0));
+        quan.itemOptions.add(new Item.ItemOption(144, 0));
+        gang.itemOptions.add(new Item.ItemOption(144, 0));
+        giay.itemOptions.add(new Item.ItemOption(144, 0));
+        nhan.itemOptions.add(new Item.ItemOption(144, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Galick và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodgalick(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(133, 0));
+        quan.itemOptions.add(new Item.ItemOption(133, 0));
+        gang.itemOptions.add(new Item.ItemOption(133, 0));
+        giay.itemOptions.add(new Item.ItemOption(133, 0));
+        nhan.itemOptions.add(new Item.ItemOption(133, 0));
+        ao.itemOptions.add(new Item.ItemOption(136, 0));
+        quan.itemOptions.add(new Item.ItemOption(136, 0));
+        gang.itemOptions.add(new Item.ItemOption(136, 0));
+        giay.itemOptions.add(new Item.ItemOption(136, 0));
+        nhan.itemOptions.add(new Item.ItemOption(136, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Monkey và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setmonkey(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(134, 0));
+        quan.itemOptions.add(new Item.ItemOption(134, 0));
+        gang.itemOptions.add(new Item.ItemOption(134, 0));
+        giay.itemOptions.add(new Item.ItemOption(134, 0));
+        nhan.itemOptions.add(new Item.ItemOption(134, 0));
+        ao.itemOptions.add(new Item.ItemOption(137, 0));
+        quan.itemOptions.add(new Item.ItemOption(137, 0));
+        gang.itemOptions.add(new Item.ItemOption(137, 0));
+        giay.itemOptions.add(new Item.ItemOption(137, 0));
+        nhan.itemOptions.add(new Item.ItemOption(137, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God HP và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodhp(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1105);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(135, 0));
+        quan.itemOptions.add(new Item.ItemOption(135, 0));
+        gang.itemOptions.add(new Item.ItemOption(135, 0));
+        giay.itemOptions.add(new Item.ItemOption(135, 0));
+        nhan.itemOptions.add(new Item.ItemOption(135, 0));
+        ao.itemOptions.add(new Item.ItemOption(138, 0));
+        quan.itemOptions.add(new Item.ItemOption(138, 0));
+        gang.itemOptions.add(new Item.ItemOption(138, 0));
+        giay.itemOptions.add(new Item.ItemOption(138, 0));
+        nhan.itemOptions.add(new Item.ItemOption(138, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt Taiyoken và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1taiyoken(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 650);
+        Item quan = ItemService.gI().otphd((short) 651);
+        Item gang = ItemService.gI().otphd((short) 657);
+        Item giay = ItemService.gI().otphd((short) 658);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(127, 0));
+        quan.itemOptions.add(new Item.ItemOption(127, 0));
+        gang.itemOptions.add(new Item.ItemOption(127, 0));
+        giay.itemOptions.add(new Item.ItemOption(127, 0));
+        nhan.itemOptions.add(new Item.ItemOption(127, 0));
+        ao.itemOptions.add(new Item.ItemOption(139, 0));
+        quan.itemOptions.add(new Item.ItemOption(139, 0));
+        gang.itemOptions.add(new Item.ItemOption(139, 0));
+        giay.itemOptions.add(new Item.ItemOption(139, 0));
+        nhan.itemOptions.add(new Item.ItemOption(139, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt Genki và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1genki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 650);
+        Item quan = ItemService.gI().otphd((short) 651);
+        Item gang = ItemService.gI().otphd((short) 657);
+        Item giay = ItemService.gI().otphd((short) 658);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(128, 0));
+        quan.itemOptions.add(new Item.ItemOption(128, 0));
+        gang.itemOptions.add(new Item.ItemOption(128, 0));
+        giay.itemOptions.add(new Item.ItemOption(128, 0));
+        nhan.itemOptions.add(new Item.ItemOption(128, 0));
+        ao.itemOptions.add(new Item.ItemOption(140, 0));
+        quan.itemOptions.add(new Item.ItemOption(140, 0));
+        gang.itemOptions.add(new Item.ItemOption(140, 0));
+        giay.itemOptions.add(new Item.ItemOption(140, 0));
+        nhan.itemOptions.add(new Item.ItemOption(140, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt Kamejoko và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1kamejoko(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 650);
+        Item quan = ItemService.gI().otphd((short) 651);
+        Item gang = ItemService.gI().otphd((short) 657);
+        Item giay = ItemService.gI().otphd((short) 658);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(129, 0));
+        quan.itemOptions.add(new Item.ItemOption(129, 0));
+        gang.itemOptions.add(new Item.ItemOption(129, 0));
+        giay.itemOptions.add(new Item.ItemOption(129, 0));
+        nhan.itemOptions.add(new Item.ItemOption(129, 0));
+        ao.itemOptions.add(new Item.ItemOption(141, 0));
+        quan.itemOptions.add(new Item.ItemOption(141, 0));
+        gang.itemOptions.add(new Item.ItemOption(141, 0));
+        giay.itemOptions.add(new Item.ItemOption(141, 0));
+        nhan.itemOptions.add(new Item.ItemOption(141, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt God Ki và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set2godki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 652);
+        Item quan = ItemService.gI().otphd((short) 653);
+        Item gang = ItemService.gI().otphd((short) 659);
+        Item giay = ItemService.gI().otphd((short) 660);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(130, 0));
+        quan.itemOptions.add(new Item.ItemOption(130, 0));
+        gang.itemOptions.add(new Item.ItemOption(130, 0));
+        giay.itemOptions.add(new Item.ItemOption(130, 0));
+        nhan.itemOptions.add(new Item.ItemOption(130, 0));
+        ao.itemOptions.add(new Item.ItemOption(142, 0));
+        quan.itemOptions.add(new Item.ItemOption(142, 0));
+        gang.itemOptions.add(new Item.ItemOption(142, 0));
+        giay.itemOptions.add(new Item.ItemOption(142, 0));
+        nhan.itemOptions.add(new Item.ItemOption(142, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt God Dam và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1goddam(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 652);
+        Item quan = ItemService.gI().otphd((short) 653);
+        Item gang = ItemService.gI().otphd((short) 659);
+        Item giay = ItemService.gI().otphd((short) 660);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(131, 0));
+        quan.itemOptions.add(new Item.ItemOption(131, 0));
+        gang.itemOptions.add(new Item.ItemOption(131, 0));
+        giay.itemOptions.add(new Item.ItemOption(131, 0));
+        nhan.itemOptions.add(new Item.ItemOption(131, 0));
+        ao.itemOptions.add(new Item.ItemOption(143, 0));
+        quan.itemOptions.add(new Item.ItemOption(143, 0));
+        gang.itemOptions.add(new Item.ItemOption(143, 0));
+        giay.itemOptions.add(new Item.ItemOption(143, 0));
+        nhan.itemOptions.add(new Item.ItemOption(143, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt Summon và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1summon(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 652);
+        Item quan = ItemService.gI().otphd((short) 653);
+        Item gang = ItemService.gI().otphd((short) 659);
+        Item giay = ItemService.gI().otphd((short) 660);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(132, 0));
+        quan.itemOptions.add(new Item.ItemOption(132, 0));
+        gang.itemOptions.add(new Item.ItemOption(132, 0));
+        giay.itemOptions.add(new Item.ItemOption(132, 0));
+        nhan.itemOptions.add(new Item.ItemOption(132, 0));
+        ao.itemOptions.add(new Item.ItemOption(144, 0));
+        quan.itemOptions.add(new Item.ItemOption(144, 0));
+        gang.itemOptions.add(new Item.ItemOption(144, 0));
+        giay.itemOptions.add(new Item.ItemOption(144, 0));
+        nhan.itemOptions.add(new Item.ItemOption(144, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt God Galick và thêm vào túi người chơi.
+     *
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set1godgalick(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 654);
+        Item quan = ItemService.gI().otphd((short) 655);
+        Item gang = ItemService.gI().otphd((short) 661);
+        Item giay = ItemService.gI().otphd((short) 662);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(133, 0));
+        quan.itemOptions.add(new Item.ItemOption(133, 0));
+        gang.itemOptions.add(new Item.ItemOption(133, 0));
+        giay.itemOptions.add(new Item.ItemOption(133, 0));
+        nhan.itemOptions.add(new Item.ItemOption(133, 0));
+        ao.itemOptions.add(new Item.ItemOption(136, 0));
+        quan.itemOptions.add(new Item.ItemOption(136, 0));
+        gang.itemOptions.add(new Item.ItemOption(136, 0));
+        giay.itemOptions.add(new Item.ItemOption(136, 0));
+        nhan.itemOptions.add(new Item.ItemOption(136, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị hủy diệt Monkey và thêm vào túi người chơi.
+    * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setmonkey1(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1987);
+        Item ao = ItemService.gI().otphd((short) 654);
+        Item quan = ItemService.gI().otphd((short) 655);
+        Item gang = ItemService.gI().otphd((short) 661);
+        Item giay = ItemService.gI().otphd((short) 662);
+        Item nhan = ItemService.gI().otphd((short) 656);
+        ao.itemOptions.add(new Item.ItemOption(134, 0));
+        quan.itemOptions.add(new Item.ItemOption(134, 0));
+        gang.itemOptions.add(new Item.ItemOption(134, 0));
+        giay.itemOptions.add(new Item.ItemOption(134, 0));
+        nhan.itemOptions.add(new Item.ItemOption(134, 0));
+        ao.itemOptions.add(new Item.ItemOption(137, 0));
+        quan.itemOptions.add(new Item.ItemOption(137, 0));
+        gang.itemOptions.add(new Item.ItemOption(137, 0));
+        giay.itemOptions.add(new Item.ItemOption(137, 0));
+        nhan.itemOptions.add(new Item.ItemOption(137, 0));
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh Taiyoken và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14taiyoken(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 555);
+        Item quan = ItemService.gI().otptl((short) 556);
+        Item gang = ItemService.gI().otptl((short) 562);
+        Item giay = ItemService.gI().otptl((short) 563);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh Genki và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14genki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 555);
+        Item quan = ItemService.gI().otptl((short) 556);
+        Item gang = ItemService.gI().otptl((short) 562);
+        Item giay = ItemService.gI().otptl((short) 563);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh Kamejoko và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14kamejoko(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 555);
+        Item quan = ItemService.gI().otptl((short) 556);
+        Item gang = ItemService.gI().otptl((short) 562);
+        Item giay = ItemService.gI().otptl((short) 563);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh God Ki và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14godki(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 557);
+        Item quan = ItemService.gI().otptl((short) 558);
+        Item gang = ItemService.gI().otptl((short) 564);
+        Item giay = ItemService.gI().otptl((short) 565);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh God Dam và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14goddam(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 557);
+        Item quan = ItemService.gI().otptl((short) 558);
+        Item gang = ItemService.gI().otptl((short) 564);
+        Item giay = ItemService.gI().otptl((short) 565);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh Summon và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14summon(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 557);
+        Item quan = ItemService.gI().otptl((short) 558);
+        Item gang = ItemService.gI().otptl((short) 564);
+        Item giay = ItemService.gI().otptl((short) 565);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh God Galick và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void set14godgalick(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 559);
+        Item quan = ItemService.gI().otptl((short) 560);
+        Item gang = ItemService.gI().otptl((short) 566);
+        Item giay = ItemService.gI().otptl((short) 567);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh Monkey và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setmonkey14(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 559);
+        Item quan = ItemService.gI().otptl((short) 560);
+        Item gang = ItemService.gI().otptl((short) 566);
+        Item giay = ItemService.gI().otptl((short) 567);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thần linh God HP và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodhp14(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1986);
+        Item ao = ItemService.gI().otptl((short) 559);
+        Item quan = ItemService.gI().otptl((short) 560);
+        Item gang = ItemService.gI().otptl((short) 566);
+        Item giay = ItemService.gI().otptl((short) 567);
+        Item nhan = ItemService.gI().otptl((short) 561);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set hủy diệt");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Taiyoken và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void settaiyoken19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Genki và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgenki19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Kamejoko và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setkamejoko19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1048);
+        Item quan = ItemService.gI().otpts((short) 1051);
+        Item gang = ItemService.gI().otpts((short) 1054);
+        Item giay = ItemService.gI().otpts((short) 1057);
+        Item nhan = ItemService.gI().otpts((short) 1060);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Ki và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodki19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Dam và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgoddam19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Summon và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setsummon19(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1049);
+        Item quan = ItemService.gI().otpts((short) 1052);
+        Item gang = ItemService.gI().otpts((short) 1055);
+        Item giay = ItemService.gI().otpts((short) 1058);
+        Item nhan = ItemService.gI().otpts((short) 1061);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God Galick và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodgalick16(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ Monkey và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setmonkey16(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo set trang bị thiên sứ God HP và thêm vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình xử lý.
+     */
+    public void setgodhp16(Player player) throws Exception {
+        Item hq = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 1985);
+        Item ao = ItemService.gI().otpts((short) 1050);
+        Item quan = ItemService.gI().otpts((short) 1053);
+        Item gang = ItemService.gI().otpts((short) 1056);
+        Item giay = ItemService.gI().otpts((short) 1059);
+        Item nhan = ItemService.gI().otpts((short) 1062);
+        ao.itemOptions.add(new Item.ItemOption(30, 0));
+        quan.itemOptions.add(new Item.ItemOption(30, 0));
+        gang.itemOptions.add(new Item.ItemOption(30, 0));
+        giay.itemOptions.add(new Item.ItemOption(30, 0));
+        nhan.itemOptions.add(new Item.ItemOption(30, 0));
+        if (InventoryServiceNew.gI().getCountEmptyBag(player) > 4) {
+            InventoryServiceNew.gI().addItemBag(player, ao);
+            InventoryServiceNew.gI().addItemBag(player, quan);
+            InventoryServiceNew.gI().addItemBag(player, gang);
+            InventoryServiceNew.gI().addItemBag(player, giay);
+            InventoryServiceNew.gI().addItemBag(player, nhan);
+            InventoryServiceNew.gI().sendItemBags(player);
+            Service.getInstance().sendThongBao(player, "Bạn đã nhận được set thiên sứ");
+            InventoryServiceNew.gI().subQuantityItemsBag(player, hq, 1);
+            InventoryServiceNew.gI().sendItemBags(player);
+        } else {
+            Service.getInstance().sendThongBao(player, "Bạn phải có ít nhất 5 ô trống hành trang");
+        }
+    }
+
+    /**
+     * Tạo vật phẩm kích hoạt với các tùy chọn cụ thể dựa trên itemId và skhId.
+     * 
+     * @param itemId ID của vật phẩm.
+     * @param skhId ID của set kích hoạt.
+     * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
+     */
     public Item itemSKH(int itemId, int skhId) {
         Item item = createItemSetKichHoat(itemId, 1);
         if (item != null) {
@@ -1957,191 +2141,230 @@ public Item createItemFromItemShop(ItemShop itemShop) {
                 case 555:
                 case 557:
                 case 559:
-                    item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(200, 500)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(200, 500))); // Giáp 200-500
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 650:
                 case 652:
                 case 654:
-                    item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(1000, 1800)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(1000, 1800))); // Giáp 1000-1800
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 1048:
                 case 1049:
                 case 1050:
-                    item.itemOptions.add(new ItemOption(47, Util.nextInt(2000, 2500)));
-                    item.itemOptions.add(new ItemOption(21, 200));
+                    item.itemOptions.add(new Item.ItemOption(47, Util.nextInt(2000, 2500))); // Giáp 2000-2500
+                    item.itemOptions.add(new Item.ItemOption(21, 200)); // Yêu cầu sức mạnh 200 tỷ
                     break;
                 case 556:
                 case 558:
                 case 560:
-                    item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(50, 70)));
-                    item.itemOptions.add(new Item.ItemOption(27, Util.nextInt(10000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(50, 70))); // HP 50k-70k
+                    item.itemOptions.add(new Item.ItemOption(27, Util.nextInt(10000))); // HP cộng thêm
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 651:
                 case 653:
                 case 655:
-                    item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(85, 110)));
-                    item.itemOptions.add(new Item.ItemOption(27, Util.nextInt(20000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 80));
+                    item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(85, 110))); // HP 85k-110k
+                    item.itemOptions.add(new Item.ItemOption(27, Util.nextInt(20000))); // HP cộng thêm
+                    item.itemOptions.add(new Item.ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỷ
                     break;
                 case 1051:
                 case 1052:
                 case 1053:
-                    item.itemOptions.add(new ItemOption(22, Util.nextInt(150, 200)));
-                    item.itemOptions.add(new Item.ItemOption(21, 200));
+                    item.itemOptions.add(new Item.ItemOption(22, Util.nextInt(150, 200))); // HP 150k-200k
+                    item.itemOptions.add(new Item.ItemOption(21, 200)); // Yêu cầu sức mạnh 200 tỷ
                     break;
                 case 562:
                 case 564:
                 case 566:
-                    item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(3000, 5000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(3000, 5000))); // Sát thương 3000-5000
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 657:
                 case 659:
                 case 661:
-                    item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(6000, 8000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 80));
+                    item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(6000, 8000))); // Sát thương 6000-8000
+                    item.itemOptions.add(new Item.ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỷ
                     break;
                 case 1054:
                 case 1055:
                 case 1056:
-                    item.itemOptions.add(new ItemOption(0, Util.nextInt(10000, 13000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 200));
+                    item.itemOptions.add(new Item.ItemOption(0, Util.nextInt(10000, 13000))); // Sát thương 10000-13000
+                    item.itemOptions.add(new Item.ItemOption(21, 200)); // Yêu cầu sức mạnh 200 tỷ
                     break;
                 case 563:
                 case 565:
                 case 567:
-                    item.itemOptions.add(new Item.ItemOption(7, Util.nextInt(50000, 70000)));
-                    item.itemOptions.add(new Item.ItemOption(28, Util.nextInt(5000,10000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(7, Util.nextInt(50000, 70000))); // HP 50k-70k
+                    item.itemOptions.add(new Item.ItemOption(28, Util.nextInt(5000, 10000))); // KI cộng thêm
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 658:
                 case 660:
                 case 662:
-                    item.itemOptions.add(new Item.ItemOption(7, Util.nextInt(80000, 110000)));
-                    item.itemOptions.add(new Item.ItemOption(28, Util.nextInt(20000)));
-                    item.itemOptions.add(new Item.ItemOption(21, 80));
+                    item.itemOptions.add(new Item.ItemOption(7, Util.nextInt(80000, 110000))); // HP 80k-110k
+                    item.itemOptions.add(new Item.ItemOption(28, Util.nextInt(20000))); // KI cộng thêm
+                    item.itemOptions.add(new Item.ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỷ
                     break;
                 case 1057:
                 case 1058:
                 case 1059:
-                    item.itemOptions.add(new ItemOption(23, Util.nextInt(200, 250)));
-                    item.itemOptions.add(new Item.ItemOption(21, 200));
+                    item.itemOptions.add(new Item.ItemOption(23, Util.nextInt(200, 250))); // KI 200k-250k
+                    item.itemOptions.add(new Item.ItemOption(21, 200)); // Yêu cầu sức mạnh 200 tỷ
                     break;
                 case 561:
-                    item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(15, 18)));
-                    item.itemOptions.add(new Item.ItemOption(21, 16));
+                    item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(15, 18))); // Chí mạng 15-18%
+                    item.itemOptions.add(new Item.ItemOption(21, 16)); // Yêu cầu sức mạnh 16 tỷ
                     break;
                 case 656:
-                    item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(17, 20)));
-                    item.itemOptions.add(new Item.ItemOption(21, 80));
+                    item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(17, 20))); // Chí mạng 17-20%
+                    item.itemOptions.add(new Item.ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỷ
                     break;
                 case 1060:
                 case 1061:
                 case 1062:
-                    item.itemOptions.add(new ItemOption(14, Util.nextInt(20, 24)));
-                    item.itemOptions.add(new Item.ItemOption(21, 200));
+                    item.itemOptions.add(new Item.ItemOption(14, Util.nextInt(20, 24))); // Chí mạng 20-24%
+                    item.itemOptions.add(new Item.ItemOption(21, 200)); // Yêu cầu sức mạnh 200 tỷ
                     break;
                 default:
                     break;
             }
             item.itemOptions.addAll(ItemService.gI().getListOptionItemShop((short) itemId));
-            item.itemOptions.add(new Item.ItemOption(skhId, 1));
-            item.itemOptions.add(new Item.ItemOption(optionIdSKH(skhId), 1));
-            item.itemOptions.add(new Item.ItemOption(30, 1));
+            item.itemOptions.add(new Item.ItemOption(skhId, 1)); // Thêm tùy chọn kích hoạt
+            item.itemOptions.add(new Item.ItemOption(optionIdSKH(skhId), 1)); // Thêm tùy chọn liên quan đến set kích hoạt
+            item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
         }
         return item;
     }
 
+    /**
+     * Trả về ID tùy chọn tương ứng với loại vật phẩm.
+     * 
+     * @param typeItem Loại vật phẩm (0: áo, 1: quần, 2: găng, 3: giày, default: nhẫn).
+     * @return int ID của tùy chọn.
+     */
     public int optionItemSKH(int typeItem) {
         switch (typeItem) {
-            case 0:
-                return 47;
-            case 1:
-                return 6;
-            case 2:
-                return 0;
-            case 3:
-                return 7;
-            default:
-                return 14;
+            case 0: // Áo
+                return 47; // Giáp
+            case 1: // Quần
+                return 6; // HP
+            case 2: // Găng
+                return 0; // Sát thương
+            case 3: // Giày
+                return 7; // HP
+            default: // Nhẫn
+                return 14; // Chí mạng
         }
     }
 
+    /**
+     * Trả về giá trị tham số ngẫu nhiên cho tùy chọn vật phẩm kích hoạt.
+     * 
+     * @param typeItem Loại vật phẩm.
+     * @return int Giá trị tham số ngẫu nhiên.
+     */
     public int pagramItemSKH(int typeItem) {
         switch (typeItem) {
-            case 0:
-            case 2:
-                return Util.nextInt(5);
-            case 1:
-            case 3:
-                return Util.nextInt(20, 30);
-            default:
-                return Util.nextInt(3);
+            case 0: // Áo
+            case 2: // Găng
+                return Util.nextInt(5); // Giá trị ngẫu nhiên 0-4
+            case 1: // Quần
+            case 3: // Giày
+                return Util.nextInt(20, 30); // Giá trị ngẫu nhiên 20-29
+            default: // Nhẫn
+                return Util.nextInt(3); // Giá trị ngẫu nhiên 0-2
         }
     }
 
+    /**
+     * Trả về ID tùy chọn liên quan đến set kích hoạt.
+     * 
+     * @param skhId ID của set kích hoạt.
+     * @return int ID tùy chọn tương ứng.
+     */
     public int optionIdSKH(int skhId) {
         switch (skhId) {
-            case 127: //Set KAMI Taiyoken
+            case 127: // Set KAMI Taiyoken
                 return 139;
-            case 128: //Set KAMI Genki
+            case 128: // Set KAMI Genki
                 return 140;
-            case 129: //Set KAMI Kamejoko
+            case 129: // Set KAMI Kamejoko
                 return 141;
-            case 130: //Set KAMI KI
+            case 130: // Set KAMI KI
                 return 142;
-            case 131: //Set KAMI Dame
+            case 131: // Set KAMI Dame
                 return 143;
-            case 132: //Set KAMI Summon
+            case 132: // Set KAMI Summon
                 return 144;
-            case 133: //Set KAMI Galick
+            case 133: // Set KAMI Galick
                 return 136;
-            case 134: //Set KAMI Monkey
+            case 134: // Set KAMI Monkey
                 return 137;
-            case 135: //Set KAMI HP
+            case 135: // Set KAMI HP
                 return 138;
+            default:
+                return 0;
         }
-        return 0;
     }
 
+    /**
+     * Tạo vật phẩm hủy diệt với các tùy chọn cụ thể.
+     * 
+     * @param itemId ID của vật phẩm.
+     * @param dhdId ID của set hủy diệt.
+     * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
+     */
     public Item itemDHD(int itemId, int dhdId) {
         Item item = createItemSetKichHoat(itemId, 1);
         if (item != null) {
-            item.itemOptions.add(new Item.ItemOption(dhdId, 1));
-            item.itemOptions.add(new Item.ItemOption(optionIdDHD(dhdId), 1));
-            item.itemOptions.add(new Item.ItemOption(30, 1));
+            item.itemOptions.add(new Item.ItemOption(dhdId, 1)); // Thêm tùy chọn set hủy diệt
+            item.itemOptions.add(new Item.ItemOption(optionIdDHD(dhdId), 1)); // Thêm tùy chọn liên quan
+            item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
         }
         return item;
     }
 
+    /**
+     * Trả về ID tùy chọn liên quan đến set hủy diệt.
+     * 
+     * @param skhId ID của set hủy diệt.
+     * @return int ID tùy chọn tương ứng.
+     */
     public int optionIdDHD(int skhId) {
         switch (skhId) {
-            case 127: //Set KAMI Taiyoken
+            case 127: // Set KAMI Taiyoken
                 return 139;
-            case 128: //Set KAMI Genki
+            case 128: // Set KAMI Genki
                 return 140;
-            case 129: //Set KAMI Kamejoko
+            case 129: // Set KAMI Kamejoko
                 return 141;
-            case 130: //Set KAMI KI
+            case 130: // Set KAMI KI
                 return 142;
-            case 131: //Set KAMI Dame
+            case 131: // Set KAMI Dame
                 return 143;
-            case 132: //Set KAMI Summon
+            case 132: // Set KAMI Summon
                 return 144;
-            case 133: //Set KAMI Galick
+            case 133: // Set KAMI Galick
                 return 136;
-            case 134: //Set KAMI Monkey
+            case 134: // Set KAMI Monkey
                 return 137;
-            case 135: //Set KAMI HP
+            case 135: // Set KAMI HP
                 return 138;
+            default:
+                return 0;
         }
-        return 0;
     }
 
-
+    /**
+     * Tạo vật phẩm hủy diệt ngẫu nhiên dựa trên giới tính người chơi.
+     * 
+     * @param itemId ID của vật phẩm.
+     * @param gender Giới tính của người chơi (0: Trái Đất, 1: Namek, 2: Xayda).
+     * @return Item Vật phẩm đã được tạo và thêm các tùy chọn.
+     */
     public Item randomCS_DHD(int itemId, int gender) {
         Item it = createItemSetKichHoat(itemId, 1);
         List<Integer> ao = Arrays.asList(650, 652, 654);
@@ -2150,72 +2373,97 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         List<Integer> giay = Arrays.asList(658, 660, 662);
         int nhd = 656;
         if (ao.contains(itemId)) {
-            it.itemOptions.add(new Item.ItemOption(47, Util.highlightsItem(gender == 2, new Random().nextInt(1001) + 1800))); // áo từ 1800-2800 giáp
+            it.itemOptions.add(new Item.ItemOption(47, Util.highlightsItem(gender == 2, new Random().nextInt(1001) + 1800))); // Giáp 1800-2800
         }
         if (quan.contains(itemId)) {
-            it.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(16) + 85))); // hp 85-100k
+            it.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(16) + 85))); // HP 85k-100k
         }
         if (gang.contains(itemId)) {
-            it.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(150) + 8500))); // 8500-10000
+            it.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(150) + 8500))); // Sát thương 8500-10000
         }
         if (giay.contains(itemId)) {
-            it.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(11) + 80))); // ki 80-90k
+            it.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(11) + 80))); // KI 80k-90k
         }
         if (nhd == itemId) {
-            it.itemOptions.add(new Item.ItemOption(14, new Random().nextInt(3) + 17)); //chí mạng 17-19%
+            it.itemOptions.add(new Item.ItemOption(14, new Random().nextInt(3) + 17)); // Chí mạng 17-19%
         }
-        it.itemOptions.add(new Item.ItemOption(21, 80));// yêu cầu sm 80 tỉ
-        it.itemOptions.add(new Item.ItemOption(30, 1));// ko the gd
+        it.itemOptions.add(new Item.ItemOption(21, 80)); // Yêu cầu sức mạnh 80 tỷ
+        it.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
         return it;
     }
 
-    //Cải trang sự kiện 20/11
+    /**
+     * Tạo cải trang sự kiện 20/11.
+     * 
+     * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
+     * @return Item Cải trang đã được tạo.
+     */
     public Item caitrang2011(boolean rating) {
         Item item = createItemSetKichHoat(680, 1);
-        item.itemOptions.add(new Item.ItemOption(76, 1));//VIP
-        item.itemOptions.add(new Item.ItemOption(77, 28));//hp 28%
-        item.itemOptions.add(new Item.ItemOption(103, 25));//ki 25%
-        item.itemOptions.add(new Item.ItemOption(147, 24));//sd 26%
-        item.itemOptions.add(new Item.ItemOption(117, 18));//Đẹp + 18% sd
-        if (Util.isTrue(995, 1000) && rating) {// tỉ lệ ra hsd
-            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1));//hsd
+        item.itemOptions.add(new Item.ItemOption(76, 1)); // VIP
+        item.itemOptions.add(new Item.ItemOption(77, 28)); // HP +28%
+        item.itemOptions.add(new Item.ItemOption(103, 25)); // KI +25%
+        item.itemOptions.add(new Item.ItemOption(147, 24)); // Sát thương +24%
+        item.itemOptions.add(new Item.ItemOption(117, 18)); // Đẹp +18% sát thương
+        if (Util.isTrue(995, 1000) && rating) { // Tỉ lệ 99.5% ra hạn sử dụng
+            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1)); // Hạn sử dụng 1-3 ngày
         }
         return item;
     }
 
-    //610 - bong hoa
-    //Phụ kiện bó hoa 20/11
+    /**
+     * Tạo phụ kiện bó hoa sự kiện 20/11.
+     * 
+     * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
+     * @return Item Phụ kiện đã được tạo.
+     */
     public Item phuKien2011(boolean rating) {
         Item item = createItemSetKichHoat(954, 1);
-        item.itemOptions.add(new Item.ItemOption(77, new Random().nextInt(5) + 5));
-        item.itemOptions.add(new Item.ItemOption(103, new Random().nextInt(5) + 5));
-        item.itemOptions.add(new Item.ItemOption(147, new Random().nextInt(5) + 5));
-        if (Util.isTrue(1, 100)) {
+        item.itemOptions.add(new Item.ItemOption(77, new Random().nextInt(5) + 5)); // HP +5-10%
+        item.itemOptions.add(new Item.ItemOption(103, new Random().nextInt(5) + 5)); // KI +5-10%
+        item.itemOptions.add(new Item.ItemOption(147, new Random().nextInt(5) + 5)); // Sát thương +5-10%
+        if (Util.isTrue(1, 100)) { // Tỉ lệ 1% tăng một tùy chọn lên 10%
             item.itemOptions.get(Util.nextInt(item.itemOptions.size() - 1)).param = 10;
         }
-        item.itemOptions.add(new Item.ItemOption(30, 1));//ko the gd
-        if (Util.isTrue(995, 1000) && rating) {// tỉ lệ ra hsd
-            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1));//hsd
+        item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
+        if (Util.isTrue(995, 1000) && rating) { // Tỉ lệ 99.5% ra hạn sử dụng
+            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1)); // Hạn sử dụng 1-3 ngày
         }
         return item;
     }
 
+    /**
+     * Tạo vật phẩm vận bay sự kiện 20/11.
+     * 
+     * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
+     * @return Item Vận bay đã được tạo.
+     */
     public Item vanBay2011(boolean rating) {
         Item item = createItemSetKichHoat(795, 1);
-        item.itemOptions.add(new Item.ItemOption(89, 1));
-        item.itemOptions.add(new Item.ItemOption(30, 1));//ko the gd
-        if (Util.isTrue(950, 1000) && rating) {// tỉ lệ ra hsd
-            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1));//hsd
+        item.itemOptions.add(new Item.ItemOption(89, 1)); // Vận bay
+        item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
+        if (Util.isTrue(950, 1000) && rating) { // Tỉ lệ 95% ra hạn sử dụng
+            item.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(3) + 1)); // Hạn sử dụng 1-3 ngày
         }
         return item;
     }
 
+    /**
+     * Tạo đá bảo vệ.
+     * 
+     * @return Item Đá bảo vệ đã được tạo.
+     */
     public Item daBaoVe() {
         Item item = createItemSetKichHoat(987, 1);
-        item.itemOptions.add(new Item.ItemOption(30, 1));//ko the gd
+        item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
         return item;
     }
 
+    /**
+     * Tạo vật phẩm rác ngẫu nhiên.
+     * 
+     * @return Item Vật phẩm rác đã được tạo.
+     */
     public Item randomRac() {
         short[] racs = {20, 19, 18, 17};
         Item item = createItemSetKichHoat(racs[Util.nextInt(racs.length - 1)], 1);
@@ -2225,6 +2473,12 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         return item;
     }
 
+    /**
+     * Trả về ID tùy chọn cho vật phẩm rác.
+     * 
+     * @param itemId ID của vật phẩm.
+     * @return byte ID tùy chọn tương ứng.
+     */
     public byte optionRac(short itemId) {
         switch (itemId) {
             case 220:
@@ -2242,6 +2496,11 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Mở hộp VIP và thêm vật phẩm ngẫu nhiên vào túi người chơi.
+     * 
+     * @param player Người chơi.
+     */
     public void openBoxVip(Player player) {
         if (InventoryServiceNew.gI().getCountEmptyBag(player) <= 1) {
             Service.gI().sendThongBao(player, "Bạn phải có ít nhất 2 ô trống hành trang");
@@ -2252,9 +2511,9 @@ public Item createItemFromItemShop(ItemShop itemShop) {
             return;
         }
         Item item;
-        if (Util.isTrue(45, 100)) {
+        if (Util.isTrue(45, 100)) { // 45% cơ hội nhận cải trang
             item = caitrang2011(false);
-        } else {
+        } else { // 55% cơ hội nhận phụ kiện
             item = phuKien2011(false);
         }
         short[] icon = new short[2];
@@ -2262,13 +2521,21 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         icon[1] = item.template.iconID;
         InventoryServiceNew.gI().addItemBag(player, item);
         InventoryServiceNew.gI().sendItemBags(player);
-        player.inventory.event -= 3000;
+        player.inventory.event -= 3000; // Trừ 3000 bông
         Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name);
         CombineServiceNew.gI().sendEffectOpenItem(player, icon[0], icon[1]);
     }
 
+    /**
+     * Giao bông để nhận vật phẩm.
+     * 
+     * @param player Người chơi.
+     * @param quantity Số lượng bông giao.
+     */
     public void giaobong(Player player, int quantity) {
-        if (quantity > 10000) return;
+        if (quantity > 10000) {
+            return;
+        }
         try {
             Item itemUse = InventoryServiceNew.gI().findItem(player.inventory.itemsBag, 610);
             if (itemUse.quantity < quantity) {
@@ -2277,54 +2544,68 @@ public Item createItemFromItemShop(ItemShop itemShop) {
             }
             InventoryServiceNew.gI().subQuantityItemsBag(player, itemUse, quantity);
             Item item = createItemSetKichHoat(736, (quantity / 100));
-            item.itemOptions.add(new Item.ItemOption(30, 1));//ko the gd
+            item.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
             InventoryServiceNew.gI().addItemBag(player, item);
             InventoryServiceNew.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Bạn đã nhận được x" + (quantity / 100) + " " + item.template.name);
         } catch (Exception e) {
-             
             Service.gI().sendThongBao(player, "Bạn không đủ bông...");
         }
     }
 
+    /**
+     * Tạo phụ kiện World Cup.
+     * 
+     * @param itemId ID của phụ kiện.
+     * @return Item Phụ kiện World Cup đã được tạo.
+     */
     public Item PK_WC(int itemId) {
         Item phukien = createItemSetKichHoat(itemId, 1);
         int co = 983;
         int cup = 982;
         int bong = 966;
         if (cup == itemId) {
-            phukien.itemOptions.add(new Item.ItemOption(77, new Random().nextInt(6) + 5)); // hp 5-10%
+            phukien.itemOptions.add(new Item.ItemOption(77, new Random().nextInt(6) + 5)); // HP +5-10%
         }
         if (co == itemId) {
-            phukien.itemOptions.add(new Item.ItemOption(103, new Random().nextInt(6) + 5)); // ki 5-10%
+            phukien.itemOptions.add(new Item.ItemOption(103, new Random().nextInt(6) + 5)); // KI +5-10%
         }
         if (bong == itemId) {
-            phukien.itemOptions.add(new Item.ItemOption(50, new Random().nextInt(6) + 5)); // sd 5- 10%
+            phukien.itemOptions.add(new Item.ItemOption(50, new Random().nextInt(6) + 5)); // Sát thương +5-10%
         }
-        phukien.itemOptions.add(new Item.ItemOption(192, 1));//WORLDCUP
-        phukien.itemOptions.add(new Item.ItemOption(193, 1));//(2 món kích hoạt ....)
-        if (Util.isTrue(99, 100)) {// tỉ lệ ra hsd
-            phukien.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(2) + 1));//hsd
+        phukien.itemOptions.add(new Item.ItemOption(192, 1)); // World Cup
+        phukien.itemOptions.add(new Item.ItemOption(193, 1)); // 2 món kích hoạt
+        if (Util.isTrue(99, 100)) { // Tỉ lệ 99% ra hạn sử dụng
+            phukien.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(2) + 1)); // Hạn sử dụng 1-2 ngày
         }
         return phukien;
     }
 
-    //Cải trang Gohan WC
+    /**
+     * Tạo cải trang Gohan World Cup.
+     * 
+     * @param rating Có áp dụng tỉ lệ ra hạn sử dụng hay không.
+     * @return Item Cải trang Gohan World Cup đã được tạo.
+     */
     public Item CT_WC(boolean rating) {
         Item caitrang = createItemSetKichHoat(883, 1);
-        caitrang.itemOptions.add(new Item.ItemOption(77, 30));// hp 30%
-        caitrang.itemOptions.add(new Item.ItemOption(103, 15));// ki 15%
-        caitrang.itemOptions.add(new Item.ItemOption(50, 20));// sd 20%
-        caitrang.itemOptions.add(new Item.ItemOption(192, 1));//WORLDCUP
-        caitrang.itemOptions.add(new Item.ItemOption(193, 1));//(2 món kích hoạt ....)
-        if (Util.isTrue(99, 100) && rating) {// tỉ lệ ra hsd
-            caitrang.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(2) + 1));//hsd
+        caitrang.itemOptions.add(new Item.ItemOption(77, 30)); // HP +30%
+        caitrang.itemOptions.add(new Item.ItemOption(103, 15)); // KI +15%
+        caitrang.itemOptions.add(new Item.ItemOption(50, 20)); // Sát thương +20%
+        caitrang.itemOptions.add(new Item.ItemOption(192, 1)); // World Cup
+        caitrang.itemOptions.add(new Item.ItemOption(193, 1)); // 2 món kích hoạt
+        if (Util.isTrue(99, 100) && rating) { // Tỉ lệ 99% ra hạn sử dụng
+            caitrang.itemOptions.add(new Item.ItemOption(93, new Random().nextInt(2) + 1)); // Hạn sử dụng 1-2 ngày
         }
         return caitrang;
     }
 
+    /**
+     * Mở hộp đồ thiên sứ.
+     * 
+     * @param player Người chơi.
+     */
     public void openDTS(Player player) {
-        //check sl đồ tl, đồ hd
         if (player.combineNew.itemsCombine.stream().filter(item -> item.template.id >= 555 && item.template.id <= 567).count() < 1) {
             Service.gI().sendThongBao(player, "Thiếu đồ thần linh");
             return;
@@ -2340,7 +2621,7 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         if (InventoryServiceNew.gI().getCountEmptyBag(player) > 0) {
             Item itemTL = player.combineNew.itemsCombine.stream().filter(item -> item.template.id >= 555 && item.template.id <= 567).findFirst().get();
             List<Item> itemHDs = player.combineNew.itemsCombine.stream().filter(item -> item.template.id >= 650 && item.template.id <= 662).collect(Collectors.toList());
-            short[][] itemIds = {{1048, 1051, 1054, 1057, 1060}, {1049, 1052, 1055, 1058, 1061}, {1050, 1053, 1056, 1059, 1062}}; // thứ tự td - 0,nm - 1, xd - 2
+            short[][] itemIds = {{1048, 1051, 1054, 1057, 1060}, {1049, 1052, 1055, 1058, 1061}, {1050, 1053, 1056, 1059, 1062}}; // Thứ tự: Trái Đất - 0, Namek - 1, Xayda - 2
 
             Item itemTS = DoThienSu(itemIds[player.gender][itemTL.template.type], player.gender);
             InventoryServiceNew.gI().addItemBag(player, itemTS);
@@ -2355,6 +2636,13 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         }
     }
 
+    /**
+     * Tạo vật phẩm thiên sứ dựa trên giới tính và loại vật phẩm.
+     * 
+     * @param itemId ID của vật phẩm.
+     * @param gender Giới tính của người chơi (0: Trái Đất, 1: Namek, 2: Xayda).
+     * @return Item Vật phẩm thiên sứ đã được tạo.
+     */
     public Item DoThienSu(int itemId, int gender) {
         Item dots = createItemSetKichHoat(itemId, 1);
         List<Integer> ao = Arrays.asList(1048, 1049, 1050);
@@ -2362,49 +2650,55 @@ public Item createItemFromItemShop(ItemShop itemShop) {
         List<Integer> gang = Arrays.asList(1054, 1055, 1056);
         List<Integer> giay = Arrays.asList(1057, 1058, 1059);
         List<Integer> nhan = Arrays.asList(1060, 1061, 1062);
-        //áo
+        // Áo
         if (ao.contains(itemId)) {
-            dots.itemOptions.add(new Item.ItemOption(47, Util.highlightsItem(gender == 2, new Random().nextInt(1201) + 2800))); // áo từ 2800-4000 giáp
+            dots.itemOptions.add(new Item.ItemOption(47, Util.highlightsItem(gender == 2, new Random().nextInt(1201) + 2800))); // Giáp 2800-4000
         }
-        //quần
+        // Quần
         if (Util.isTrue(80, 100)) {
             if (quan.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(11) + 120))); // hp 120k-130k
+                dots.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(11) + 120))); // HP 120k-130k
             }
         } else {
             if (quan.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(21) + 130))); // hp 130-150k 15%
+                dots.itemOptions.add(new Item.ItemOption(22, Util.highlightsItem(gender == 0, new Random().nextInt(21) + 130))); // HP 130k-150k
             }
         }
-        //găng
+        // Găng
         if (Util.isTrue(80, 100)) {
             if (gang.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(651) + 9350))); // 9350-10000
+                dots.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(651) + 9350))); // Sát thương 9350-10000
             }
         } else {
             if (gang.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(1001) + 10000))); // gang 15% 10-11k -xayda 12k1
+                dots.itemOptions.add(new Item.ItemOption(0, Util.highlightsItem(gender == 2, new Random().nextInt(1001) + 10000))); // Sát thương 10000-11000 (Xayda: 12001)
             }
         }
-        //giày
+        // Giày
         if (Util.isTrue(80, 100)) {
             if (giay.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(21) + 90))); // ki 90-110k
+                dots.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(21) + 90))); // KI 90k-110k
             }
         } else {
             if (giay.contains(itemId)) {
-                dots.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(21) + 110))); // ki 110-130k
+                dots.itemOptions.add(new Item.ItemOption(23, Util.highlightsItem(gender == 1, new Random().nextInt(21) + 110))); // KI 110k-130k
             }
         }
-
+        // Nhẫn
         if (nhan.contains(itemId)) {
-            dots.itemOptions.add(new Item.ItemOption(14, Util.highlightsItem(gender == 1, new Random().nextInt(3) + 18))); // nhẫn 18-20%
+            dots.itemOptions.add(new Item.ItemOption(14, Util.highlightsItem(gender == 1, new Random().nextInt(3) + 18))); // Chí mạng 18-20%
         }
-        dots.itemOptions.add(new Item.ItemOption(21, 120));
-        dots.itemOptions.add(new Item.ItemOption(30, 1));
+        dots.itemOptions.add(new Item.ItemOption(21, 120)); // Yêu cầu sức mạnh 120 tỷ
+        dots.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
         return dots;
     }
 
+    /**
+     * Lấy danh sách tùy chọn của vật phẩm từ cửa hàng.
+     * 
+     * @param id ID của vật phẩm.
+     * @return List<Item.ItemOption> Danh sách các tùy chọn của vật phẩm.
+     */
     public List<Item.ItemOption> getListOptionItemShop(short id) {
         List<Item.ItemOption> list = new ArrayList<>();
         Manager.SHOPS.forEach(shop -> shop.tabShops.forEach(tabShop -> tabShop.itemShops.forEach(itemShop -> {
